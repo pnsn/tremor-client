@@ -1,0 +1,62 @@
+#tremor-map{
+  height:600px;
+}
+
+#chart{
+  height:300px;
+}
+
+.station {
+	width: 0;
+	height: 0;
+	border-left: 6px solid transparent !important;
+	border-right: 6px solid transparent !important;
+	border-bottom: 10px solid black !important;
+/*  background-color:red;*/
+}
+
+.station.active-station{
+	width: 0;
+	height: 0;
+	border-left: 9px solid transparent !important;
+	border-right: 9px solid transparent !important;
+	border-bottom: 13px solid black !important;
+}
+
+
+ul.sidebar-list {
+  list-style-type:none;
+  padding-left:10;
+}
+
+ul#region-nav li{
+  padding-right:10px;
+  margin-bottom: 3px;
+}
+
+.event {
+  width: 10px !important;
+  height: 10px !important;
+  border-radius: 50% !important;
+  border: solid black 1px;
+  background-color: red !important;
+}
+.event.active-event {
+  width: 13px !important;
+  height: 13px !important;
+  border-radius: 50% !important;
+  border: solid black 2px;
+  background-color: red !important;
+}
+.active-nav{
+  font-weight:bold;
+}
+.sub-header{
+  background-color: #d3d3d3;
+  margin-bottom:5px;
+  text-align:center;
+}
+.event-nav {
+  max-height: 800px;
+  overflow:scroll;
+}

@@ -1,0 +1,72 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css">
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/tremor-map.css" />
+
+
+    
+    <script src="http://code.jquery.com/jquery-1.10.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"   integrity="sha256-lnH4vnCtlKU2LmD0ZW1dU7ohTTKrcKP50WA9fa350cE="   crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
+    <script src="javascript/moment.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script src="javascript/bootstrap.min.js"></script>
+    <script src="javascript/all_stations.js"></script>
+    <script src="javascript/all_summary.js"></script>
+    <script src="javascript/tremor.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="javascript/tremor-map.js"></script>
+
+  </head>
+  <body>
+    <div id="left-sidebar" class="sidebar col-xs-3">
+      <div class="row">
+        <div class="sub-header">Region Options</div>
+        <ul id="region-nav" class="sidebar-list">
+          <li>Show all <div class="pull-right"> <input class="toggle-switch" checked ></div><li>
+          
+        </ul>
+      </div>
+      <div class="row">
+        <div class="sub-header">Time Options</div>
+        <div class="input-group input-daterange form-group">
+            <input type="text" class="form-control datepicker" id="start-select">
+            <div class="input-group-addon">to</div>
+            <input type="text" class="form-control datepicker" id="end-select">
+        </div>
+      </div>
+      
+    </div> 
+    <div class="col-xs-7" >
+      <div class="row" id="tremor-map"></div>
+    </div>
+    
+    <div id="right-sidebar" class="sidebar col-xs-2">
+      <div class="row">
+        <div class="sub-header">Plot Summary</div>
+        <div id="summary">
+          <div id="hours" ><span></span> Hours</div>
+          <div id="epicenters" ><span></span> Epicenters</div>
+        </div>
+        <div id="event-nav">
+          <ul class="sidebar-list">
+          </ul>
+        </div>  
+      </div>
+    </div>
+    
+    <div class="col-xs-12" >
+      <div class="row" id="chart"></div>
+    </div>
+  </body>
+</html>
