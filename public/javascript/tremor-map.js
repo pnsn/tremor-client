@@ -37,9 +37,8 @@ $(function(){
       last = event.time;
     }
     var time = event.time.replace(/[\s:]/g, "-");
-    // console.log(marker._lat, marker._lon)
     var marker = L.marker([event.lat, event.lng],{
-        icon:L.divIcon({className: "event region-" + event.region + " event-"+ time }),
+        icon:L.divIcon({className: "event region-" + (event.region ? event.region : "unknown") + " event-"+ time }),
         riseOnHover:true
     });
     
@@ -55,6 +54,65 @@ $(function(){
     latlngs.push([event.lat, event.lng]);
 
     markers["event-" + time] = marker;
+  });
+  
+  var columns = {
+    'dates': ['x'], 
+    'all': ['ALL']
+  };
+  
+  var k;
+  $.each(regions, function(i, region){
+    columns[region.id] = [];
+    columns[region.id].push(region.id);
+  });
+  
+  $.each(all_summary.total, function(i, event){
+    k = i;
+    columns.dates.push(event.date);
+    columns.all.push(event.ALL);
+    $.each(regions, function(i, region){
+      columns[region.id].push(event[region.id]);
+    });
+  });
+  
+  console.log(k)
+  
+  var chartColumns = [columns.dates, columns.all];
+  $.each(regions, function(i, region){
+    chartColumns.push(columns[region.id]);
+  });
+  
+  
+  
+  var chart = c3.generate({
+    bindto: '#chart',
+    data: {
+      x: 'x',
+      xFormat: '%m/%d/%Y',
+      //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
+      columns: chartColumns
+    },
+    axis: {
+      x: {
+        type: 'timeseries',
+        tick: {
+          format: '%Y-%m-%d'
+        }
+      }
+    },
+    point: {
+      show: false
+    },
+    subchart: {
+      show: true
+    },
+    zoom: {
+      enabled: true
+    },
+    transition: {
+      duration: 0
+    }
   });
 
   var bounds = new L.LatLngBounds(latlngs);
@@ -108,6 +166,5 @@ $(function(){
   
   $('.toggle-switch').change(function(){
     console.log($(this).prop("checked"), $(this)[0].id);
-
   });
 });      
