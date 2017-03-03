@@ -21,24 +21,39 @@ $(function(){
   map.addLayer(osm);
   var latlngs = [];
   var markers = {};
+	
+	//GET RID OF THIS IN PRODUCTION
+	var regiony = [];
+	
   $.each(allStations, function(i, station){
-    var marker = L.marker([station.lat, station.lng], {icon:L.divIcon({className: "station region-" + station.region})});
-
+    var marker = L.marker([station.lat, station.lng], {icon:L.divIcon({className: "station hidden region-" + station.region})});
+		
     marker.addTo(map);
     marker.bindPopup("Station: " + station.station);
     latlngs.push([station.lat, station.lng]);
   });
   
   var first, last;
+	
+  // var k;
+  $.each(regions, function(i, region){
+		regiony.push(region.id);
+    // columns[region.id] = [];
+    // columns[region.id].push(region.id);
+  });
+	
   $.each(events.markers, function(i, event){
-    if(i==0){
+    if(i === 0){
       first = event.time;
-    }else{
-      last = event.time;
-    }
+    } 
+		if(i === events.markers.length - 1 ){
+		  last = event.time;
+		}
+		
     var time = event.time.replace(/[\s:]/g, "-");
+
     var marker = L.marker([event.lat, event.lng],{
-        icon:L.divIcon({className: "event region-" + (event.region ? event.region : "unknown") + " event-"+ time }),
+        icon:L.divIcon({className: "event region-all region-" + (event.region ? event.region : regiony[Math.floor(Math.random()*regiony.length)]) + " event-"+ time }),
         riseOnHover:true
     });
     
@@ -61,82 +76,88 @@ $(function(){
     'all': ['ALL']
   };
   
-  var k;
-  $.each(regions, function(i, region){
-    columns[region.id] = [];
-    columns[region.id].push(region.id);
-  });
+  // var k;
+  // $.each(regions, function(i, region){
+  //   columns[region.id] = [];
+  //   columns[region.id].push(region.id);
+  // });
+  //
+  // $.each(all_summary.total, function(i, event){
+  //   k = i;
+  //   columns.dates.push(event.date);
+  //   columns.all.push(event.ALL);
+  //   $.each(regions, function(i, region){
+  //     columns[region.id].push(event[region.id]);
+  //   });
+  // });
+  //
+  // console.log(k)
+  //
+  // var chartColumns = [columns.dates, columns.all];
+  // $.each(regions, function(i, region){
+  //   chartColumns.push(columns[region.id]);
+  // });
   
-  $.each(all_summary.total, function(i, event){
-    k = i;
-    columns.dates.push(event.date);
-    columns.all.push(event.ALL);
-    $.each(regions, function(i, region){
-      columns[region.id].push(event[region.id]);
-    });
-  });
-  
-  console.log(k)
-  
-  var chartColumns = [columns.dates, columns.all];
-  $.each(regions, function(i, region){
-    chartColumns.push(columns[region.id]);
-  });
   
   
-  
-  var chart = c3.generate({
-    bindto: '#chart',
-    data: {
-      x: 'x',
-      xFormat: '%m/%d/%Y',
-      //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
-      columns: chartColumns
-    },
-    axis: {
-      x: {
-        type: 'timeseries',
-        tick: {
-          format: '%Y-%m-%d'
-        }
-      }
-    },
-    point: {
-      show: false
-    },
-    subchart: {
-      show: true
-    },
-    zoom: {
-      enabled: true
-    },
-    transition: {
-      duration: 0
-    }
-  });
+  // var chart = c3.generate({
+  //   bindto: '#chart',
+  //   data: {
+  //     x: 'x',
+  //     xFormat: '%m/%d/%Y',
+  //     //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
+  //     columns: chartColumns
+  //   },
+  //   axis: {
+  //     x: {
+  //       type: 'timeseries',
+  //       tick: {
+  //         format: '%Y-%m-%d'
+  //       }
+  //     }
+  //   },
+  //   point: {
+  //     show: false
+  //   },
+  //   subchart: {
+  //     show: true
+  //   },
+  //   zoom: {
+  //     enabled: true
+  //   },
+  //   transition: {
+  //     duration: 0
+  //   }
+  // });
 
   var bounds = new L.LatLngBounds(latlngs);
   map.fitBounds(bounds);
+          
+	$("#region-nav").append($("<li class='region-nav-toggle' id=region-all>All<div class='pull-right'> <input class='toggle-switch region-all' checked></div></li>"))
   $.each(regions, function(i, region){
-    $("#region-nav").append($("<li class='region-nav-toggle' id=region-" + region.id + " >" + region.name + "<div class='pull-right'> <input class='toggle-switch'></div></li>"));
+    $("#region-nav").append($("<li class='region-nav-toggle' id=region-"+region.id+">" + region.name + "<div class='pull-right'> <input class='toggle-switch region-" + region.id +"'></div></li>"));
   });
-
+ 
   $("#hours span").text(((new Date(first) - new Date(last)) / (1000 * 60 * 60)).toFixed(1));
-  $("#epicenters span").text(events.markers.length);
+  
+	$("#epicenters span").text(events.markers.length);
   //clicking and stuff like that
   //can probably combine these
+	
   $(".region-nav-toggle").mouseover(function(){
     $(this).addClass("active-nav");
-    $("." + $(this)[0].id).addClass("active-station");
+    $(".station." + $(this)[0].id).addClass("active-station").removeClass("hidden");
     
   });
   
   $(".region-nav-toggle").mouseleave(function(){
      $(this).removeClass("active-nav");
-    $("." + $(this)[0].id).removeClass("active-station");
+		 $(".station." + $(this)[0].id).removeClass("active-station");
+		 if(!$(".station." + $(this)[0].id).hasClass("always-show")){
+			 $(".station." + $(this)[0].id).addClass("hidden");
+		 }
   });
-  
-  
+
   $(".event-nav").mouseover(function(){
      $(this).addClass("active-nav");
      markers[$(this)[0].id].setZIndexOffset(1000);
@@ -164,7 +185,21 @@ $(function(){
     'size':'mini'
   });
   
-  $('.toggle-switch').change(function(){
-    console.log($(this).prop("checked"), $(this)[0].id);
+  $('.region-nav-toggle .toggle-switch').change(function(){
+		if($(this).prop("checked")){
+			$(".event." + $(this)[0].classList[1]).removeClass("hidden");
+			console.log($(this).prop("checked"))
+		} else {
+			$(".event." + $(this)[0].classList[1]).addClass("hidden");
+		}
   });
+	
+	$("#station-toggle .toggle-switch").change(function(){
+		if($(this).prop("checked")){
+			$(".station").removeClass("hidden").addClass("always-show");
+		} else {
+			$(".station").addClass("hidden").removeClass("always-show");
+		}
+		
+	});
 });      
