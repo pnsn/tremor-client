@@ -64,3 +64,22 @@ ul.toggle-nav li{
 .hidden {
 	display:none;
 }
+
+.leaflet-top,
+.leaflet-bottom {
+  position: absolute;
+  z-index: 499; /* was 1000 */
+  pointer-events: none;
+  }
+	
+	@media (min-width: 768px) {
+	    .navbar .navbar-nav {
+	        display: inline-block;
+	        float: none;
+	        vertical-align: top;
+	    }
+
+	    .navbar .navbar-collapse {
+	        text-align: center;
+	    }
+	}

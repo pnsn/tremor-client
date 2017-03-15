@@ -2,7 +2,7 @@ $(function(){
   var map = new L.Map('tremor-map').setView([51.505, -0.09], 13),
       osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});		
+      osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
 
   $('.input-daterange,.datepicker').datepicker();
   
@@ -133,9 +133,9 @@ $(function(){
   var bounds = new L.LatLngBounds(latlngs);
   map.fitBounds(bounds);
           
-	$("#region-nav").append($("<li class='region-nav-toggle' id=region-all>All<div class='pull-right'> <input class='toggle-switch region-all' checked></div></li>"))
+	$("#region-nav").append($("<li class='region-nav-toggle' id=region-all>All<div class='pull-right'> <input id='toggle-region-all' class='toggle-switch region-all' checked></div></li>"))
   $.each(regions, function(i, region){
-    $("#region-nav").append($("<li class='region-nav-toggle' id=region-"+region.id+">" + region.name + "<div class='pull-right'> <input class='toggle-switch region-" + region.id +"'></div></li>"));
+    $("#region-nav").append($("<li class='region-nav-toggle' id=region-"+region.id+">" + region.name + "<div class='pull-right'> <input id=toggle-region-" +region.id+" class='toggle-switch region-" + region.id +"'></div></li>"));
   });
  
   $("#hours span").text(((new Date(first) - new Date(last)) / (1000 * 60 * 60)).toFixed(1));
@@ -186,11 +186,18 @@ $(function(){
   });
   
   $('.region-nav-toggle .toggle-switch').change(function(){
+		var regionId = $(this)[0].id.replace("toggle-","");
+		
 		if($(this).prop("checked")){
-			$(".event." + $(this)[0].classList[1]).removeClass("hidden");
-			console.log($(this).prop("checked"))
+			if(regionId  === "region-all"){
+				$(".region-nav-toggle .toggle-switch:not(#toggle-region-all)").bootstrapToggle('off');
+			} else if($("#toggle-region-all").prop("checked")){
+				$("#toggle-region-all").bootstrapToggle('off');
+			}
+			$('.event.' + regionId).removeClass("hidden");
+
 		} else {
-			$(".event." + $(this)[0].classList[1]).addClass("hidden");
+			$('.event.' + regionId).addClass("hidden");
 		}
   });
 	
