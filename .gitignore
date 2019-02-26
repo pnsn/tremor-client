@@ -27,4 +27,5 @@ node_modules
 .lock-wscript
 .DS_STORE
 .secret.sh
+.vscode
 npm-debug.log
