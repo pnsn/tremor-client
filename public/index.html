@@ -1,149 +1,98 @@
-<html>
+<!doctype html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-		<title> Tremor Map </title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.9.4/css/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css">
-    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker.min.css">
-    <link rel="stylesheet" href="css/c3.min.css" />
+    <title> Tremor Map </title>
+    <!-- External Styles -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
+    <!-- End External Styles -->
     <link rel="stylesheet" href="css/tremor-map.css" />
-    
-    <script src="http://code.jquery.com/jquery-1.10.0.js"></script>
-    <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.min.js"   integrity="sha256-lnH4vnCtlKU2LmD0ZW1dU7ohTTKrcKP50WA9fa350cE="   crossorigin="anonymous"></script>
+    <!-- External JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
-    <script src="javascript/moment.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
-    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-    <script src="javascript/bootstrap.min.js"></script>
-    <script src="javascript/all_stations.js"></script>
-    <script src="javascript/all_summary.js"></script>
-    <script src="javascript/newtremor.js"></script>
-    <script src="javascript/d3.min.js"></script>
-    <script src="javascript/c3.min.js"></script>
-    <script src="javascript/tremor-map.js"></script>
-
+    <script src="javascript/external/rainbowvis.js"></script>
+    <script src="javascript/external/leaflet-heat.js"></script>
   </head>
-	<body>
-		<nav class="navbar navbar-default">
-		  <div class="container-fluid">
-		    <!-- Brand and toggle get grouped for better mobile display -->
-		    <div class="navbar-header">
-		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-		        <span class="sr-only">Toggle navigation</span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		      </button>
-		      <a class="navbar-brand" href="#">Tremor Map</a>
-		    </div>
-
-		    <!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Webpage Info <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="http://www.pnsn.org/tremor/overview">Tremor Logs</a></li>
-		            <li><a href="#">WECC Method</a></li>
-		            <li><a href="https://tunk.ess.washington.edu/map_display/Wech_SRL_2010.pdf">Webpage Reference</a></li>
-		            <li role="separator" class="divider"></li>
-		            <li><a href="#">Contact</a></li>
-		          </ul>
-		        </li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Monitoring Resources <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="http://tunk.ess.washington.edu/REALTIME/">Hourly Tremor Map</a></li>
-		            <li><a href="http://pnsn.org/spectrograms">Spectrograms</a></li>
-		            <li><a href="http://www.panga.cwu.edu/demo_vms/map_gui.html">GPS</a></li>
-		            <li><a href="#">Strainmeters</a></li>
-		            <li><a href="http://www.pnsn.org/tremor/overview">Tremor Logs</a></li>
-								<li><a href="#">Tremor Movie</a></li>
-		          </ul>
-		        </li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Contributing Networks <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="https://www.pnsn.org" target="_blank">Pacific Northwest Seismic Network </a></li>
-		            <li><a href="http://www.earthquakescanada.nrcan.gc.ca/index-en.php" target="_blank">Canadian National Seismograph Network </a></li>
-		            <li><a href="http://pboweb.unavco.org/" target="_blank">Plate Boundary Obervatory </a></li>
-		            <li><a href="http://www.ncedc.org/ncsn/" target="_blank">Northern California Seismic Network </a></li>
-		            <li><a href="http://seismo.berkeley.edu//bdsn/bdsn.overview.html" target="_blank">Berkeley Digital Seismic Network </a></li>
-		          </ul>
-		        </li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Tremor & Slip Info <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="#">University of Washington</a></li>
-		            <li><a href="http://www.geodesy.cwu.edu/instruments/tilt/explanation_ETS.html">Central Washington University</a></li>
-		            <li><a href="http://www.earthquakescanada.nrcan.gc.ca/index-en.php">Natural Resources Canada</a></li>
-		          </ul>
-		        </li>
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> FAQ <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="#">Webpage FAQ</a></li>
-		            <li><a href="#">Tremor FAQ</a></li>
-		          </ul>
-		        </li>
-		      </ul>
-		    </div><!-- /.navbar-collapse -->
-		  </div><!-- /.container-fluid -->
-		</nav>
-    <div id="left-sidebar" class="sidebar col-xs-3">
-      <div class="row">
-        <div class="sub-header">Region Options</div>
-        <ul id="region-nav" class="sidebar-list toggle-nav"></ul>
-      </div>
-      <div class="row">
-        <div class="sub-header">Time Options</div>
-        <div class="input-group input-daterange form-group">
-            <input type="text" class="form-control datepicker" id="start-select">
-            <div class="input-group-addon">to</div>
-            <input type="text" class="form-control datepicker" id="end-select">
+  <body>
+    <div class="container-fluid">
+      <div id="control-bar" class="row">
+        <div class="col-3">
+          <div class="form-group">
+            <label for="start-date" class="col-form-label-sm"> Start Date </label>
+            <input class="form-control form-control-sm" type="date" id="start-date">
+          </div>
+          <div class="form-group">
+            <label for="end-date" class="col-form-label-sm"> End Date</label>
+            <input class="form-control form-control-sm" type="date" id="end-date">
+          </div>
+          <button id="submit" class="btn btn-outline-primary btn-sm align-middle">Search</button>
         </div>
-				<div class="input-group input-daterange form-group">
-					Time: 
-					<select >
-					  <option value="normal">Normal</option>
-					  <option value="color-vs-time">Color vs. Time</option>
-					</select>
-				</div>
-      </div>
-      <div class="row">
-        <div class="sub-header">Overlay Options</div>
-        <ul id="station-nav" class="sidebar-list toggle-nav">
-        	<li class='nav-toggle' id="station-toggle">Toggle Stations<div class='pull-right'> <input class='toggle-switch station-toggle'></div></li>
-        </ul>
-      </div>
-      
-    </div> 
-    <div class="col-xs-7" >
-      <div class="row" id="tremor-map"></div>
-    </div>
-    
-    <div id="right-sidebar" class="sidebar col-xs-2">
-      <div class="row">
-        <div class="sub-header">Plot Summary</div>
-        <div id="summary">
-          <div id="hours" ><span></span> Hours</div>
-          <div id="epicenters" ><span></span> Epicenters</div>
+        <div class="col align-self-center">
+          <h3>Display Type</h3>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-time" value="color-time">
+            <label for="color-time" class="form-check-label-sm"> Color vs. Time</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-normal" value="color-normal" checked>
+            <label for="color-normal" class="form-check-label-sm"> Normal</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="heat-map" value="heat-map">
+            <label for="heat-map" class="form-check-label-sm"> Heat Map</label>
+          </div>
         </div>
-        <div id="event-nav">
-          <ul class="sidebar-list">
-          </ul>
-        </div>  
+        <div class="col align-self-center">
+          <h3>Overlays</h3>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="checkbox" id="seismometers" value="seismometers">
+            <label for="seismometers" class="form-check-label-sm"> Seismometers</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="checkbox" id="plate-contours" value="plate-contours" checked>
+            <label for="plate-contours" class="form-check-label-sm"> JDF Plate Contours</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input-sm" type="checkbox" id="past-tremor" value="past-tremor">
+            <label for="past-tremor" class="form-check-label-sm"> Past Tremor</label>
+          </div>
+        </div>
+        <div class="col align-self-center">
+          <h3>Play Events</h3>
+          <button class="btn btn-info" id="play-events">Play</button>
+          <button class="btn btn-info hidden" id="stop-events">Stop</button>
+          <div id="loading">Loading!!</div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12 col-md-9">
+          <div id="tremor-map"></div>
+        </div>
+        <div id="info-sidebar" class="col">
+          <h3>Plot Summary</h3>
+          <div id="hours">Number of hours: <span>???</span></div>
+          <div id="epicenters">Number of epicenters: <span></span></div>
+          <div id="event-nav">
+            <ul class="sidebar-list pl-0">
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="row" id="footer">
+        Footer stuff here
       </div>
     </div>
-    
-    <div class="col-xs-12" >
+    <!-- <div class="col-xs-12" >
       <div class="row" id="chart"></div>
-    </div>
+      </div> -->
+    <!-- End External JS -->
+    <script src="assets/plateContours.js"></script>
+    <script src="assets/pastTremor.js"></script>
+    <script src="assets/seismometers.js"></script>
+    <script src="javascript/tremor-map.js"></script>
   </body>
 </html>

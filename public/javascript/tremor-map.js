@@ -1,212 +1,298 @@
-$(function(){
-  var map = new L.Map('tremor-map').setView([51.505, -0.09], 13),
-      osmUrl='http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-      osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});
-
-  $('.input-daterange,.datepicker').datepicker();
-  
-  var regions = [
-    {name:"N Vancouver Island", id:"NV"}, 
-    {name:"S Vancouver Island", id:"VI"},	
-    {name:"N Washington", id:"NW"},	
-    {name:"S Washington", id:"SW"},	
-    {name:"N Oregon", id:"NO"},
-    {name:"Central Oregon", id:"CO"},
-    {name:"S Oregon", id:"SO"},
-    {name:"N California", id:"NC"},	
-    {name:"N Central California", id:"CC"} 
-  ];
-  
-  map.addLayer(osm);
-  var latlngs = [];
-  var markers = {};
-	
-	//GET RID OF THIS IN PRODUCTION
-	var regiony = [];
-	
-  $.each(allStations, function(i, station){
-    var marker = L.marker([station.lat, station.lng], {icon:L.divIcon({className: "station hidden region-" + station.region})});
-		
-    marker.addTo(map);
-    marker.bindPopup("Station: " + station.station);
-    latlngs.push([station.lat, station.lng]);
-  });
-  
-  var first, last;
-	
-  // var k;
-  $.each(regions, function(i, region){
-		regiony.push(region.id);
-    // columns[region.id] = [];
-    // columns[region.id].push(region.id);
-  });
-	
-  $.each(events.markers, function(i, event){
-    if(i === 0){
-      first = event.time;
-    } 
-		if(i === events.markers.length - 1 ){
-		  last = event.time;
-		}
-		
-    var time = event.time.replace(/[\s:]/g, "-");
-
-    var marker = L.marker([event.lat, event.lng],{
-        icon:L.divIcon({className: "event region-all region-" + (event.region ? event.region : regiony[Math.floor(Math.random()*regiony.length)]) + " event-"+ time }),
-        riseOnHover:true
-    });
-    
-    $("#event-nav ul").append($("<li class='event-nav' id=event-" + time + ">" + event.time + "</li>"));
-    marker.addTo(map);
-    marker.bindPopup("<div> Time: " + event.time + "</div> <div> Latitude: " + event.lat + "</div><div>Longitude: " + event.lng + "</div>");
-    marker.on('mouseover', function(){
-      $(".event-" + time).addClass("active-event");
-    });
-    marker.on('mouseout', function(){
-      $(".event-" + time).removeClass("active-event");
-    });
-    latlngs.push([event.lat, event.lng]);
-
-    markers["event-" + time] = marker;
-  });
-  
-  var columns = {
-    'dates': ['x'], 
-    'all': ['ALL']
+$(function () {
+  var mapOptions = {
+    minZoom: 5,
+    zoomSnap: 0.5,
+    preferCanvas: true
   };
-  
-  // var k;
-  // $.each(regions, function(i, region){
-  //   columns[region.id] = [];
-  //   columns[region.id].push(region.id);
-  // });
-  //
-  // $.each(all_summary.total, function(i, event){
-  //   k = i;
-  //   columns.dates.push(event.date);
-  //   columns.all.push(event.ALL);
-  //   $.each(regions, function(i, region){
-  //     columns[region.id].push(event[region.id]);
-  //   });
-  // });
-  //
-  // console.log(k)
-  //
-  // var chartColumns = [columns.dates, columns.all];
-  // $.each(regions, function(i, region){
-  //   chartColumns.push(columns[region.id]);
-  // });
-  
-  
-  
-  // var chart = c3.generate({
-  //   bindto: '#chart',
-  //   data: {
-  //     x: 'x',
-  //     xFormat: '%m/%d/%Y',
-  //     //        xFormat: '%Y%m%d', // 'xFormat' can be used as custom format of 'x'
-  //     columns: chartColumns
-  //   },
-  //   axis: {
-  //     x: {
-  //       type: 'timeseries',
-  //       tick: {
-  //         format: '%Y-%m-%d'
-  //       }
-  //     }
-  //   },
-  //   point: {
-  //     show: false
-  //   },
-  //   subchart: {
-  //     show: true
-  //   },
-  //   zoom: {
-  //     enabled: true
-  //   },
-  //   transition: {
-  //     duration: 0
-  //   }
-  // });
-
-  var bounds = new L.LatLngBounds(latlngs);
-  map.fitBounds(bounds);
-          
-	$("#region-nav").append($("<li class='region-nav-toggle' id=region-all>All<div class='pull-right'> <input id='toggle-region-all' class='toggle-switch region-all' checked></div></li>"))
-  $.each(regions, function(i, region){
-    $("#region-nav").append($("<li class='region-nav-toggle' id=region-"+region.id+">" + region.name + "<div class='pull-right'> <input id=toggle-region-" +region.id+" class='toggle-switch region-" + region.id +"'></div></li>"));
-  });
+  var tremorMap = buildMap([45.5122, -122.6587], mapOptions);
+  var eventMarkers;
+  var heatmap;
+  var plateContours;
+  var seismometers;
+  var pastTremor;
  
-  $("#hours span").text(((new Date(first) - new Date(last)) / (1000 * 60 * 60)).toFixed(1));
+  //returns map
   
-	$("#epicenters span").text(events.markers.length);
-  //clicking and stuff like that
-  //can probably combine these
-	
-  $(".region-nav-toggle").mouseover(function(){
-    $(this).addClass("active-nav");
-    $(".station." + $(this)[0].id).addClass("active-station").removeClass("hidden");
-    
-  });
-  
-  $(".region-nav-toggle").mouseleave(function(){
-     $(this).removeClass("active-nav");
-		 $(".station." + $(this)[0].id).removeClass("active-station");
-		 if(!$(".station." + $(this)[0].id).hasClass("always-show")){
-			 $(".station." + $(this)[0].id).addClass("hidden");
-		 }
+  //for now start with a default
+  //later default to today, and update with value from selector
+  var startTime = $("#start-date").val() ?  $("#start-date").val() : "2018-03-01" ;//24 hours ago
+  var endTime = $("#end-date").val() ? $("#end-date").val() : "2018-03-02";//now
+  $("#start-date").val(startTime);
+  $("#end-date").val(endTime);
+
+  //AUTOREFRESH THIS
+  getEvents(startTime, endTime).done(function(response){
+    eventMarkers = updateMarkers(response);
+    tremorMap.addLayer(eventMarkers);
+    //hide loading screen
+    $("#loading").hide();
   });
 
-  $(".event-nav").mouseover(function(){
-     $(this).addClass("active-nav");
-     markers[$(this)[0].id].setZIndexOffset(1000);
-    $("." + $(this)[0].id).addClass("active-event");
+  // BUTTONS AND CONTROLS START HERE
+
+  $("#seismometers").change(function(){
+    if($(this).is(":checked")) {
+      seismometers = L.geoJSON(seismometersGeoJSON, {
+      }).addTo(tremorMap);
+    } else {
+      tremorMap.removeLayer(seismometers);
+    }
   });
 
-  $(".event-nav").mouseleave(function(){
-     $(this).removeClass("active-nav");
-     markers[$(this)[0].id].setZIndexOffset(1);
-    $("." + $(this)[0].id).removeClass("active-event");
-  });
-  
-  $(".event-nav").click(function(){
-    markers[$(this)[0].id].openPopup();
+  $("#past-tremor").change(function(){
+    if($(this).is(":checked")) {
+      pastTremor = L.geoJSON(pastTremorGeoJSON, {
+        style: pastTremorGeoJSON.properties.style
+      }).addTo(tremorMap);
+    } else {
+      tremorMap.removeLayer(pastTremor);
+    }
   });
 
-  $('.toggle-switch').attr({
-    'data-toggle':'toggle',
-    'type':'checkbox'
+  $("#plate-contours").change(function(){
+    if($(this).is(":checked")) {
+      plateContours = L.geoJSON(contoursGeoJSON, {
+        style: function(feature) {
+          return feature.properties.style;
+        }
+      }).addTo(tremorMap);
+    } else {
+      tremorMap.removeLayer(plateContours);
+    }
   });
-  
-  $('.toggle-switch').bootstrapToggle({
-    on:"On",
-    off:"Off",
-    'size':'mini'
-  });
-  
-  $('.region-nav-toggle .toggle-switch').change(function(){
-		var regionId = $(this)[0].id.replace("toggle-","");
-		
-		if($(this).prop("checked")){
-			if(regionId  === "region-all"){
-				$(".region-nav-toggle .toggle-switch:not(#toggle-region-all)").bootstrapToggle('off');
-			} else if($("#toggle-region-all").prop("checked")){
-				$("#toggle-region-all").bootstrapToggle('off');
-			}
-			$('.event.' + regionId).removeClass("hidden");
 
-		} else {
-			$('.event.' + regionId).addClass("hidden");
-		}
+
+  $('input[type=radio][name=coloringRadio]').change(function() {
+    if($(this).val() == "heat-map") {
+      tremorMap.removeLayer(eventMarkers);
+      heatmap = drawHeatMap(eventMarkers);
+      heatmap.addTo(tremorMap);
+    } else {
+      if(tremorMap.hasLayer(heatmap)){
+        tremorMap.removeLayer(heatmap);
+      }
+      if(!tremorMap.hasLayer(eventMarkers)){
+        tremorMap.addLayer(eventMarkers);
+      }
+      eventMarkers = recolorMarkers($(this).val(),eventMarkers);
+    }
   });
-	
-	$("#station-toggle .toggle-switch").change(function(){
-		if($(this).prop("checked")){
-			$(".station").removeClass("hidden").addClass("always-show");
-		} else {
-			$(".station").addClass("hidden").removeClass("always-show");
-		}
-		
-	});
+  
+  $("#play-events").click(function(){
+    $("#play-events").hide();
+    $("#stop-events").show();
+
+    if(!tremorMap.hasLayer(eventMarkers)){
+      tremorMap.addLayer(eventMarkers);
+    }
+
+    playEvents(eventMarkers);
+  });
+
+  $("#stop-events").click(function(){
+
+    $("#stop-events").hide();
+    $("#play-events").show();
+    eventMarkers.eachLayer(function(marker){
+      marker.addTo(tremorMap);
+    });
+
+  });
+
+  //if there is only one value, use the same
+  //change to lose focus ?
+  $("#submit").click(function(){
+    console.log("submit!!!");
+    $("#loading").show();
+    console.log("get some more events!")
+    var start = $("#start-date").val();
+    var end = $("#end-date").val();  
+    if(start || end) {
+      if(tremorMap.hasLayer(eventMarkers)){
+        tremorMap.removeLayer(eventMarkers);
+      }
+      if(tremorMap.hasLayer(heatmap)){
+        tremorMap.removeLayer(heatmap);
+      }
+      //clear out old stuff
+
+
+      $("#event-nav ul").empty();
+
+      //If there is only one value, assume same day
+      start = start ? start : end;
+      end = end ? end : start;
+
+      getEvents(start, end).done(function(response){
+        eventMarkers = updateMarkers(response);
+        tremorMap.addLayer(eventMarkers);
+        $("#loading").hide();
+        //hide loading screen
+      });
+    }
+  });
+  //change start times
 });      
+
+
+  //Fetches events for given start and endtime
+  //Returns json object
+  function getEvents(start, end) {
+    var request = $.ajax({
+      url: "https://tremorapi.pnsn.org/v1.0/events?starttime="+start+ " &endtime=" + end,
+      dataType: "json"
+    });
+    
+    return request.done(function(response) {
+      console.log("got the request, processing now")
+      return response;
+    }).fail(function(jqXHR, textStatus) {
+      console.log(jqXHR.status);
+      console.log("Request failed: " + textStatus + " ");
+    }).promise();
+  }
+
+  //builds the leaflet map with given center and returns it
+  //I just made it a function to get it out of the way
+  function buildMap (center, options) {
+    var map = new L.Map('tremor-map', options).setView(center, 5);
+    
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttrib = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
+    var osm = new L.TileLayer(osmUrl, { attribution: osmAttrib });
+
+    L.control.scale().addTo(map);
+    map.addLayer(osm);
+    
+    return map;
+  }
+
+  // Updates markers with new data
+  function updateMarkers(events) {
+    customMarker = L.CircleMarker.extend({
+      options: {
+        timeIndex: 0
+      }
+    });
+
+    var markersArr = [];
+
+    var firstEventTime = (new Date(events[0].time)).getTime();
+    var lastEventTime = (new Date(events[events.length-1].time)).getTime();
+
+    $.each(events, function (i, event) {
+      var timeIndex = 0;
+      if(lastEventTime > firstEventTime) {
+        var time = (new Date(event.time)).getTime();
+        timeIndex = (time-firstEventTime)/(lastEventTime-firstEventTime)*100;
+      }
+
+      var marker = new customMarker([event.lat, event.lon], {
+        color: "black",
+        weight: 1,
+        fillOpacity: 1,
+        radius: 4,
+        riseOnHover: true,
+        timeIndex: timeIndex
+      });
+  
+      if(events.length < 5000) {
+        var listItem = $("<li class='event-nav event-" + event.id + "'>" + event.time + "</li>");
+        // $("body").click(function(){
+        //   marker.closePopup();
+        //   $(".event-" + event.id).removeClass("active-event");
+        // });    
+        
+        listItem.click(function(){
+            $(".active-event").removeClass("active-event");
+            $(".event-" + event.id).addClass("active-event");
+            marker.openPopup();
+          })
+          .on('mouseover', function(){
+            $(".active-event").removeClass("active-event");
+            $(".event-" + event.id).addClass("active-event");
+          })
+          
+        
+
+        $("#event-nav ul").append(listItem);
+
+      }
+
+      marker.bindPopup("<div> Time: " + event.time + "</div> <div> Latitude: " + event.lat + "</div><div>Longitude: " + event.lon + "</div>")
+        .on('mouseover', function () {
+          $(".active-event").removeClass("active-event");
+          $(".event-" + event.id).addClass("active-event");
+        });
+
+      marker.on('click', function(){
+        $(".active-event").removeClass("active-event");
+        $(".event-" + event.id).addClass("active-event");
+        $('#event-nav ul').scrollTop(listItem.position().top);
+      });
+
+      //TODO: onclick make sidebar scroll
+
+      markersArr.push(marker);
+    });
+
+    $("#epicenters span").text(markersArr.length);
+
+    var markers = new L.layerGroup(markersArr);
+    
+    return recolorMarkers($('input[type=radio][name=coloringRadio]').val(), markers);
+  }
+
+  // Changes icon color, defaults to red
+  function recolorMarkers(coloring, markers) {
+    if(coloring == "color-time") {
+      var rainbow = new Rainbow();
+      rainbow.setSpectrum("blue", "cyan", "yellow", "red");
+      markers.eachLayer(function(marker){
+        marker.setStyle({
+          fillColor: "#" + rainbow.colorAt(marker.options.timeIndex)
+        });
+      });
+    } else{
+      markers.eachLayer(function(marker){
+        marker.setStyle({
+          fillColor: "red"
+        })
+      });
+    }
+    return markers;
+  }
+
+  //plays events in some order
+  //TODO: fix early stop problem
+  function playEvents(markers){
+    console.log("play");
+    var markersCopy = markers.getLayers();
+
+    markers.clearLayers();
+
+    $.each(markersCopy, function(i, marker){
+      if (i == 500) {console.log(marker.options.timeIndex)};
+      setTimeout(function(){
+        markers.addLayer(marker);
+
+        if(i == markersCopy.length-1){
+          $("#stop-events").hide();
+          $("#play-events").show();
+        }
+      }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
+    });
+  }
+
+  //Returns a heatmap layer using external heatmap library
+  function drawHeatMap(markers){
+    var points = [];
+
+    markers.eachLayer(function(marker){
+      points.push(marker.getLatLng());
+    });
+    
+    var heat = L.heatLayer(points, {radius: 25});
+
+    return heat;
+  }
