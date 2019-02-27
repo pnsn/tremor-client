@@ -1,17 +1,19 @@
 $(function () {
   var mapOptions = {
-    minZoom: 5,
+    minZoom: 5.5,
     zoomSnap: 0.5,
     preferCanvas: true
   };
+
+  //map
   var tremorMap = buildMap([45.5122, -122.6587], mapOptions);
+
+  //map layers
   var eventMarkers;
   var heatmap;
   var plateContours;
   var seismometers;
   var pastTremor;
- 
-  //returns map
   
   //for now start with a default
   //later default to today, and update with value from selector
@@ -20,11 +22,14 @@ $(function () {
   $("#start-date").val(startTime);
   $("#end-date").val(endTime);
 
+  $("#play-events").prop('disabled', true); //should be disabled in HTML, but its not working
+
   //AUTOREFRESH THIS
   getEvents(startTime, endTime).done(function(response){
     eventMarkers = updateMarkers(response);
     tremorMap.addLayer(eventMarkers);
     //hide loading screen
+    $("#play-events").prop("disabled", false);
     $("#loading").hide();
   });
 
@@ -32,8 +37,20 @@ $(function () {
 
   $("#seismometers").change(function(){
     if($(this).is(":checked")) {
-      seismometers = L.geoJSON(seismometersGeoJSON, {
-      }).addTo(tremorMap);
+      if(!seismometers) {
+        var icon = L.icon ({
+          iconUrl: 'assets/Station.png',
+          iconSize: [10, 8]
+        });
+        seismometers = L.geoJSON(seismometersGeoJSON, {
+          pointToLayer: function(feature, latlng){
+            return L.marker(latlng, {
+              icon: icon
+            }).bindPopup("<div>" + feature.properties.station + "</div>");
+          }
+        });
+      }
+      tremorMap.addLayer(seismometers);
     } else {
       tremorMap.removeLayer(seismometers);
     }
@@ -41,9 +58,12 @@ $(function () {
 
   $("#past-tremor").change(function(){
     if($(this).is(":checked")) {
-      pastTremor = L.geoJSON(pastTremorGeoJSON, {
-        style: pastTremorGeoJSON.properties.style
-      }).addTo(tremorMap);
+      if(!pastTremor) {
+        pastTremor = L.geoJSON(pastTremorGeoJSON, {
+          style: pastTremorGeoJSON.properties.style
+        });
+      }
+      pastTremor.addTo(tremorMap);
     } else {
       tremorMap.removeLayer(pastTremor);
     }
@@ -51,11 +71,14 @@ $(function () {
 
   $("#plate-contours").change(function(){
     if($(this).is(":checked")) {
-      plateContours = L.geoJSON(contoursGeoJSON, {
-        style: function(feature) {
-          return feature.properties.style;
-        }
-      }).addTo(tremorMap);
+      if(!plateContours) {
+        plateContours = L.geoJSON(contoursGeoJSON, {
+          style: function(feature) {
+            return feature.properties.style;
+          }
+        });
+      }
+      plateContours.addTo(tremorMap);
     } else {
       tremorMap.removeLayer(plateContours);
     }
@@ -79,8 +102,7 @@ $(function () {
   });
   
   $("#play-events").click(function(){
-    $("#play-events").hide();
-    $("#stop-events").show();
+    $("#play-events").prop("disabled", true);
 
     if(!tremorMap.hasLayer(eventMarkers)){
       tremorMap.addLayer(eventMarkers);
@@ -89,22 +111,12 @@ $(function () {
     playEvents(eventMarkers);
   });
 
-  $("#stop-events").click(function(){
-
-    $("#stop-events").hide();
-    $("#play-events").show();
-    eventMarkers.eachLayer(function(marker){
-      marker.addTo(tremorMap);
-    });
-
-  });
 
   //if there is only one value, use the same
   //change to lose focus ?
   $("#submit").click(function(){
-    console.log("submit!!!");
     $("#loading").show();
-    console.log("get some more events!")
+    $("#play-events").prop('disabled', true);
     var start = $("#start-date").val();
     var end = $("#end-date").val();  
     if(start || end) {
@@ -126,6 +138,8 @@ $(function () {
       getEvents(start, end).done(function(response){
         eventMarkers = updateMarkers(response);
         tremorMap.addLayer(eventMarkers);
+
+        $("#play-events").prop('disabled', false);
         $("#loading").hide();
         //hide loading screen
       });
@@ -277,8 +291,7 @@ $(function () {
         markers.addLayer(marker);
 
         if(i == markersCopy.length-1){
-          $("#stop-events").hide();
-          $("#play-events").show();
+          $("#play-events").prop("disabled", false);
         }
       }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
     });

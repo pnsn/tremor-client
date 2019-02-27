@@ -1,5 +1,5 @@
 #tremor-map{
-  height:600px;
+  height:700px;
 }
 
 #chart{
@@ -33,14 +33,6 @@ ul.sidebar-list {
 ul.toggle-nav li{
   padding-right:10px;
   margin-bottom: 3px;
-}
-
-.event {
-  width: 8px !important;
-  height: 8px !important;
-  border-radius: 50% !important;
-  border: solid black 1px;
-  background-color: red;
 }
 
 .event.active-event {
