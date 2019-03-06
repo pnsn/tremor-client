@@ -1,9 +1,10 @@
-#tremor-map{
-  height:700px;
+.selected {
+  fill: red;
+  stroke: brown;
 }
 
-#chart{
-  height:300px;
+#tremor-map{
+  height:700px;
 }
 
 .station {

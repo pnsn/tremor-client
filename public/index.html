@@ -9,6 +9,7 @@
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
     <!-- End External Styles -->
     <link rel="stylesheet" href="css/tremor-map.css" />
+    <link rel="stylesheet" href="css/time-series.css"/>
     <!-- External JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -16,6 +17,8 @@
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="javascript/external/rainbowvis.js"></script>
     <script src="javascript/external/leaflet-heat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
     <div class="container-fluid">
@@ -69,7 +72,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-sm-12 col-md-9">
+        <div class="col-sm-12 col-md-9 col-lg-10">
           <div id="tremor-map"></div>
         </div>
         <div id="info-sidebar" class="col">
@@ -83,16 +86,23 @@
         </div>
       </div>
       <div class="row" id="footer">
-        Footer stuff here
+        <div class="col">
+            <div id="chart"></div>
+        </div>
+
       </div>
     </div>
     <!-- <div class="col-xs-12" >
       <div class="row" id="chart"></div>
       </div> -->
     <!-- End External JS -->
+    <script src="javascript/test-data/all_summary.js"></script>
     <script src="assets/plateContours.js"></script>
     <script src="assets/pastTremor.js"></script>
     <script src="assets/seismometers.js"></script>
-    <script src="javascript/tremor-map.js"></script>
+    <script src="javascript/selectChart.js"></script>
+    <script src="javascript/tremorMap.js"></script>
+    <script src="javascript/tremorClient.js"></script>
+
   </body>
 </html>
