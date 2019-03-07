@@ -3,7 +3,12 @@
     stroke: gray;
     stroke-width: 2px;
   }
-  
+
+/* #chart {
+	height: 100px;
+	width: 900px;
+} */
+
 #chart text {
 	fill: #565656;
 	font-size: 9px;
