@@ -178,10 +178,10 @@ $(function () {
   function getEvents(start, end) {
     var request = $.ajax({
       url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
-      headers: {
-        "accept": "application/json",
-        "Access-Control-Allow-Origin":"*",
-        },
+    //   headers: {
+    //     "accept": "application/json",
+    //     "Access-Control-Allow-Origin":"*",
+    //     },
       dataType: "json"
     });
   
@@ -201,10 +201,10 @@ $(function () {
   function getCounts() {
     var request = $.ajax({
       url: "https://tremorapi.pnsn.org/api/v1.0/day_counts",
-      headers: {
-        "accept": "application/json",
-        "Access-Control-Allow-Origin":"*",
-        },
+    //   headers: {
+    //     "accept": "application/json",
+    //     "Access-Control-Allow-Origin":"*",
+    //     },
       dataType: "json"
     });
   
