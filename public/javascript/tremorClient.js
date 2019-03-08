@@ -140,7 +140,7 @@ $(function () {
   function dealWithDates(validate) {
 
     var timeFormat = d3.utcFormat("%Y-%m-%d");
-    var start = $("#start-date").val() ? $("#start-date").val() : "2018-02-01";
+    var start = $("#start-date").val() ? $("#start-date").val() : "2018-03-14";
     var end;
 
     var s = new Date(start);
