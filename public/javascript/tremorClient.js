@@ -181,6 +181,7 @@ $(function () {
       headers: {
         "accept": "application/json",
         "Access-Control-Allow-Origin":"assets.pnsn.org/*",
+        Origin:"assets.pnsn.org"
         },
       dataType: "json"
     });
@@ -204,6 +205,7 @@ $(function () {
       headers: {
         "accept": "application/json",
         "Access-Control-Allow-Origin":"assets.pnsn.org/*",
+        Origin:"assets.pnsn.org"
         },
       dataType: "json"
     });
