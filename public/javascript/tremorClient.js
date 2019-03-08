@@ -177,14 +177,16 @@ $(function () {
   //Returns json object
   function getEvents(start, end) {
     var request = $.ajax({
-      url: "https://tremorapi.pnsn.org/v1.0/events?starttime=" + start + "&endtime=" + end,
+      url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
       dataType: "json"
     });
   
     return request.done(function (response) {
+    $(".error").hide();
       console.log("got the request, processing now")
       return response;
     }).fail(function (jqXHR, textStatus) {
+        $(".error").show();
       console.log(jqXHR.status);
       console.log("Request failed: " + textStatus + " ");
     }).promise();
@@ -194,7 +196,7 @@ $(function () {
   //Returns json object
   function getCounts() {
     var request = $.ajax({
-      url: "https://tremorapi.pnsn.org/v1.0/day_counts",
+      url: "https://tremorapi.pnsn.org/api/v1.0/day_counts",
       dataType: "json"
     });
   

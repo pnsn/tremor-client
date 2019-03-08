@@ -12,10 +12,12 @@
 }
 
 #info {
-  height:25px;
-  background-color: lightgray;
+  /* height:25px; */
+  /* background-color: lightgray; */
 }
-
+.error {
+  display:none;
+}
 #info div {
   display: inline;
 }
