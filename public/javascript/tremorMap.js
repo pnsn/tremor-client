@@ -1,22 +1,60 @@
+// Makes a map 
 var TremorMap = (function () {
+  //This is the map
   var map;
-  //map layers
-  var eventMarkers,
-    heatmap,
-    seismometers,
-    pastTremor,
-    plateContours;
 
-  //remove event layers
-  function clearLayers() {
-    if (map.hasLayer(heatmap)) {
-      map.removeLayer(heatmap);
+  //event map layers
+  var eventMarkers,
+      heatmap;
+
+  //stores the overlays
+  var overlays = {};
+
+  var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+  });
+
+  // Allows storing of additional data in marker
+  var customMarker = L.CircleMarker.extend({
+    options: {
+      timeIndex: 0
+      // depth: ? Future feature
     }
-    if (map.hasLayer(eventMarkers)) {
-      map.removeLayer(eventMarkers);
-    }
+  });
+
+  // Makes the overlays
+  function makeLayers() {
+    var icon = L.icon({
+      iconUrl: 'assets/Station.png',
+      iconSize: [10, 8]
+    });
+    overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+          icon: icon
+        }).bindPopup("<div>" + feature.properties.station + "</div>");
+      }
+    });
+
+    overlays.pastTremor = L.geoJSON(pastTremorGeoJSON, {
+      style: pastTremorGeoJSON.properties.style
+    });
+
+    overlays.plateContours = L.geoJSON(contoursGeoJSON, {
+      style: function (feature) {
+        return feature.properties.style;
+      }
+    });
   }
 
+  //removes event based layers
+  function clearLayers() {
+    toggleLayer(false, heatmap);
+    toggleLayer(false, eventMarkers);
+  }
+
+  // Makes a heat map using the eventMarkers
+  // Uses leaflet-heat.js
   function drawHeatMap() {
     clearLayers();
     var points = [];
@@ -29,39 +67,56 @@ var TremorMap = (function () {
     map.addLayer(heatmap);
   }
   
+  // Toogles given layer using passed bool
+  function toggleLayer (show, layer) {
+    if (show) {
+      if(!map.hasLayer(layer)) {
+        map.addLayer(layer);
+      }
+    } else {
+      if(map.hasLayer(layer)) {
+        map.removeLayer(layer);
+      }
+    }
+  }
+
   return {
 
-    buildMap: function (container, center, options) {
-      map = new L.Map(container, options).setView(center, 5);
-      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-      var osmAttrib = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-      var osm = new L.TileLayer(osmUrl, {
-        attribution: osmAttrib
-      });
-      L.control.scale().addTo(map);
+    init: function (opts) {
+
+      makeLayers();
+
+      map = new L.Map(opts.mapContainer, opts.leafletOptions).setView(opts.center, 5);
+
       map.addLayer(osm);
+
+      L.control.scale().addTo(map);
+
     },
 
+
+    //TODO: clean up list logic
     updateMarkers: function (events, coloring) {
       clearLayers();
-      customMarker = L.CircleMarker.extend({
-        options: {
-          timeIndex: 0
-        }
-      });
 
       var markersArr = [];
       var firstEventTime = (new Date(events[0].time)).getTime();
       var lastEventTime = (new Date(events[events.length - 1].time)).getTime();
-      console.log(events[0].time, events[events.length - 1].time);
+
       $.each(events, function (i, event) {
+
+        //Time index used for coloring and playback
+        //What percent of the way through the selected time the event is
         var timeIndex = 0;
+
         if (lastEventTime > firstEventTime) {
           var time = (new Date(event.time)).getTime();
           timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
         }
+
+        //Defaults to black - gets overwritten
         var marker = new customMarker([event.lat, event.lon], {
-          color: "black",
+          color: "black", //outline Color
           weight: 1,
           fillOpacity: 1,
           radius: 4,
@@ -69,7 +124,8 @@ var TremorMap = (function () {
           timeIndex: timeIndex
         });
 
-        if (events.length < 5000) {
+        if(events.length < 5000 ) {
+
           var listItem = $("<li class='event-nav event-" + event.id + "'>" + event.time + "</li>");
           // $("body").click(function(){
           //   marker.closePopup();
@@ -79,23 +135,26 @@ var TremorMap = (function () {
               $(".active-event").removeClass("active-event");
               $(".event-" + event.id).addClass("active-event");
               marker.openPopup();
-            })
-            .on('mouseover', function () {
+          })
+              .on('mouseover', function () {
               $(".active-event").removeClass("active-event");
               $(".event-" + event.id).addClass("active-event");
-            })
-          $("#event-nav ul").append(listItem);
+              });
+
+              marker.bindPopup("<div> Time: " + event.time + "</div> <div> Latitude: " + event.lat + "</div><div>Longitude: " + event.lon + "</div>")
+              .on('mouseover', function () {
+                $(".active-event").removeClass("active-event");
+                $(".event-" + event.id).addClass("active-event");
+              });
+    
+            marker.on('click', function () {
+              $(".active-event").removeClass("active-event");
+              $(".event-" + event.id).addClass("active-event");
+              $('#event-nav ul').scrollTop(listItem.position().top);
+            });
+          $("#event-list").append(listItem);
         }
-        marker.bindPopup("<div> Time: " + event.time + "</div> <div> Latitude: " + event.lat + "</div><div>Longitude: " + event.lon + "</div>")
-          .on('mouseover', function () {
-            $(".active-event").removeClass("active-event");
-            $(".event-" + event.id).addClass("active-event");
-          });
-        marker.on('click', function () {
-          $(".active-event").removeClass("active-event");
-          $(".event-" + event.id).addClass("active-event");
-          $('#event-nav ul').scrollTop(listItem.position().top);
-        });
+
         //TODO: onclick make sidebar scroll
         markersArr.push(marker);
       });
@@ -105,15 +164,13 @@ var TremorMap = (function () {
 
       this.recolorMarkers(coloring);
 
-      
+
     },
 
     recolorMarkers: function (coloring) {
       clearLayers();
 
-      if (!map.hasLayer(eventMarkers)) {
-        map.addLayer(eventMarkers);
-      }
+      toggleLayer(true, eventMarkers);
 
       switch (coloring) {
         case "color-time":
@@ -139,11 +196,10 @@ var TremorMap = (function () {
       }
     },
 
+    // Removes events from map and adds them one by one
+    // FIXME: Takes a while to remove
     playEvents: function () {
-
-      if (!map.hasLayer(eventMarkers)) {
-        map.addLayer(eventMarkers);
-      }
+      toggleLayer(true, eventMarkers);
 
       var markersCopy = eventMarkers.getLayers();
       eventMarkers.clearLayers();
@@ -157,53 +213,8 @@ var TremorMap = (function () {
       });
     },
 
-    toggleSeismometers: function (show) {
-      if (show) {
-        if (!seismometers) {
-          var icon = L.icon({
-            iconUrl: 'assets/Station.png',
-            iconSize: [10, 8]
-          });
-          seismometers = L.geoJSON(seismometersGeoJSON, {
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng, {
-                icon: icon
-              }).bindPopup("<div>" + feature.properties.station + "</div>");
-            }
-          });
-        }
-        map.addLayer(seismometers);
-      } else {
-        map.removeLayer(seismometers);
-      }
-    },
-
-    togglePastTremor: function (show) {
-      if (show) {
-        if (!pastTremor) {
-          pastTremor = L.geoJSON(pastTremorGeoJSON, {
-            style: pastTremorGeoJSON.properties.style
-          });
-        }
-        map.addLayer(pastTremor);
-      } else {
-        map.removeLayer(pastTremor);
-      }
-    },
-
-    togglePlateContours: function (show) {
-      if (show) {
-        if (!plateContours) {
-          plateContours = L.geoJSON(contoursGeoJSON, {
-            style: function (feature) {
-              return feature.properties.style;
-            }
-          });
-        }
-        map.addLayer(plateContours);
-      } else {
-        map.removeLayer(plateContours);
-      }
+    toggleOverlays: function (show, overlay) {
+      toggleLayer(show, overlays[overlay]);
     }
   };
 })();

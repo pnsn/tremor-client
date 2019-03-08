@@ -22,73 +22,93 @@
   </head>
   <body>
     <div class="container-fluid">
+        <h2 > Welcome to Tremor Client V2.0 (beta) <span class="loading alert alert-warning"> ... Please hold while loading events</span></h2>
       <div id="control-bar" class="row">
-        <div class="col-3">
-          <div class="form-group">
-            <label for="start-date" class="col-form-label-sm"> Start Date </label>
-            <input class="form-control form-control-sm" type="date" id="start-date">
-          </div>
-          <div class="form-group">
-            <label for="end-date" class="col-form-label-sm"> End Date</label>
-            <input class="form-control form-control-sm" type="date" id="end-date">
-          </div>
-          <button id="submit" class="btn btn-outline-primary btn-sm align-middle">Search</button>
+
+        <div class="col-2">
+            <h4> Date Select Stuff</h4>
+            <div class="form-check">
+              <input class="form-check-input-sm" type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
+              <label for="singleDay" class="form-check-label-sm"> Single</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input-sm" type="radio" name="rangeSelect" id="range" value="range"/>
+                <label for="range" class="form-check-label-sm"> Range</label>
+            </div>
+            <div class="row justify-content-around">
+              <button id="submit" class="btn btn-success btn-sm align-middle">Search</button>
+              <button class="btn btn-outline-primary" id="play-events">Play</button>
+            </div>
         </div>
-        <div class="col align-self-center">
-          <h3>Display Type</h3>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-time" value="color-time">
-            <label for="color-time" class="form-check-label-sm"> Color vs. Time</label>
+        <div class="col-2">
+            <div class="form-group">
+              <label for="start-date" class="col-form-label-sm"> Start Date </label>
+              <input class="form-control form-control-sm" type="date" id="start-date">
           </div>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-normal" value="color-normal" checked>
-            <label for="color-normal" class="form-check-label-sm"> Normal</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="radio" name="coloringRadio" id="heat-map" value="heat-map">
-            <label for="heat-map" class="form-check-label-sm"> Heat Map</label>
-          </div>
+          <div class="form-group" id="end-date-parent">
+              <label for="end-date" class="col-form-label-sm"> End Date</label>
+              <input class="form-control form-control-sm" type="date" id="end-date">
+            </div>
+
         </div>
+
         <div class="col align-self-center">
-          <h3>Overlays</h3>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="checkbox" id="seismometers" value="seismometers">
-            <label for="seismometers" class="form-check-label-sm"> Seismometers</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="checkbox" id="plate-contours" value="plate-contours" checked>
-            <label for="plate-contours" class="form-check-label-sm"> JDF Plate Contours</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input-sm" type="checkbox" id="past-tremor" value="past-tremor">
-            <label for="past-tremor" class="form-check-label-sm"> Past Tremor</label>
-          </div>
-        </div>
-        <div class="col align-self-center">
-          <h3>Play Events</h3>
-          <button class="btn btn-success" id="play-events">Play</button>
-          <!-- <button class="btn btn-info hidden" id="stop-events">Stop</button> -->
-          <div id="loading">Loading!!</div>
+            <div id="chart"></div>
         </div>
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-9 col-lg-10">
+          <div id="info">
+              <div class="loading">Loading!!!</div>
+              <div class="date-range"> Start: <span id="start"></span> End: <span id="end"></span></div>
+              <div id="epicenters">Number of epicenters: <span></span></div>
+
+
+          </div>
           <div id="tremor-map"></div>
         </div>
         <div id="info-sidebar" class="col">
-          <h3>Plot Summary</h3>
-          <div id="hours">Number of hours: <span>???</span></div>
-          <div id="epicenters">Number of epicenters: <span></span></div>
+                <h4>Display Type</h4>
+      
+                <div class="form-check">
+                  <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-time" value="color-time"/>
+                  <label for="color-time" class="form-check-label-sm"> Color vs. Time</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-normal" value="color-normal" checked/>
+                    <label for="color-normal" class="form-check-label-sm"> Normal</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input-sm" type="radio" name="coloringRadio" id="heat-map" value="heat-map"/>
+                  <label for="heat-map" class="form-check-label-sm"> Heat Map</label>
+                </div>
+      
+                <h4>Overlays</h4>
+                <div class="form-check">
+                  <input class="form-check-input-sm" type="checkbox" id="seismometers" value="seismometers" />
+                  <label for="seismometers" class="form-check-label-sm"> Seismometers</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input-sm" type="checkbox" id="plate-contours" value="plateContours"/>
+                  <label for="plate-contours" class="form-check-label-sm"> JDF Plate Contours</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input-sm" type="checkbox" id="past-tremor" value="pastTremor"/>
+                  <label for="past-tremor" class="form-check-label-sm"> Past Tremor</label>
+                </div>
+          <h4>Plot Summary</h4>
           <div id="event-nav">
-            <ul class="sidebar-list pl-0">
+            <ul id="event-list" class="sidebar-list pl-0">
             </ul>
+            <div id="event-limit-warning" class="alert alert-warning">
+
+                Too many events, list was not generated;
+            </div>
           </div>
         </div>
       </div>
       <div class="row" id="footer">
-        <div class="col">
-            <div id="chart"></div>
-        </div>
+
 
       </div>
     </div>
@@ -96,7 +116,6 @@
       <div class="row" id="chart"></div>
       </div> -->
     <!-- End External JS -->
-    <script src="javascript/test-data/all_summary.js"></script>
     <script src="assets/plateContours.js"></script>
     <script src="assets/pastTremor.js"></script>
     <script src="assets/seismometers.js"></script>

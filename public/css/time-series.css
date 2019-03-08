@@ -4,10 +4,10 @@
     stroke-width: 2px;
   }
 
-/* #chart {
+ #chart {
 	height: 100px;
-	width: 900px;
-} */
+	width: 100%;
+} 
 
 #chart text {
 	fill: #565656;

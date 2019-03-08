@@ -1,5 +1,6 @@
 var TimeChart = (function() {
-
+  var formatTime = d3.utcFormat("%Y-%m-%d");
+  var parseTime = d3.utcParse("%Y-%m-%d");
   //Sizes - keep out here for potential resizing?
   var margin, height, width
   // set the ranges
@@ -21,13 +22,15 @@ var TimeChart = (function() {
     if (s) {
       x.domain(s.map(x.invert, x));
       svg.select(".brush").call(brush.move, null);
-      var formatTime = d3.utcFormat("%Y-%m-%d");
       var start = x.domain()[0];
       var end = x.domain()[1];
 
       if(startSelect && endSelect) {
+
         startSelect.val(formatTime(start));
         endSelect.val(formatTime(end));
+        endSelect.parent().show();
+        rangeSelect.prop("checked",true);
       }
 
     } else {
@@ -51,11 +54,12 @@ var TimeChart = (function() {
     init: function(config) {
       startSelect = config.start;
       endSelect = config.end;
+      rangeSelect = config.range;
       //Gives chart room to breathe inside parent
       margin = {
         top: 8,
         right: 0,
-        bottom: 20,
+        bottom: 12,
         left: 0
       };
       
@@ -126,13 +130,17 @@ var TimeChart = (function() {
 
     updateBounds: function(start, end) {
       svg.select(".brush").call(brush.move, null);
-      
-      
-      var parseTime = d3.utcParse("%Y-%m-%d");
 
       x.domain([parseTime(start), parseTime(end)]);
 
       zoom();
+    },
+
+    reset: function() {
+    x.domain(x0);
+      y.domain(y0);
+      zoom();
     }
+
   };
 })();

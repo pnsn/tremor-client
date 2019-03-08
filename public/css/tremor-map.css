@@ -1,10 +1,27 @@
+#control-bar {
+  height:172px;
+}
+
 .selected {
   fill: red;
   stroke: brown;
 }
 
 #tremor-map{
-  height:700px;
+  height:775px;
+}
+
+#info {
+  height:25px;
+  background-color: lightgray;
+}
+
+#info div {
+  display: inline;
+}
+
+#event-limit-warning{
+  display:none;
 }
 
 .station {
@@ -28,7 +45,7 @@
 ul.sidebar-list {
   list-style-type:none;
   overflow:scroll;
-  max-height: 500px;
+  max-height: 450px;
 }
 
 ul.toggle-nav li{
