@@ -180,7 +180,7 @@ $(function () {
       url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
       headers: {
         "accept": "application/json",
-        "Access-Control-Allow-Origin":"assets.pnsn.org/*",
+        "Access-Control-Allow-Origin":"*",
         Origin:"assets.pnsn.org"
         },
       dataType: "json"
@@ -204,7 +204,7 @@ $(function () {
       url: "https://tremorapi.pnsn.org/api/v1.0/day_counts",
       headers: {
         "accept": "application/json",
-        "Access-Control-Allow-Origin":"assets.pnsn.org/*",
+        "Access-Control-Allow-Origin":"*",
         Origin:"assets.pnsn.org"
         },
       dataType: "json"
