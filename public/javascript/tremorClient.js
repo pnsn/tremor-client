@@ -36,6 +36,11 @@ $(function () {
         $("#end-date-parent").show();
       }
     });
+
+    // UI Events
+    $('input[type=radio][name=coloringRadio]').change(function () {
+        TremorMap.recolorMarkers($('input[type=radio][name=coloringRadio]:checked').val());
+    });
   
     $("#seismometers, #past-tremor, #plate-contours").change(function () {
       TremorMap.toggleOverlays($(this).is(":checked"), $(this).val());
@@ -54,6 +59,10 @@ $(function () {
         TimeChart.updateBounds(dateRange.start, dateRange.end);
       }
     });
+
+    $("#download").click(function(){
+        alert("Jon hasn't enabled CSV download yet.");
+    });
   
     //change to lose focus ?
     $("#submit").click(function () {
@@ -70,19 +79,8 @@ $(function () {
 
       $("#event-nav ul").empty();
   
-      console.log(dateRange)
-      getEvents(dateRange.start, dateRange.end).done(function (response) {
-        TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
-        $("#start").text(dateRange.start);
-        $("#end").text(dateRange.end);
-        $("#epicenters span").text(response.length);
-        if(response.length > 5000) {
-
-           $("#event-limit-warning").show();
-        }
-        $("#play-events").prop('disabled', false);
-        $(".loading").hide();
-        //hide loading screen
+      getEvents(dateRange.start, dateRange.end).done(function(response) {
+          updateMarkers(response);
       });
   
     });
@@ -90,19 +88,10 @@ $(function () {
     // Get some data
   
     //AUTOREFRESH THIS
-    getEvents(dateRange.start, dateRange.end).done(function (response) {
-      TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
-        $("#start").text(dateRange.start);
-        $("#end").text(dateRange.end);
-        if(response.length > 5000) {
-
-            $("#event-limit-warning").show();
-         }
-      $("#epicenters span").text(response.length);
-      $("#play-events").prop("disabled", false);
-      $(".loading").hide();
+    getEvents(dateRange.start, dateRange.end).done(function(response) {
+        updateMarkers(response);
     });
-  
+
     getCounts().done(function (response) {
   
       var chartData = [],
@@ -132,6 +121,19 @@ $(function () {
   
       TimeChart.addData(chartData);
     });
+
+    function updateMarkers(response){
+        TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
+        $("#start").text(dateRange.start);
+        $("#end").text(dateRange.end);
+        if(response.features.length > 5000) {
+
+            $("#event-limit-warning").show();
+         }
+      $("#epicenters span").text(response.features.length);
+      $("#play-events").prop("disabled", false);
+      $(".loading").hide();
+    }
   
     //change start times
   });

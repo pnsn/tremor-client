@@ -98,78 +98,77 @@ var TremorMap = (function () {
     //TODO: clean up list logic
     updateMarkers: function (events, coloring) {
       clearLayers();
+      console.log(events)
 
-      var markersArr = [];
-      var firstEventTime = (new Date(events[0].time)).getTime();
-      var lastEventTime = (new Date(events[events.length - 1].time)).getTime();
+      var firstEventTime = (new Date(events.features[0].properties.time)).getTime();
+      var lastEventTime = (new Date(events.features[events.features.length - 1].properties.time)).getTime();
 
-      $.each(events, function (i, event) {
+  
+      eventMarkers = L.geoJSON(events, {
+        pointToLayer: function (feature, latlng) {
 
-        //Time index used for coloring and playback
-        //What percent of the way through the selected time the event is
-        var timeIndex = 0;
+          var timeIndex = 0;
 
-        if (lastEventTime > firstEventTime) {
-          var time = (new Date(event.time)).getTime();
-          timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-        }
+          if (lastEventTime > firstEventTime) {
+            var time = (new Date(feature.properties.time)).getTime();
+            timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
+          }
 
-        //Defaults to black - gets overwritten
-        var marker = new customMarker([event.lat, event.lon], {
-          color: "black", //outline Color
-          weight: 1,
-          fillOpacity: 1,
-          radius: 4,
-          riseOnHover: true,
-          timeIndex: timeIndex
-        });
+          //Defaults to black - gets overwritten
+          var marker = new customMarker([latlng.lat, latlng.lng], {
+            color: "black", //outline Color
+            weight: 1,
+            fillOpacity: 1,
+            radius: 4,
+            riseOnHover: true,
+            timeIndex: timeIndex
+          });
+          
+          var props = feature.properties;
 
-        if(events.length < 5000 ) {
-
-          var listItem = $("<li class='event-nav event-" + event.id + "'>" + event.time + "</li>");
-          // $("body").click(function(){
-          //   marker.closePopup();
-          //   $(".event-" + event.id).removeClass("active-event");
-          // });    
-          listItem.click(function () {
-              $(".active-event").removeClass("active-event");
-              $(".event-" + event.id).addClass("active-event");
-              marker.openPopup();
-          })
-              .on('mouseover', function () {
-              $(".active-event").removeClass("active-event");
-              $(".event-" + event.id).addClass("active-event");
-              });
-
-              marker.bindPopup("<div> Time: " + event.time + "</div> <div> Latitude: " + event.lat + "</div><div>Longitude: " + event.lon + "</div>")
-              .on('mouseover', function () {
+          // do all the listy stuff
+          if(events.features.length < 5000 ) {
+            var listItem = $("<li class='event-nav event-" + props.id + "'>" + props.time + "</li>");  
+            listItem.click(function () {
                 $(".active-event").removeClass("active-event");
-                $(".event-" + event.id).addClass("active-event");
+                $(".event-" + props.id).addClass("active-event");
+                marker.openPopup();
+            }).on('mouseover', function () {
+                $(".active-event").removeClass("active-event");
+                $(".event-" + props.id).addClass("active-event");
               });
-    
-            marker.on('click', function () {
-              $(".active-event").removeClass("active-event");
-              $(".event-" + event.id).addClass("active-event");
-              $('#event-nav ul').scrollTop(listItem.position().top);
-            });
-          $("#event-list").append(listItem);
+
+              marker.on('click', function () {
+                $('#event-nav ul').scrollTop(listItem.position().top);
+              });
+
+              $("#event-list").append(listItem);
+          }
+
+          marker.bindPopup("<div> Time: " + props.time + "</div> <div> Latitude: " + latlng.lat + "</div><div>Longitude: " + latlng.lng + "</div>")
+          .on('mouseover', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + props.id).addClass("active-event");
+          });
+  
+          marker.on('click', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + props.id).addClass("active-event");
+            $('#event-nav ul').scrollTop(listItem.position().top);
+          });
+
+          return marker;
         }
-
-        //TODO: onclick make sidebar scroll
-        markersArr.push(marker);
       });
-
-      eventMarkers = new L.layerGroup(markersArr);
+      
       map.addLayer(eventMarkers);
 
       this.recolorMarkers(coloring);
-
-
     },
 
     recolorMarkers: function (coloring) {
       clearLayers();
-
+      console.log("recolor me")
       toggleLayer(true, eventMarkers);
 
       switch (coloring) {
