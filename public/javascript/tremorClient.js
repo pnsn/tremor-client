@@ -10,7 +10,20 @@ $(function () {
         preferCanvas: true
       }
     });
-  
+
+    //Get dates from URL
+    var search_params = new URLSearchParams(window.location.search); 
+    
+    var start = search_params.get('start');
+    var end = search_params.get('end');
+
+    if(start && new Date(start)) {
+        $("#start-date").val(start);
+    }
+    if(end && new Date(end)) {
+        $("#start-date").val(end);
+    }
+
     // Get everything set up properly
     var rangeSelector = $("#range");
     var dateRange = dealWithDates(true);
@@ -19,6 +32,12 @@ $(function () {
       $("#end-date-parent").hide();
     } else {
       $("#end-date-parent").show();
+    }
+
+    var coloring = search_params.get('coloring');
+    if(coloring) {
+        $('input[type=radio][name=coloringRadio][value='+ coloring+']').prop('checked', true);
+        console.log($('input[type=radio][name=coloringRadio][value='+ coloring+']'))
     }
   
     $("#play-events").prop('disabled', true); //should be disabled in HTML, but its not working
@@ -70,12 +89,13 @@ $(function () {
       $("#play-events").prop('disabled', true);
   
       dateRange = dealWithDates(true);
-  
-        if(new Date(dateRange.start) > new Date(dateRange.stop)) {
-            var start = dateRange.end;
-            dateRange.end = dateRange.start;
-            dateRange.start = start;
-        }
+
+      var coloring = $('input[type=radio][name=coloringRadio]:checked').val();
+
+      var url = "?start="+dateRange.start+"&end="+dateRange.end+"&coloring="+coloring;
+    if (window.history.replaceState) {
+        window.history.replaceState({}, "Tremor Map", url);
+    }
 
       $("#event-nav ul").empty();
   
@@ -87,11 +107,6 @@ $(function () {
   
     // Get some data
   
-    //AUTOREFRESH THIS
-    getEvents(dateRange.start, dateRange.end).done(function(response) {
-        updateMarkers(response);
-    });
-
     getCounts().done(function (response) {
   
       var chartData = [],
@@ -122,10 +137,18 @@ $(function () {
       TimeChart.addData(chartData);
     });
 
+    //AUTOREFRESH THIS
+    getEvents(dateRange.start, dateRange.end).done(function(response) {
+        updateMarkers(response);
+    });
+    
+
     function updateMarkers(response){
         TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
         $("#start").text(dateRange.start);
         $("#end").text(dateRange.end);
+
+
         if(response.features.length > 5000) {
 
             $("#event-limit-warning").show();
@@ -142,7 +165,16 @@ $(function () {
   function dealWithDates(validate) {
 
     var timeFormat = d3.utcFormat("%Y-%m-%d");
-    var start = $("#start-date").val() ? $("#start-date").val() : "2018-03-14";
+    var datePickerStart =  $("#start-date").val();
+
+    var start;
+    if(datePickerStart) {
+        var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
+        var date = new Date(datePickerStart);
+        start = timeFormat(date.getTime() - offsetMiliseconds);
+    } else {
+        start = timeFormat(new Date());
+    }
     var end;
 
     var s = new Date(start);
@@ -155,24 +187,19 @@ $(function () {
 
     //swaps start and end date if needed
     if(validate && s > e) {
-        $("#start-date").val(end);
-        $("#end-date").val(start);
-        return {
-          "start": end,
-          "end": start
-        };
-    } else {
-        $("#start-date").val(start);
-        $("#end-date").val(end);
-        return {
-          "start": start,
-          "end": end
-        };
-
+        var tmpS = end;
+        end = start;
+        start = tmpS;
     }
 
+    $("#start-date").val(start);
+    console.log("start after deal with dates", start);
+    $("#end-date").val(end);
 
-
+    return {
+        "start": start,
+        "end": end
+    };
   }
   
   //Fetches events for given start and endtime

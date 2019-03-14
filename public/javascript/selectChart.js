@@ -1,3 +1,5 @@
+//This makes a D3 chart that can zoom in and select a period of time
+
 var TimeChart = (function() {
   var formatTime = d3.utcFormat("%Y-%m-%d");
   var parseTime = d3.utcParse("%Y-%m-%d");
@@ -17,6 +19,8 @@ var TimeChart = (function() {
 
   var startSelect, endSelect;
 
+
+  //Figures out what user selected
   function brushended() {
     var s = d3.event.selection;
     if (s) {
@@ -41,6 +45,7 @@ var TimeChart = (function() {
     zoom();
   }
 
+  //zoom the chart in
   function zoom() {
     xAxis.transition().call(d3.axisBottom(x));
     yAxis.transition().call(d3.axisLeft(y));
@@ -51,6 +56,8 @@ var TimeChart = (function() {
     idleTimeout = null;
   }
   return {
+
+    //Build a chart with no data in the given element
     init: function(config) {
       startSelect = config.start;
       endSelect = config.end;
@@ -97,6 +104,7 @@ var TimeChart = (function() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     },
 
+    // Add data to the chart
     addData: function(data) {
       // Scale the range of the data
       x0 = d3.extent(data, function(d) {
@@ -128,6 +136,7 @@ var TimeChart = (function() {
       //do stuff with data
     },
 
+    //change start and end of chart
     updateBounds: function(start, end) {
       svg.select(".brush").call(brush.move, null);
 
@@ -136,6 +145,7 @@ var TimeChart = (function() {
       zoom();
     },
 
+    //zoom chart out to full view
     reset: function() {
     x.domain(x0);
       y.domain(y0);
