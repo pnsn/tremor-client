@@ -80,6 +80,42 @@ var TremorMap = (function () {
     }
   }
 
+  function playHeatmap() {
+    toggleLayer(false, heatmap);
+    heatmap = new L.heatLayer([],{
+      radius: 25
+    }
+    );
+    map.addLayer(heatmap);
+
+    var markersCopy = eventMarkers.getLayers();
+    $.each(markersCopy, function (i, marker) {
+      setTimeout(function () {
+        heatmap.addLatLng(marker.getLatLng());
+        if (i == markersCopy.length - 1) {
+          $("#play-events").prop("disabled", false);
+        }
+      }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
+    });
+
+  }
+
+  function playEvents(){
+    toggleLayer(true, eventMarkers);
+
+    var markersCopy = eventMarkers.getLayers();
+    eventMarkers.clearLayers();
+    $.each(markersCopy, function (i, marker) {
+      setTimeout(function () {
+        eventMarkers.addLayer(marker);
+        if (i == markersCopy.length - 1) {
+          $("#play-events").prop("disabled", false);
+        }
+      }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
+    });
+  }
+
+
   return {
 
     init: function (opts) {
@@ -98,7 +134,6 @@ var TremorMap = (function () {
     //TODO: clean up list logic
     updateMarkers: function (events, coloring) {
       clearLayers();
-      console.log(events)
 
       var firstEventTime = (new Date(events.features[0].properties.time)).getTime();
       var lastEventTime = (new Date(events.features[events.features.length - 1].properties.time)).getTime();
@@ -168,7 +203,6 @@ var TremorMap = (function () {
 
     recolorMarkers: function (coloring) {
       clearLayers();
-      console.log("recolor me")
       toggleLayer(true, eventMarkers);
 
       switch (coloring) {
@@ -197,23 +231,22 @@ var TremorMap = (function () {
 
     // Removes events from map and adds them one by one
     // FIXME: Takes a while to remove
-    playEvents: function () {
-      toggleLayer(true, eventMarkers);
+    playFeatures: function () {
+      //case switch for heatmap/markers
+      if(map.hasLayer(heatmap)){
+        playHeatmap();
 
-      var markersCopy = eventMarkers.getLayers();
-      eventMarkers.clearLayers();
-      $.each(markersCopy, function (i, marker) {
-        setTimeout(function () {
-          eventMarkers.addLayer(marker);
-          if (i == markersCopy.length - 1) {
-            $("#play-events").prop("disabled", false);
-          }
-        }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
-      });
+      } else { //mapHas
+        playEvents();
+
+      }
     },
-
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);
     }
+
   };
+
+
+
 })();

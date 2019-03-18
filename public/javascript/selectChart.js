@@ -4,7 +4,7 @@ var TimeChart = (function() {
   var formatTime = d3.utcFormat("%Y-%m-%d");
   var parseTime = d3.utcParse("%Y-%m-%d");
   //Sizes - keep out here for potential resizing?
-  var margin, height, width
+  var margin, height, width;
   // set the ranges
   var x, y;
   var valueline, brush, svg;
@@ -28,7 +28,6 @@ var TimeChart = (function() {
       svg.select(".brush").call(brush.move, null);
       var start = x.domain()[0];
       var end = x.domain()[1];
-
       if(startSelect && endSelect) {
 
         startSelect.val(formatTime(start));
@@ -38,7 +37,9 @@ var TimeChart = (function() {
       }
 
     } else {
-      if (!idleTimeout) return idleTimeout = setTimeout(idled, idleDelay);
+      if (!idleTimeout) {
+        return idleTimeout = setTimeout(idled, idleDelay);
+      } 
       x.domain(x0);
       y.domain(y0);
     }
@@ -98,7 +99,7 @@ var TimeChart = (function() {
       svg = d3.select(config.container)
         .append("svg:svg")
         .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("height", height + margin.top + margin.bottom);
       svg.append("g")
         .attr('clip-path', 'url(#clipper)')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

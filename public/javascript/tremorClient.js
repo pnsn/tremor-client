@@ -16,16 +16,20 @@ $(function () {
     
     var start = search_params.get('start');
     var end = search_params.get('end');
-
+ 
     if(start && new Date(start)) {
         $("#start-date").val(start);
-    }
-    if(end && new Date(end)) {
-        $("#start-date").val(end);
     }
 
     // Get everything set up properly
     var rangeSelector = $("#range");
+
+    if(end && new Date(end)) {
+        $("#end-date").val(end);
+        rangeSelector.prop("checked", true);
+    }
+
+
     var dateRange = dealWithDates(true);
   
     if (!rangeSelector.prop("checked")) {
@@ -37,7 +41,6 @@ $(function () {
     var coloring = search_params.get('coloring');
     if(coloring) {
         $('input[type=radio][name=coloringRadio][value='+ coloring+']').prop('checked', true);
-        console.log($('input[type=radio][name=coloringRadio][value='+ coloring+']'))
     }
   
     $("#play-events").prop('disabled', true); //should be disabled in HTML, but its not working
@@ -68,7 +71,7 @@ $(function () {
     $("#play-events").click(function () {
       $(this).prop("disabled", true);
   
-      TremorMap.playEvents();
+      TremorMap.playFeatures();
     });
   
     $("#start-date, #end-date").change(function () {
@@ -87,9 +90,9 @@ $(function () {
     $("#submit").click(function () {
       $(".loading").show();
       $("#play-events").prop('disabled', true);
-  
+      console.log("before:", dateRange)
       dateRange = dealWithDates(true);
-
+      console.log("after:", dateRange)
       var coloring = $('input[type=radio][name=coloringRadio]:checked').val();
 
       var url = "?start="+dateRange.start+"&end="+dateRange.end+"&coloring="+coloring;
@@ -167,6 +170,8 @@ $(function () {
     var timeFormat = d3.utcFormat("%Y-%m-%d");
     var datePickerStart =  $("#start-date").val();
 
+//FIXME: somethig happening iwth dates ehre
+
     var start;
     if(datePickerStart) {
         var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
@@ -176,7 +181,6 @@ $(function () {
         start = timeFormat(new Date());
     }
     var end;
-
     var s = new Date(start);
     if ($('input[type=radio][name=rangeSelect]:checked').val() == "single") {
       end = timeFormat(s.setDate(s.getDate() + 1));
@@ -193,7 +197,6 @@ $(function () {
     }
 
     $("#start-date").val(start);
-    console.log("start after deal with dates", start);
     $("#end-date").val(end);
 
     return {
@@ -216,7 +219,7 @@ $(function () {
   
     return request.done(function (response) {
     $(".error").hide();
-      console.log("got the request, processing now")
+      console.log("got the request, processing now");
       return response;
     }).fail(function (jqXHR, textStatus) {
         $(".error").show();
