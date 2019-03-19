@@ -46,19 +46,19 @@
     stroke-width: 1px;
     stroke: #555;
 }
-/*
-#metric-modal .metric-chart .scale_button {
+
+.scale_button {
 	cursor: pointer;
 }
 
-#metric-modal .metric-chart .scale_button rect {
+.scale_button rect {
 	fill: #eaeaea;
 }
-#metric-modal .metric-chart .scale_button:hover text {
+.scale_button:hover text {
 	fill: #417DD6;
 	transition: all 0.1s cubic-bezier(.25,.8,.25,1);
 }
 
-#metric-modal .metric-chart text#displayDates  {
+/* #metric-modal .metric-chart text#displayDates  {
 	font-weight: bold;
 } */

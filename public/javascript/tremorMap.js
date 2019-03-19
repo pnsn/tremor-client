@@ -2,7 +2,7 @@
 var TremorMap = (function () {
   //This is the map
   var map;
-
+  var playbackSpeed;
   //event map layers
   var eventMarkers,
       heatmap;
@@ -95,24 +95,32 @@ var TremorMap = (function () {
         if (i == markersCopy.length - 1) {
           $("#play-events").prop("disabled", false);
         }
-      }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
+      }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
     });
 
   }
 
   function playEvents(){
-    toggleLayer(true, eventMarkers);
+    toggleLayer(false, eventMarkers);
 
     var markersCopy = eventMarkers.getLayers();
-    eventMarkers.clearLayers();
+
     $.each(markersCopy, function (i, marker) {
       setTimeout(function () {
-        eventMarkers.addLayer(marker);
-        if (i == markersCopy.length - 1) {
-          $("#play-events").prop("disabled", false);
-        }
-      }, marker.options.timeIndex * 30); //change the 30 to .val() for someinput to change speed
+        map.addLayer(marker);
+
+        setTimeout(function(){
+          map.removeLayer(marker);
+          if (i == markersCopy.length - 1) {
+            setTimeout(function(){
+              $("#play-events").prop("disabled", false);
+              toggleLayer(true, eventMarkers);
+            }, 100);
+          }
+        }, playbackSpeed.val() * 10);
+      }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
     });
+
   }
 
 
@@ -121,6 +129,8 @@ var TremorMap = (function () {
     init: function (opts) {
 
       makeLayers();
+
+      playbackSpeed = opts.playbackSpeed;
 
       map = new L.Map(opts.mapContainer, opts.leafletOptions).setView(opts.center, 5);
 

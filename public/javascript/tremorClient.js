@@ -3,6 +3,7 @@ $(function () {
     //map
     TremorMap.init({
       mapContainer: 'tremor-map',
+      playbackSpeed: $('#playbackSpeed'),
       center: [45.5122, -122.6587],
       leafletOptions: {
         minZoom: 5.5,
