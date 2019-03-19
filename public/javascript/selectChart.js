@@ -103,14 +103,6 @@ var TimeChart = (function() {
       svg.append("g")
         .attr('clip-path', 'url(#clipper)')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      
-
-
-
-
-
-
-
     },
 
     // Add data to the chart
@@ -144,59 +136,6 @@ var TimeChart = (function() {
         .call(d3.axisLeft(y));
       //do stuff with data
 
-      var display_range_group = svg.append("g")
-      .attr("id", "buttons_group")
-      .attr("transform", "translate(" + 0 + ","+ 0 +")");
-  
-  var expl_text = display_range_group.append("text")
-      .text("Showing data from: ")
-      .style("text-anchor", "start")
-      .attr("transform", "translate(" + 0 + ","+ 10 +")");
-  
-  display_range_group.append("text")
-      .attr("id", "displayDates")
-      .text(formatTime(x.domain()[0]) + " - " + formatTime(x.domain()[1]))
-      .style("text-anchor", "start")
-      .attr("transform", "translate(" + 82 + ","+ 10 +")");
-  
-  var expl_text = display_range_group.append("text")
-      .text("Zoom to: ")
-      .style("text-anchor", "start")
-      .attr("transform", "translate(" + 180 + ","+ 10 +")");
-  
-  
-      var button_width = 40;
-      var button_height = 14;
-      
-      // don't show year button if < 1 year of data
-      var dateRange  = x.domain()[1] - x.domain()[0],
-          ms_in_year = 31540000000;
-      
-      if (dateRange < ms_in_year)   {
-          var button_data =["month","data"];
-      } else {
-          var button_data =["year","month","data"];
-      };
-      
-      var button = display_range_group.selectAll("g")
-          .data(button_data)
-          .enter().append("g")
-          .attr("class", "scale_button")
-          .attr("transform", function(d, i) { return "translate(" + (220 + i*button_width + i*10) + ",0)"; });
-      
-      button.append("rect")
-          .attr("width", button_width)
-          .attr("height", button_height)
-          .attr("rx", 1)
-          .attr("ry", 1);
-      
-      button.append("text")
-          .attr("dy", (button_height/2 + 3))
-          .attr("dx", button_width/2)
-          .style("text-anchor", "middle")
-          .text(function(d) { return d; });
-    },
-
     //change start and end of chart
     updateBounds: function(start, end) {
       svg.select(".brush").call(brush.move, null);
@@ -208,7 +147,7 @@ var TimeChart = (function() {
 
     //zoom chart out to full view
     reset: function() {
-    x.domain(x0);
+      x.domain(x0);
       y.domain(y0);
       zoom();
     }
