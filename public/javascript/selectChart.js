@@ -135,6 +135,7 @@ var TimeChart = (function() {
         .attr("class", "y-axis")
         .call(d3.axisLeft(y));
       //do stuff with data
+    },
 
     //change start and end of chart
     updateBounds: function(start, end) {
