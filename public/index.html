@@ -22,72 +22,101 @@
   </head>
   <body>
     <div class="container-fluid">
-        <h2 > Welcome to Tremor Client V2.0 (beta) <span class="loading alert alert-warning"> ... Please hold while loading events</span></h2>
+      <div class="row">
+          <h2 > Welcome to Tremor Client V2.0 (beta) <span class="loading alert alert-warning"> ... Please hold while loading events</span></h2>
+      </div>
+
       <div id="control-bar" class="row">
-        <div class="col-2">
-            <h4> Date Select Stuff</h4>
-            <div class="form-check">
-              <input class="form-check-input-sm" type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
-              <label for="singleDay" class="form-check-label-sm"> Single</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input-sm" type="radio" name="rangeSelect" id="range" value="range"/>
-                <label for="range" class="form-check-label-sm"> Range</label>
-            </div>
-            <div class="row justify-content-around">
-              <button id="submit" class="btn btn-success">Search</button>
-              <button class="btn btn-outline-secondary" id="play-events">Play</button>
-              <button class="btn btn-outline-info" id="download">Save</button>
-            </div>
-            <div class="row slidecontainer pl-5">
-                <input type="range" min="1" max="200" value="30" class="slider" id="playbackSpeed">
-            </div>
-        </div>
-        <div class="col-2">
-            <div class="form-group">
-              <label for="start-date" class="col-form-label-sm"> Start Date </label>
-              <input class="form-control form-control-sm" type="date" id="start-date">
+        <div class="col-5">
+          <div class="row">
+              <div class="col">
+                  <div> Date Select Stuff</div>
+                  <div class="form-check">
+                    <input class="form-check-input-sm" type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
+                    <label for="singleDay" class="form-check-label-sm"> Single</label>
+                  </div>
+                  <div class="form-check">
+                      <input class="form-check-input-sm" type="radio" name="rangeSelect" id="range" value="range"/>
+                      <label for="range" class="form-check-label-sm"> Range</label>
+                  </div>
+      
+                  <div class="row justify-content-around">
+                    <button id="submit" class="btn btn-success">Search</button>
+                    <button class="btn btn-outline-secondary" id="play-events">Play</button>
+                    <button class="btn btn-outline-info" id="download">Save</button>
+                  </div>
+                  <div class="row slidecontainer pl-2">
+                      <input type="range" min="1" max="200" value="30" class="slider" id="playbackSpeed">
+                  </div>
+
+              </div>
+              <div class="col">
+                  <div class="form-group">
+                    <label for="start-date" class="col-form-label-sm"> Start Date </label>
+                    <input class="form-control form-control-sm" type="date" id="start-date">
+                </div>
+                <div class="form-group" id="end-date-parent">
+                    <label for="end-date" class="col-form-label-sm"> End Date</label>
+                    <input class="form-control form-control-sm" type="date" id="end-date">
+                  </div>
+      
+              </div>
+              
           </div>
-          <div class="form-group" id="end-date-parent">
-              <label for="end-date" class="col-form-label-sm"> End Date</label>
-              <input class="form-control form-control-sm" type="date" id="end-date">
-            </div>
+
+    
 
         </div>
 
-        <div class="col align-self-center">
-            <div class="alert alert-info">
-              Click and drag to zoom in, double click to zoom out;
-            </div>
-            <div id="chart"></div>
-        </div>
+
+      <div class="col-7">
+          <div class="align-self-center">
+              <div class="alert alert-info">
+                How to use chart: Click and drag to zoom in, double click to zoom out
+              </div>
+              <div id="chart"></div>
+          </div>
+
+      </div>
+
+      
+      </div>
+      <div class="row">
+          <div class="alert alert-danger" id="count-warning">
+              <span></span> events selected. 
+              <div>For more than 50,000 epicenters, only heatmap will be generated. Reduce query to see individual epicenters.</div>
+          </div>
       </div>
       <div class="row">
         <div class="col-sm-12 col-md-9 col-lg-10">
           <div class="error alert alert-danger">Error: No Tremor in Time Range</div>
-          <div id="info"  class="alert alert-secondary">
-              <div class="loading">Loading!!!</div>
-              <div class="date-range"> Start: <span id="start"></span> End: <span id="end"></span></div>
-              <div id="epicenters">Number of epicenters: <span></span></div>
-          </div>
           <div id="tremor-map"></div>
         </div>
         <div id="info-sidebar" class="col">
+              <div id="info"  class="alert alert-secondary">
+                  <div class="loading">Loading!!!</div>
+                  What's on the map:
+                  <div class="date-range"> Start: <span id="start"></span></div>
+                  <div class="date-range">End: <span id="end"></span></div>
+                  <div id="epicenters">Number of epicenters: <span></span></div>
+              </div>
                 <h4>Display Type</h4>
       
-                <div class="form-check">
+                <div class="form-check display-type">
                   <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-time" value="color-time"/>
                   <label for="color-time" class="form-check-label-sm"> Color vs. Time</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check display-type">
                     <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-normal" value="color-normal" checked/>
                     <label for="color-normal" class="form-check-label-sm"> Normal</label>
                 </div>
-                <div class="form-check">
+                <div class="form-check display-type">
                   <input class="form-check-input-sm" type="radio" name="coloringRadio" id="heat-map" value="heat-map"/>
                   <label for="heat-map" class="form-check-label-sm"> Heat Map</label>
                 </div>
-      
+                <div id="display-type-warning">
+                  Too many epicenters, only heatmap generated.
+                </div>
                 <h4>Overlays</h4>
                 <div class="form-check">
                   <input class="form-check-input-sm" type="checkbox" id="seismometers" value="seismometers" />

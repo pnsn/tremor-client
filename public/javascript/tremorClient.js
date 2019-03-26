@@ -18,6 +18,7 @@ $(function () {
     var start = search_params.get('start');
     var end = search_params.get('end');
  
+    var tremorCounts;
     if(start && new Date(start)) {
         $("#start-date").val(start);
     }
@@ -80,11 +81,21 @@ $(function () {
   
       if (rangeSelector.prop("checked")) {
         TimeChart.updateBounds(dateRange.start, dateRange.end);
+      } else {
+        TimeChart.getTotal(dateRange.start);
       }
+    // $("#count-warning").show();
+
+    // var total = sumCounts(dateRange.start, dateRange.end);
+    // if (total > 50000) {
+    //   $("#count-warning div").show();
+
+    // }
+    //  $("#count-warning span").text(total);
     });
 
     $("#download").click(function(){
-        alert("Jon hasn't enabled CSV download yet.");
+        alert("I haven't enabled CSV download yet.");
     });
   
     //change to lose focus ?
@@ -112,21 +123,8 @@ $(function () {
     // Get some data
   
     getCounts().done(function (response) {
-  
-      var chartData = [],
-        formatTime = d3.utcFormat("%Y-%m-%d"),
-        today = new Date(),
-        firstMeas = new Date(Object.keys(response)[0]);
-  
-      for (var d = firstMeas; d <= today; d.setDate(d.getDate() + 1)) {
-        dString = formatTime(d);
-        hours = response[dString] ? response[dString] : 0;
-  
-        chartData.push({
-          "date": new Date(d),
-          "count": hours
-        });
-      }
+      // tremorCounts = response;
+
   
       //getTotalHours(dayCounts);
       TimeChart.init({
@@ -138,29 +136,39 @@ $(function () {
         range: $("#range")
       }); //some height and some width;
   
-      TimeChart.addData(chartData);
+      TimeChart.addData(response);
     });
 
-    //AUTOREFRESH THIS
     getEvents(dateRange.start, dateRange.end).done(function(response) {
         updateMarkers(response);
     });
     
 
     function updateMarkers(response){
+      if (response.features.length >= 50000) {
+        $("#count-warning div").show();
+        TremorMap.updateMarkers(response, "heat-map");
+        $(".display-type").hide();
+        $("#display-type-warning").show();
+      } else {
         TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
-        $("#start").text(dateRange.start);
-        $("#end").text(dateRange.end);
+        $(".display-type").show();
+      }
+
+      $("#start").text(dateRange.start);
+      $("#end").text(dateRange.end);
 
 
-        if(response.features.length > 5000) {
+      if(response.features.length > 5000) {
 
-            $("#event-limit-warning").show();
-         }
+          $("#event-limit-warning").show();
+        }
       $("#epicenters span").text(response.features.length);
       $("#play-events").prop("disabled", false);
       $(".loading").hide();
     }
+
+
   
     //change start times
   });
@@ -171,13 +179,15 @@ $(function () {
     var timeFormat = d3.utcFormat("%Y-%m-%d");
     var datePickerStart =  $("#start-date").val();
 
-//FIXME: somethig happening iwth dates ehre
+    console.log(datePickerStart)
+  //FIXME: somethig happening iwth dates ehre
 
     var start;
     if(datePickerStart) {
-        var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
-        var date = new Date(datePickerStart);
-        start = timeFormat(date.getTime() - offsetMiliseconds);
+      start = datePickerStart;
+        // var offsetMiliseconds = new Date().getTimezoneOffset() * 60000;
+        // var date = new Date(datePickerStart);
+        // start = timeFormat(date.getTime() - offsetMiliseconds);
     } else {
         start = timeFormat(new Date());
     }
@@ -197,6 +207,7 @@ $(function () {
         start = tmpS;
     }
 
+    console.log(start)
     $("#start-date").val(start);
     $("#end-date").val(end);
 

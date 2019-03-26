@@ -7,6 +7,10 @@ var TremorMap = (function () {
   var eventMarkers,
       heatmap;
 
+  // array of layer groups
+  //Index is the time index
+  var eventMarkerGroups = [];
+
   //stores the overlays
   var overlays = {};
 
@@ -159,6 +163,8 @@ var TremorMap = (function () {
             timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           }
 
+          // console.log(timeIndex);
+
           //Defaults to black - gets overwritten
           var marker = new customMarker([latlng.lat, latlng.lng], {
             color: "black", //outline Color
@@ -208,6 +214,7 @@ var TremorMap = (function () {
       
       map.addLayer(eventMarkers);
 
+      // eventMarkerGroups[index] =  
       this.recolorMarkers(coloring);
     },
 

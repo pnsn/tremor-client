@@ -19,7 +19,7 @@ var TimeChart = (function() {
 
   var startSelect, endSelect;
 
-
+  var rawData;
   //Figures out what user selected
   function brushended() {
     var s = d3.event.selection;
@@ -33,6 +33,7 @@ var TimeChart = (function() {
         startSelect.val(formatTime(start));
         endSelect.val(formatTime(end));
         endSelect.parent().show();
+        getTotal(start, end);
         rangeSelect.prop("checked",true);
       }
 
@@ -56,6 +57,66 @@ var TimeChart = (function() {
   function idled() {
     idleTimeout = null;
   }
+
+  // Add data to the chart
+  function putDataInChart(data) {
+    // Scale the range of the data
+    x0 = d3.extent(data, function(d) {
+      return d.date;
+    });
+    y0 = [0, d3.max(data, function(d) {
+      return d.count;
+    })];
+    x.domain(x0);
+    y.domain(y0);
+
+    line = svg.append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("d", valueline);
+    var brushg = svg.append("g")
+      .attr("class", "brush")
+      .call(brush);
+    // .call(brush.move, x.domain().map(x)); //make it have a starting selection
+    // Add the X Axis
+    xAxis = svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x));
+    // // Add the Y Axis
+    yAxis = svg.append("g")
+      .attr("class", "y-axis")
+      .call(d3.axisLeft(y));
+    //do stuff with data
+  }
+
+  function getTotal(start, end) {
+    var total = 0;
+
+    var formatTime = d3.utcFormat("%Y-%m-%d");
+    var firstMeas = new Date(start);
+    console.log(firstMeas)
+    if(start && end) {
+      for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
+        dString = formatTime(d);
+        hours = rawData[dString] ? rawData[dString] : 0;
+  
+        total += hours;
+      }
+    } else {
+      console.log(formatTime(firstMeas))
+      total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
+    }
+    $("#count-warning span").text(total);
+    if (total > 50000) {
+      $("#count-warning div").show();
+
+    }
+
+
+    return total;
+  }
+
   return {
 
     //Build a chart with no data in the given element
@@ -105,44 +166,33 @@ var TimeChart = (function() {
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     },
 
-    // Add data to the chart
     addData: function(data) {
-      // Scale the range of the data
-      x0 = d3.extent(data, function(d) {
-        return d.date;
-      });
-      y0 = [0, d3.max(data, function(d) {
-        return d.count;
-      })];
-      x.domain(x0);
-      y.domain(y0);
+      rawData = data;
+      var chartData = [],
+      today = new Date(),
+      firstMeas = new Date(Object.keys(rawData)[0]);
 
-      line = svg.append("path")
-        .data([data])
-        .attr("class", "line")
-        .attr("d", valueline);
-      var brushg = svg.append("g")
-        .attr("class", "brush")
-        .call(brush);
-      // .call(brush.move, x.domain().map(x)); //make it have a starting selection
-      // Add the X Axis
-      xAxis = svg.append("g")
-        .attr("class", "x-axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(d3.axisBottom(x));
-      // // Add the Y Axis
-      yAxis = svg.append("g")
-        .attr("class", "y-axis")
-        .call(d3.axisLeft(y));
-      //do stuff with data
+      for (var d = firstMeas; d <= today; d.setDate(d.getDate() + 1)) {
+        dString = formatTime(d);
+        hours = rawData[dString] ? rawData[dString] : 0;
+
+        chartData.push({
+          "date": new Date(d),
+          "count": hours
+        });
+      }
+
+      putDataInChart(chartData);
     },
+
+
 
     //change start and end of chart
     updateBounds: function(start, end) {
       svg.select(".brush").call(brush.move, null);
 
       x.domain([parseTime(start), parseTime(end)]);
-
+      getTotal(start, end);
       zoom();
     },
 
@@ -151,6 +201,10 @@ var TimeChart = (function() {
       x.domain(x0);
       y.domain(y0);
       zoom();
+    },
+
+    getTotal: function(start, end) {
+      return getTotal(start, end);
     }
 
   };

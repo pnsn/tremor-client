@@ -1,6 +1,6 @@
-#control-bar {
-  height:172px;
-}
+/* #control-bar {
+  height:225px;
+} */
 
 .selected {
   fill: red;
@@ -11,16 +11,22 @@
   height:775px;
 }
 
-.error {
+.error{
   display:none;
-}
-#info div {
-  display: inline;
 }
 
-#event-limit-warning{
+#count-warning div {
   display:none;
 }
+
+#info div {
+  /* display: inline; */
+}
+
+#event-limit-warning, #display-type-warning{
+  display:none;
+}
+
 
 .station {
 	width: 0;
