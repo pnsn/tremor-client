@@ -146,27 +146,25 @@ var TremorMap = (function () {
 
 
     //TODO: clean up list logic
-    updateMarkers: function (events, coloring) {
+    updateMarkers: function (response, coloring) {
       clearLayers();
+      var firstEventTime = (new Date(response.features[0].time)).getTime();
+      var lastEventTime = (new Date(response.features[response.features.length - 1].time)).getTime();
 
-      var firstEventTime = (new Date(events.features[0].properties.time)).getTime();
-      var lastEventTime = (new Date(events.features[events.features.length - 1].properties.time)).getTime();
-
+      eventMarkers = new L.layerGroup();
   
-      eventMarkers = L.geoJSON(events, {
-        pointToLayer: function (feature, latlng) {
-
+      response.features.forEach(function(feature){
           var timeIndex = 0;
 
           if (lastEventTime > firstEventTime) {
-            var time = (new Date(feature.properties.time)).getTime();
+            var time = (new Date(feature.time)).getTime();
             timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           }
 
           // console.log(timeIndex);
 
           //Defaults to black - gets overwritten
-          var marker = new customMarker([latlng.lat, latlng.lng], {
+          var marker = new customMarker([feature.lat, feature.lon], {
             color: "black", //outline Color
             weight: 1,
             fillOpacity: 1,
@@ -174,19 +172,17 @@ var TremorMap = (function () {
             riseOnHover: true,
             timeIndex: timeIndex
           });
-          
-          var props = feature.properties;
 
           // do all the listy stuff
-          if(events.features.length < 5000 ) {
-            var listItem = $("<li class='event-nav event-" + props.id + "'>" + props.time + "</li>");  
+          if(response.features.length < 5000 ) {
+            var listItem = $("<li class='event-nav event-" + feature.id + "'>" + feature.time + "</li>");  
             listItem.click(function () {
                 $(".active-event").removeClass("active-event");
-                $(".event-" + props.id).addClass("active-event");
+                $(".event-" + feature.id).addClass("active-event");
                 marker.openPopup();
             }).on('mouseover', function () {
                 $(".active-event").removeClass("active-event");
-                $(".event-" + props.id).addClass("active-event");
+                $(".event-" + feature.id).addClass("active-event");
               });
 
               marker.on('click', function () {
@@ -196,20 +192,19 @@ var TremorMap = (function () {
               $("#event-list").append(listItem);
           }
 
-          marker.bindPopup("<div> Time: " + props.time + "</div> <div> Latitude: " + latlng.lat + "</div><div>Longitude: " + latlng.lng + "</div>")
+          marker.bindPopup("<div> Time: " + feature.time + "</div> <div> Latitude: " + feature.lat + "</div><div>Longitude: " + feature.lon + "</div>")
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
-            $(".event-" + props.id).addClass("active-event");
+            $(".event-" + feature.id).addClass("active-event");
           });
   
           marker.on('click', function () {
             $(".active-event").removeClass("active-event");
-            $(".event-" + props.id).addClass("active-event");
+            $(".event-" + feature.id).addClass("active-event");
             $('#event-nav ul').scrollTop(listItem.position().top);
           });
 
-          return marker;
-        }
+          eventMarkers.addLayer(marker);
       });
       
       map.addLayer(eventMarkers);
