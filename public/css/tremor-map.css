@@ -1,15 +1,125 @@
-/* #control-bar {
-  height:225px;
-} */
+body {
+  font-family: 'Open Sans', sans-serif;
+  /* line-height: 1.37; */
+  margin:0;
+}
+#header {
+  width: 100%;
+}
+#header #info{
+  height: 89px;
+  width:100%;
+  background-color: #10381d;
+  margin: 0px;
+  color:  white;
+  font-size: 16px;
+  font-weight: light;
+}
 
+#header #info h2 {
+  margin: 0px 100px;
+  font-size: 50px;
+  font-weight: bold;
+  display:inline-block;
+  line-height:1.36;
+}
+
+#header #info a {
+  float:right;
+  margin-right: 80px
+}
+
+#header #info #updated {
+  float:right;
+  margin-right: 20px
+}
+
+h3 {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 0;
+}
+#control-bar {
+  padding: 0px 100px;
+}
+#control-bar #search {
+  display: inline-block;
+  width:300px
+}
+
+#range-select, #date-select {
+  font-size: 18px;
+  /* display:block; */
+}
+
+#date-select .selector{
+  display:inline-block;
+
+}
+
+#date-select .selector label{
+  display:block;
+}
+
+#date-select .selector input{
+  font-size: 18px;
+  font-family: inherit;
+  width: 135px;
+  height: 30px;
+  border-radius: 5px;
+  border: solid 1px #10381d;
+  background-color: #ffffff;
+}
+
+#search #submit {
+  width:100%;
+  height: 34px;
+  border-radius: 5px;
+  background-color: #107a10;
+  border: none;
+  margin: 5px 0;
+}
+
+#search #submit.disabled {
+  background-color: #ababab;
+}
+
+#content {
+  /* background-color: #f5f5f5; */
+}
+
+#content #warnings {
+
+
+}
+
+#content #map-container  {
+  background-color: #f5f5f5;
+  padding: 20px;
+  display:inline-block;
+  height:775px;
+  width: 75%;
+}
+
+#tremor-map {
+  width:100%;
+  height:100%;
+}
+
+#content #sidebar {
+  height:100%;
+  padding: 10px;
+  width: 20%;
+  display:inline-block;
+  background-color:white;
+}
+
+/* old css below */
 .selected {
   fill: red;
   stroke: brown;
 }
 
-#tremor-map{
-  height:775px;
-}
 
 .error{
   display:none;
@@ -19,14 +129,6 @@
   display:none;
 }
 
-#info{
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: 20vw;
-  padding: 1em;
-}
 
 #info div {
   /* display: inline; */
@@ -35,25 +137,6 @@
 #event-limit-warning, #display-type-warning{
   display:none;
 }
-
-
-.station {
-	width: 0;
-	height: 0;
-	border-left: 6px solid transparent !important;
-	border-right: 6px solid transparent !important;
-	border-bottom: 10px solid black !important;
-/*  background-color:red;*/
-}
-
-.station.active-station{
-	width: 0;
-	height: 0;
-	border-left: 9px solid transparent !important;
-	border-right: 9px solid transparent !important;
-	border-bottom: 13px solid black !important;
-}
-
 
 ul.sidebar-list {
   list-style-type:none;

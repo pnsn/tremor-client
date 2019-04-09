@@ -1,32 +1,34 @@
+
+ #chart {
+	height: 100px;
+	width: 60%;
+	display: inline-block;
+} 
+
 .line {
     fill: none;
     stroke: gray;
     stroke-width: 2px;
-  }
-
- #chart {
-	height: 100px;
-	width: 100%;
-} 
+}
 
 #chart text {
-	fill: #565656;
-	font-size: 9px;
-	font-family: Helvetica, Arial, "sans serif";
+	fill: black;
+	font-size: 12px;
+	font-family: "Open Sans", Arial, "sans serif";
 }
 
 /* CB: padding to display better on bl.ocks.org */
 
 #chart path.line {
 	fill: none;
-	stroke: #00AA8D; /* default, changed in each theme */
+	stroke: #ababab; /* default, changed in each theme */
 	stroke-width: 1.5px;
 	clip-path: url(#clip);
 }
 
-/* #chart path.domain{
-	display:none;
-} */
+#chart .y-axis, .x-axis{
+	/* stroke: #f5f5f5; */
+}
 
 #chart .y-axis .tick{
 	display: none;
@@ -46,19 +48,3 @@
     stroke-width: 1px;
     stroke: #555;
 }
-
-.scale_button {
-	cursor: pointer;
-}
-
-.scale_button rect {
-	fill: #eaeaea;
-}
-.scale_button:hover text {
-	fill: #417DD6;
-	transition: all 0.1s cubic-bezier(.25,.8,.25,1);
-}
-
-/* #metric-modal .metric-chart text#displayDates  {
-	font-weight: bold;
-} */
