@@ -145,7 +145,6 @@ $(function () {
     
     function geojsonify(response){
       console.log("got the request, processing now");
-      // console.log(response)
       var geojson = {
         "type": "FeatureCollection",
         "features": []

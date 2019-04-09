@@ -149,43 +149,24 @@ var TremorMap = (function () {
       clearLayers();
       var firstEventTime = (new Date(response.features[0].properties.time)).getTime();
       var lastEventTime = (new Date(response.features[response.features.length - 1].properties.time)).getTime();
-
-      eventMarkers = new L.layerGroup();
-      var getInterval = function(quake) {
-        console.log
-        // earthquake data only has a time, so we'll use that as a "start"
-        // and the "end" will be that + some value based on magnitude
-        // 18000000 = 30 minutes, so a quake of magnitude 5 would show on the
-        // map for 150 minutes or 2.5 hours
-        return {
-          start: quake.time,
-          end:   quake.time + 1800000
-        };
-      };
-
-      var timelineControl = L.timelineSliderControl({
-        formatOutput: function(date){
-          return d3.utcParse("%Y-%m-%d")(date);
-        }
-      });
-
-      console.log(response)
-
-      var timeline = L.timeline(response, {
-        getInterval: getInterval,
+      eventMarkers = L.geoJSON(response, {
         pointToLayer: function(feature, latlng){
-          console.log(feature);
           var timeIndex = 0;
 
+          var time = feature.properties.time;
+          var id = feature.properties.id;
+          var lat = latlng.lat;
+          var lng = latlng.lng;
+
           if (lastEventTime > firstEventTime) {
-            var time = (new Date(feature.time)).getTime();
-            timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
+            var t = (new Date(feature.properties.time)).getTime();
+            timeIndex = (t - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           }
 
           // console.log(timeIndex);
 
           //Defaults to black - gets overwritten
-          var marker = new customMarker([feature.lat, feature.lon], {
+          var marker = new customMarker([lat, lng], {
             color: "black", //outline Color
             weight: 1,
             fillOpacity: 1,
@@ -194,49 +175,43 @@ var TremorMap = (function () {
             timeIndex: timeIndex
           });
 
-          // // do all the listy stuff
-          // if(response.features.length < 5000 ) {
-          //   var listItem = $("<li class='event-nav event-" + feature.id + "'>" + feature.time + "</li>");  
-          //   listItem.click(function () {
-          //       $(".active-event").removeClass("active-event");
-          //       $(".event-" + feature.id).addClass("active-event");
-          //       marker.openPopup();
-          //   }).on('mouseover', function () {
-          //       $(".active-event").removeClass("active-event");
-          //       $(".event-" + feature.id).addClass("active-event");
-          //     });
+          // do all the listy stuff
+          if(response.features.length < 5000 ) {
+            var listItem = $("<li class='event-nav event-" + id + "'>" + time + "</li>");  
+            listItem.click(function () {
+                $(".active-event").removeClass("active-event");
+                $(".event-" + id).addClass("active-event");
+                marker.openPopup();
+            }).on('mouseover', function () {
+                $(".active-event").removeClass("active-event");
+                $(".event-" + id).addClass("active-event");
+              });
 
-          //     marker.on('click', function () {
-          //       $('#event-nav ul').scrollTop(listItem.position().top);
-          //     });
+              marker.on('click', function () {
+                $('#event-nav ul').scrollTop(listItem.position().top);
+              });
 
-          //     $("#event-list").append(listItem);
-          // }
+              $("#event-list").append(listItem);
+          }
 
-          // marker.bindPopup("<div> Time: " + feature.time + "</div> <div> Latitude: " + feature.lat + "</div><div>Longitude: " + feature.lon + "</div>")
-          // .on('mouseover', function () {
-          //   $(".active-event").removeClass("active-event");
-          //   $(".event-" + feature.id).addClass("active-event");
-          // });
+          marker.bindPopup("<div> Time: " + time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
+          .on('mouseover', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+          });
   
-          // marker.on('click', function () {
-          //   $(".active-event").removeClass("active-event");
-          //   $(".event-" + feature.id).addClass("active-event");
-          //   $('#event-nav ul').scrollTop(listItem.position().top);
-          // });
+          marker.on('click', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+            $('#event-nav ul').scrollTop(listItem.position().top);
+          });
           
           return marker;
         }
       });
-      console.log(timeline)
-      timelineControl.addTo(map);
-      timelineControl.addTimelines(timeline);
-      timeline.addTo(map);
-      // timeline.on('change', function(e){
-      //   updateList(e.target);
-      // });
       
-      // map.addLayer(eventMarkers);
+      
+      map.addLayer(eventMarkers);
 
       // eventMarkerGroups[index] = 
       console.log("done!"); 
