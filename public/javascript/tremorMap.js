@@ -144,16 +144,37 @@ var TremorMap = (function () {
 
     },
 
-
     //TODO: clean up list logic
     updateMarkers: function (response, coloring) {
       clearLayers();
-      var firstEventTime = (new Date(response.features[0].time)).getTime();
-      var lastEventTime = (new Date(response.features[response.features.length - 1].time)).getTime();
+      var firstEventTime = (new Date(response.features[0].properties.time)).getTime();
+      var lastEventTime = (new Date(response.features[response.features.length - 1].properties.time)).getTime();
 
       eventMarkers = new L.layerGroup();
-  
-      response.features.forEach(function(feature){
+      var getInterval = function(quake) {
+        console.log
+        // earthquake data only has a time, so we'll use that as a "start"
+        // and the "end" will be that + some value based on magnitude
+        // 18000000 = 30 minutes, so a quake of magnitude 5 would show on the
+        // map for 150 minutes or 2.5 hours
+        return {
+          start: quake.time,
+          end:   quake.time + 1800000
+        };
+      };
+
+      var timelineControl = L.timelineSliderControl({
+        formatOutput: function(date){
+          return d3.utcParse("%Y-%m-%d")(date);
+        }
+      });
+
+      console.log(response)
+
+      var timeline = L.timeline(response, {
+        getInterval: getInterval,
+        pointToLayer: function(feature, latlng){
+          console.log(feature);
           var timeIndex = 0;
 
           if (lastEventTime > firstEventTime) {
@@ -173,43 +194,52 @@ var TremorMap = (function () {
             timeIndex: timeIndex
           });
 
-          // do all the listy stuff
-          if(response.features.length < 5000 ) {
-            var listItem = $("<li class='event-nav event-" + feature.id + "'>" + feature.time + "</li>");  
-            listItem.click(function () {
-                $(".active-event").removeClass("active-event");
-                $(".event-" + feature.id).addClass("active-event");
-                marker.openPopup();
-            }).on('mouseover', function () {
-                $(".active-event").removeClass("active-event");
-                $(".event-" + feature.id).addClass("active-event");
-              });
+          // // do all the listy stuff
+          // if(response.features.length < 5000 ) {
+          //   var listItem = $("<li class='event-nav event-" + feature.id + "'>" + feature.time + "</li>");  
+          //   listItem.click(function () {
+          //       $(".active-event").removeClass("active-event");
+          //       $(".event-" + feature.id).addClass("active-event");
+          //       marker.openPopup();
+          //   }).on('mouseover', function () {
+          //       $(".active-event").removeClass("active-event");
+          //       $(".event-" + feature.id).addClass("active-event");
+          //     });
 
-              marker.on('click', function () {
-                $('#event-nav ul').scrollTop(listItem.position().top);
-              });
+          //     marker.on('click', function () {
+          //       $('#event-nav ul').scrollTop(listItem.position().top);
+          //     });
 
-              $("#event-list").append(listItem);
-          }
+          //     $("#event-list").append(listItem);
+          // }
 
-          marker.bindPopup("<div> Time: " + feature.time + "</div> <div> Latitude: " + feature.lat + "</div><div>Longitude: " + feature.lon + "</div>")
-          .on('mouseover', function () {
-            $(".active-event").removeClass("active-event");
-            $(".event-" + feature.id).addClass("active-event");
-          });
+          // marker.bindPopup("<div> Time: " + feature.time + "</div> <div> Latitude: " + feature.lat + "</div><div>Longitude: " + feature.lon + "</div>")
+          // .on('mouseover', function () {
+          //   $(".active-event").removeClass("active-event");
+          //   $(".event-" + feature.id).addClass("active-event");
+          // });
   
-          marker.on('click', function () {
-            $(".active-event").removeClass("active-event");
-            $(".event-" + feature.id).addClass("active-event");
-            $('#event-nav ul').scrollTop(listItem.position().top);
-          });
-
-          eventMarkers.addLayer(marker);
+          // marker.on('click', function () {
+          //   $(".active-event").removeClass("active-event");
+          //   $(".event-" + feature.id).addClass("active-event");
+          //   $('#event-nav ul').scrollTop(listItem.position().top);
+          // });
+          
+          return marker;
+        }
       });
+      console.log(timeline)
+      timelineControl.addTo(map);
+      timelineControl.addTimelines(timeline);
+      timeline.addTo(map);
+      // timeline.on('change', function(e){
+      //   updateList(e.target);
+      // });
       
-      map.addLayer(eventMarkers);
+      // map.addLayer(eventMarkers);
 
-      // eventMarkerGroups[index] =  
+      // eventMarkerGroups[index] = 
+      console.log("done!"); 
       this.recolorMarkers(coloring);
     },
 

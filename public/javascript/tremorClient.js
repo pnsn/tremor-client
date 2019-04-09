@@ -143,15 +143,42 @@ $(function () {
         updateMarkers(response);
     });
     
+    function geojsonify(response){
+      console.log("got the request, processing now");
+      // console.log(response)
+      var geojson = {
+        "type": "FeatureCollection",
+        "features": []
+      };
+      response.features.forEach(function(feature){
+        var obj = {
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": [feature.lon, feature.lat]
+          },
+          "properties": {
+            "amplitude": feature.amp,
+            "time": feature.time,
+            "id": feature.id
+          }
+        };
+        geojson.features.push(obj);
 
+      });
+      // console.log(geojson)
+      return geojson;
+    }
     function updateMarkers(response){
+      var geojson = geojsonify(response);
+      // console.log(geojson)
       if (response.features.length >= 50000) {
         $("#count-warning div").show();
-        TremorMap.updateMarkers(response, "heat-map");
+        TremorMap.updateMarkers(geojson, "heat-map");
         $(".display-type").hide();
         $("#display-type-warning").show();
       } else {
-        TremorMap.updateMarkers(response, $('input[type=radio][name=coloringRadio]:checked').val());
+        TremorMap.updateMarkers(geojson, $('input[type=radio][name=coloringRadio]:checked').val());
         $(".display-type").show();
       }
 
@@ -231,7 +258,7 @@ $(function () {
   
     return request.done(function (response) {
     $(".error").hide();
-      console.log("got the request, processing now");
+      console.log("processing");
       return response;
     }).fail(function (jqXHR, textStatus) {
         $(".error").show();
