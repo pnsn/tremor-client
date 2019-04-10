@@ -209,6 +209,31 @@ var TimeChart = (function() {
 
     getTotal: function(start, end) {
       return getTotal(start, end);
+    },
+
+    resize: function(innerWidth){
+      width = innerWidth - margin.right - margin.left;
+      
+      //update x and y scales to new dimensions
+      x.range([0, width]);
+      y.range([height, 0]);
+
+      //update svg elements to new dimensions
+      svg
+        .attr('width', width + margin.right + margin.left)
+        .attr('height', height + margin.top + margin.bottom);
+
+      // //update the axis and line
+      // xAxis.scale(x);
+      // yAxis.scale(y);
+      
+      svg.select('.x-axis')
+        .call(xAxis);
+
+      svg.select('.y-axis')
+        .call(yAxis);
+
+      // path.attr('d', valueLine);
     }
 
   };

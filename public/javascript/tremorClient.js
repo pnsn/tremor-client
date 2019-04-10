@@ -138,6 +138,10 @@ $(function () {
       }); //some height and some width;
   
       TimeChart.addData(response);
+      $(window).on('resize', function () {
+        TimeChart.resize($("#chart-container").width())
+      });
+
     });
 
     getEvents(dateRange.start, dateRange.end).done(function(response) {
