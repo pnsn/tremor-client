@@ -20,46 +20,53 @@
     <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
-      <div id="header">
-          <div id="info">
-              <h2>Episodic Tremor & Slip Events (ETS)</h2>
-              <a>learn more about ETS</a>
-              <div id="updated">Updated <span></span> ago</div>
+      <div id="header" class="flex-container flex-column" >
+          <div id="info-container" class="flex-container flex-column" >
+              <div id="info" class="flex-container flex-row">
+                  <h2>Episodic Tremor & Slip Events (ETS)</h2>
+                  <a class="info-text">learn more about ETS</a>
+                  <div id="updated" class="info-text">Updated <span></span> ago</div>
+              </div>
           </div>
 
-          <div id="control-bar">
-            <div id="search">
+
+          <div id="control-bar" class="flex-container flex-row">
+            <div id="search" class="flex-container flex-column">
               <h3>Search</h3>
 
-              <div id="range-select">
-                <input class="form-check-input-sm" type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
-                <label for="singleDay" class="form-check-label-sm"> Single</label>
-                <input class="form-check-input-sm" type="radio" name="rangeSelect" id="range" value="range"/>
-                <label for="range" class="form-check-label-sm"> Range</label>
+              <div id="range-select" >
+                <input type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
+                <label for="singleDay"> Single</label>
+                <input  type="radio" name="rangeSelect" id="range" value="range"/>
+                <label for="range" > Range</label>
               </div>
               
               <div id="date-select">
                 <div class="selector">
-                    <label for="start-date" class="col-form-label-sm"> Start</label>
-                    <input class="form-control form-control-sm" type="date" id="start-date">
+                    <label for="start-date"> Start</label>
+                    <input type="date" id="start-date">
                 </div>
                 <div class="selector">
-                    <label for="end-date" class="col-form-label-sm"> End</label>
-                    <input class="form-control form-control-sm" type="date" id="end-date">
+                    <label for="end-date" > End</label>
+                    <input type="date" id="end-date">
                 </div>
               </div>
             
-              <button id="submit" class="btn btn-success">Search</button>
+              <button id="submit" >Search</button>
             </div>
 
-            <div id="chart"></div>
+            <div id="chart-container">
+                <div id="chart"></div>
+
+            </div>
+
           </div>
 
       </div>
 
-      <div id="content">
+      <div id="content" class="flex-container flex-row">
         <div id="warnings">
-          <div class="alert alert-danger" id="count-warning">
+          <div id="count-warning">
             <!-- <span></span> events selected.  -->
             <div>For more than 50,000 epicenters, only heatmap will be generated. Reduce query to see individual epicenters.</div>
             <div class="error alert alert-danger">Error: No Tremor in Time Range</div>
@@ -79,25 +86,23 @@
           <div id="overlays">
             <h4>Map Overlays</h4>
               <div class="form-check">
-                <input class="form-check-input-sm" type="checkbox" id="seismometers" value="seismometers" />
-                <label for="seismometers" class="form-check-label-sm"> Seismometers</label>
+                <input type="checkbox" id="seismometers" value="seismometers" />
+                <label for="seismometers" > Seismometers</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input-sm" type="checkbox" id="plate-contours" value="plateContours"/>
-                <label for="plate-contours" class="form-check-label-sm"> JDF Plate Contours</label>
+                <input  type="checkbox" id="plate-contours" value="plateContours"/>
+                <label for="plate-contours" > JDF Plate Contours</label>
               </div>
               <div class="form-check">
-                <input class="form-check-input-sm" type="checkbox" id="past-tremor" value="pastTremor"/>
-                <label for="past-tremor" class="form-check-label-sm"> Past Tremor</label>
+                <input  type="checkbox" id="past-tremor" value="pastTremor"/>
+                <label for="past-tremor" > Past Tremor</label>
               </div>
 
-              <!-- change to dropdown -->
-              <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-time" value="color-time"/>
-              <label for="color-time" class="form-check-label-sm"> Color vs. Time</label>
-              <input class="form-check-input-sm" type="radio" name="coloringRadio" id="color-normal" value="color-normal" checked/>
-              <label for="color-normal" class="form-check-label-sm"> Normal</label>
-              <input class="form-check-input-sm" type="radio" name="coloringRadio" id="heat-map" value="heat-map"/>
-              <label for="heat-map" class="form-check-label-sm"> Heat Map</label>
+              <select id="display-type">
+                <option value="color-time">Color vs. Time</option>
+                <option value="color-normal">Normal (red)</option>
+                <option value="heat-map">Heat Map</option>
+              </select>
           </div>
 
        <h3>Search Results</h3>
@@ -108,9 +113,9 @@
 
 
         <div id="event-nav">
-          <ul id="event-list" class="sidebar-list pl-0">
+          <ul id="event-list" class="sidebar-list">
           </ul>
-          <div id="event-limit-warning" class="alert alert-warning">
+          <div id="event-limit-warning" >
 
               Too many events, list was not generated;
           </div>

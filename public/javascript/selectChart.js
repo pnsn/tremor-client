@@ -161,6 +161,10 @@ var TimeChart = (function() {
         .append("svg:svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
+      svg.append("rect")
+        .attr("class", "background")
+        .attr("width", width)
+        .attr("height", height);
       svg.append("g")
         .attr('clip-path', 'url(#clipper)')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");

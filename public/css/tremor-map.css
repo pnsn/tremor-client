@@ -3,48 +3,75 @@ body {
   /* line-height: 1.37; */
   margin:0;
 }
+
+.flex-container {
+  display:flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+
 #header {
   width: 100%;
+  align-items: center
 }
-#header #info{
-  height: 89px;
+
+#info-container {
   width:100%;
   background-color: #10381d;
-  margin: 0px;
+  align-items: center
+}
+
+#header #info{
+  justify-content: space-between;
+  flex-wrap: wrap;
+  min-height: 89px;
+  width:90%;
+
+  margin:0 -5%;
+
   color:  white;
-  font-size: 16px;
-  font-weight: light;
 }
 
 #header #info h2 {
-  margin: 0px 100px;
+  margin:0;
+  align-self: center;
   font-size: 50px;
   font-weight: bold;
   display:inline-block;
-  line-height:1.36;
 }
 
-#header #info a {
-  float:right;
-  margin-right: 80px
+#header #info .info-text {
+  align-self: flex-end;
+  margin-bottom: 10px;
+  font-weight: 200;
+  font-size: 14px;
 }
 
-#header #info #updated {
-  float:right;
-  margin-right: 20px
-}
 
 h3 {
   font-size: 30px;
   font-weight: 600;
   margin: 0;
 }
+
 #control-bar {
-  padding: 0px 100px;
+  padding: 10px 0px;
+  justify-content: space-between;
+  width: 90%;
+  align-items: center;
 }
+
 #control-bar #search {
   display: inline-block;
-  width:300px
+  width:320px;
+  margin-right:20px;
 }
 
 #range-select, #date-select {
@@ -54,7 +81,7 @@ h3 {
 
 #date-select .selector{
   display:inline-block;
-
+  width: 49%;
 }
 
 #date-select .selector label{
@@ -62,10 +89,10 @@ h3 {
 }
 
 #date-select .selector input{
-  font-size: 18px;
+  font-size: 16px;
   font-family: inherit;
-  width: 135px;
   height: 30px;
+  width: 90%;
   border-radius: 5px;
   border: solid 1px #10381d;
   background-color: #ffffff;
@@ -82,6 +109,12 @@ h3 {
 
 #search #submit.disabled {
   background-color: #ababab;
+}
+
+
+#chart-container {
+  height: 100px;
+  width: 90%;
 }
 
 #content {
@@ -107,8 +140,9 @@ h3 {
 }
 
 #content #sidebar {
+  /* top:0; */
   height:100%;
-  padding: 10px;
+  padding: 0px 10px;
   width: 20%;
   display:inline-block;
   background-color:white;

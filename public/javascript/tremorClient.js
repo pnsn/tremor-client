@@ -41,8 +41,9 @@ $(function () {
     }
 
     var coloring = search_params.get('coloring');
+    var coloringSelector = $("#display-type");
     if(coloring) {
-        $('input[type=radio][name=coloringRadio][value='+ coloring+']').prop('checked', true);
+      coloringSelector.val(coloring);
     }
   
     $("#play-events").prop('disabled', true); //should be disabled in HTML, but its not working
@@ -62,8 +63,8 @@ $(function () {
     });
 
     // UI Events
-    $('input[type=radio][name=coloringRadio]').change(function () {
-        TremorMap.recolorMarkers($('input[type=radio][name=coloringRadio]:checked').val());
+    coloringSelector.change(function () {
+        TremorMap.recolorMarkers(coloringSelector.val());
     });
   
     $("#seismometers, #past-tremor, #plate-contours").change(function () {
@@ -105,7 +106,7 @@ $(function () {
       console.log("before:", dateRange)
       dateRange = dealWithDates(true);
       console.log("after:", dateRange)
-      var coloring = $('input[type=radio][name=coloringRadio]:checked').val();
+      var coloring = coloringSelector.val();
 
       var url = "?start="+dateRange.start+"&end="+dateRange.end+"&coloring="+coloring;
     if (window.history.replaceState) {
@@ -177,7 +178,7 @@ $(function () {
         $(".display-type").hide();
         $("#display-type-warning").show();
       } else {
-        TremorMap.updateMarkers(geojson, $('input[type=radio][name=coloringRadio]:checked').val());
+        TremorMap.updateMarkers(geojson, coloringSelector.val());
         $(".display-type").show();
       }
 
