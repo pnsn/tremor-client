@@ -73,6 +73,7 @@ h3 {
   display: inline-block;
   min-width:320px;
   margin-right:20px;
+  min-height: 150px;
 }
 
 #range-select, #date-select {

@@ -10,8 +10,11 @@
     <!-- End External Styles -->
     <link rel="stylesheet" href="css/tremor-map.css" />
     <link rel="stylesheet" href="css/time-series.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="javascript/external/rainbowvis.js"></script>
     <script src="javascript/external/leaflet-heat.js"></script>
@@ -33,25 +36,15 @@
           <div id="control-bar" class="flex-container flex-row">
             <div id="search" class="flex-container flex-column">
               <h3>Search</h3>
-
-              <div id="range-select" >
-                <input type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
-                <label for="singleDay"> Single</label>
-                <input  type="radio" name="rangeSelect" id="range" value="range"/>
-                <label for="range" > Range</label>
-              </div>
-              
-              <div id="date-select" class="flex-container flex-row">
-                <div class="selector">
-                    <label for="start-date"> Start</label>
-                    <input type="date" id="start-date">
+              <input name="date-range" type="text"/>
+              <div id="warning-container">
+                  <span id="count-warning" class="warning">
+                    <span></span> epicenters selected.
+                  </span>
+                  <span id="heatmap-warning" class="warning">
+                    For more than <span></span> epicenters, only the heatmap will be available.
+                  </span>
                 </div>
-                <div class="selector" id="end-date-parent">
-                    <label for="end-date" > End</label>
-                    <input type="date" id="end-date">
-                </div>
-              </div>
-            
               <button id="submit" >Search</button>
             </div>
 
@@ -60,14 +53,6 @@
                   Click and drag on chart to zoom in. Double click on chart to zoom out.
                 </div>
                 <div id="chart"></div>
-                <div id="warning-container">
-                  <span id="count-warning" class="warning">
-                    <span></span> epicenters selected.
-                  </span>
-                  <span id="heatmap-warning" class="warning">
-                    For more than <span></span> epicenters, only the heatmap will be available.
-                  </span>
-                </div>
             </div>
 
           </div>

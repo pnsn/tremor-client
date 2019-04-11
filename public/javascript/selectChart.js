@@ -30,14 +30,10 @@ var TimeChart = (function() {
       svg.select(".brush").call(brush.move, null);
       var start = x.domain()[0];
       var end = x.domain()[1];
-      if(startSelect && endSelect) {
-
-        startSelect.val(formatTime(start));
-        endSelect.val(formatTime(end));
-        endSelect.parent().show();
-        getTotal(start, end);
-        rangeSelect.prop("checked",true);
-      }
+      datePicker.setStartDate(start);
+      datePicker.setEndDate(end);
+      getTotal(start, end);
+      
 
     } else {
       if (!idleTimeout) {
@@ -94,10 +90,7 @@ var TimeChart = (function() {
 
   function getTotal(start, end) {
     var total = 0;
-
-    var formatTime = d3.utcFormat("%Y-%m-%d");
     var firstMeas = new Date(start);
-    console.log(firstMeas)
     if(start && end) {
       for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
         dString = formatTime(d);
@@ -106,7 +99,6 @@ var TimeChart = (function() {
         total += hours;
       }
     } else {
-      console.log(formatTime(firstMeas))
       total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
     }
     $("#count-warning span").text(total);
@@ -127,6 +119,7 @@ var TimeChart = (function() {
       endSelect = config.end;
       rangeSelect = config.range;
       drawLimit = config.limit;
+      datePicker = config.datePicker;
       //Gives chart room to breathe inside parent
       margin = {
         top: 8,
@@ -191,8 +184,6 @@ var TimeChart = (function() {
 
       putDataInChart(chartData);
     },
-
-
 
     //change start and end of chart
     updateBounds: function(start, end) {
