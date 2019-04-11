@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title> Tremor Map </title>
     <!-- External Styles -->
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
     <!-- End External Styles -->
     <link rel="stylesheet" href="css/tremor-map.css" />
@@ -41,7 +41,7 @@
                 <label for="range" > Range</label>
               </div>
               
-              <div id="date-select">
+              <div id="date-select" class="flex-container flex-row">
                 <div class="selector">
                     <label for="start-date"> Start</label>
                     <input type="date" id="start-date">
@@ -56,8 +56,18 @@
             </div>
 
             <div id="chart-container">
+                <div id="chart-info">
+                  Click and drag on chart to zoom in. Double click on chart to zoom out.
+                </div>
                 <div id="chart"></div>
-
+                <div id="warning-container">
+                  <span id="count-warning" class="warning">
+                    <span></span> epicenters selected.
+                  </span>
+                  <span id="heatmap-warning" class="warning">
+                    For more than <span></span> epicenters, only the heatmap will be available.
+                  </span>
+                </div>
             </div>
 
           </div>
@@ -65,22 +75,12 @@
       </div>
 
       <div id="content" class="flex-container flex-row">
-        <div id="warnings">
-          <div id="count-warning">
-            <!-- <span></span> events selected.  -->
-            <div>For more than 50,000 epicenters, only heatmap will be generated. Reduce query to see individual epicenters.</div>
-            <div class="error alert alert-danger">Error: No Tremor in Time Range</div>
-            <div class="loading">Loading!!!</div>
 
-            <div id="display-type-warning">
-              Too many epicenters, only heatmap generated.
-            </div>
-          </div>
-        </div>
 
         <div id="map-container">
             <div id="tremor-map"></div>
         </div>
+
         <div id="sidebar">
           <h3>Settings</h3>
           <div id="overlays">
@@ -103,27 +103,41 @@
                 <option value="color-normal">Normal (red)</option>
                 <option value="heat-map">Heat Map</option>
               </select>
+
+              <div id="display-type-warning" class="warning">
+                Reduce time range to view individual epicenters.
+              </div>
           </div>
 
-       <h3>Search Results</h3>
-       <div id="date-range">
-        Date Range <span id="start"></span> - <span id="end"></span>
-       </div>
-       <div id="epicenters">Total Events: <span></span> Epicenters</div>
+          <h3>Search Results</h3>
+          <div id="date-range">
+            Date Range <span id="start"></span> - <span id="end"></span>
+          </div>
+          <div id="epicenters">Total Events: <span></span> Epicenters</div>
 
 
-        <div id="event-nav">
-          <ul id="event-list" class="sidebar-list">
-          </ul>
-          <div id="event-limit-warning" >
+            <div id="event-nav">
+              <ul id="event-list" class="sidebar-list">
+              </ul>
+              <div id="event-limit-warning" class="warning">
+                List not generated for more than 5000 epicenters.
+              </div>
+            </div>
 
-              Too many events, list was not generated;
+            <!-- download stuff here -->
+        </div>
+        <div id="loading-overlay">
+          <div id="loading-gif">
+            Loading...
           </div>
         </div>
 
-        <!-- download stuff here -->
     </div>
-  </div>
+
+    <div id="footer">
+      Put Footer stuff here
+    </div>
+
     <!-- <div class="col-xs-12" >
       <div class="row" id="chart"></div>
       </div> -->

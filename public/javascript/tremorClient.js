@@ -1,5 +1,7 @@
 $(function () {
+    var drawLimit = 50000;
 
+    $("#heatmap-warning span").text(drawLimit);
     //map
     TremorMap.init({
       mapContainer: 'tremor-map',
@@ -30,7 +32,6 @@ $(function () {
         $("#end-date").val(end);
         rangeSelector.prop("checked", true);
     }
-
 
     var dateRange = dealWithDates(true);
   
@@ -78,7 +79,7 @@ $(function () {
     });
   
     $("#start-date, #end-date").change(function () {
-      dateRange = dealWithDates();
+      // dateRange = dealWithDates();
   
       if (rangeSelector.prop("checked")) {
         TimeChart.updateBounds(dateRange.start, dateRange.end);
@@ -101,7 +102,7 @@ $(function () {
   
     //change to lose focus ?
     $("#submit").click(function () {
-      $(".loading").show();
+      $("#loading-overlay").show();
       $("#play-events").prop('disabled', true);
       console.log("before:", dateRange)
       dateRange = dealWithDates(true);
@@ -134,10 +135,13 @@ $(function () {
         width: $("#chart").width(),
         start: $("#start-date"),
         end: $("#end-date"),
-        range: $("#range")
+        range: $("#range"),
+        limit: drawLimit
       }); //some height and some width;
   
       TimeChart.addData(response);
+
+      TimeChart.getTotal(dateRange.start, dateRange.end);
       $(window).on('resize', function () {
         TimeChart.resize($("#chart-container").width())
       });
@@ -173,15 +177,18 @@ $(function () {
       // console.log(geojson)
       return geojson;
     }
+    
     function updateMarkers(response){
       var geojson = geojsonify(response);
       // console.log(geojson)
-      if (response.features.length >= 50000) {
-        $("#count-warning div").show();
+      if (response.features.length >= drawLimit) {
+        $("#count-warning").show();
         TremorMap.updateMarkers(geojson, "heat-map");
-        $(".display-type").hide();
+        $("#display-type").hide();
         $("#display-type-warning").show();
       } else {
+
+        TremorMap.addKey(dateRange.start, dateRange.end);
         TremorMap.updateMarkers(geojson, coloringSelector.val());
         $(".display-type").show();
       }
@@ -191,17 +198,15 @@ $(function () {
 
 
       if(response.features.length > 5000) {
-
           $("#event-limit-warning").show();
-        }
+      } 
+
       $("#epicenters span").text(response.features.length);
       $("#play-events").prop("disabled", false);
-      $(".loading").hide();
+      
+      $("#loading-overlay").hide();
     }
 
-
-  
-    //change start times
   });
   
   //FIXME: change default date to today

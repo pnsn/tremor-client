@@ -26,6 +26,22 @@ var TremorMap = (function () {
     }
   });
 
+  L.Control.Key = L.Control.extend({
+    onAdd: function(map) {
+        var div = L.DomUtil.create('div', 'map-key');
+        div.innerHTML = "<div id='key-start'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-end'></div>";
+        return div;
+    },
+
+    onRemove: function(map) {
+        // Nothing to do here
+    }
+  });
+
+  L.control.key = function(opts) {
+    return new L.Control.Key(opts);
+  }
+
   // Makes the overlays
   function makeLayers() {
     var icon = L.icon({
@@ -167,10 +183,10 @@ var TremorMap = (function () {
 
           //Defaults to black - gets overwritten
           var marker = new customMarker([lat, lng], {
-            color: "black", //outline Color
             weight: 1,
-            fillOpacity: 1,
-            radius: 4,
+            opacity: 1,
+            fillOpacity: 0.8,
+            radius: 5,
             riseOnHover: true,
             timeIndex: timeIndex
           });
@@ -225,13 +241,15 @@ var TremorMap = (function () {
       switch (coloring) {
         case "color-time":
           var rainbow = new Rainbow();
-          rainbow.setSpectrum("blue", "cyan", "yellow", "red");
+          var rainbowDark = new Rainbow();
+          rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
+          rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
           eventMarkers.eachLayer(function (marker) {
             marker.setStyle({
-              fillColor: "#" + rainbow.colorAt(marker.options.timeIndex)
+              fillColor: "#" + rainbow.colorAt(marker.options.timeIndex),
+              color: "#" + rainbowDark.colorAt(marker.options.timeIndex)
             });
           });
-
           break;
         case "heat-map":
           drawHeatMap();
@@ -240,7 +258,8 @@ var TremorMap = (function () {
         default: 
           eventMarkers.eachLayer(function (marker) {
             marker.setStyle({
-              fillColor: "red"
+              fillColor: "#e5172f",
+              color: "#ba1327"
             });
           });      
       }
@@ -260,9 +279,22 @@ var TremorMap = (function () {
     },
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);
+    },
+
+
+    addKey : function(start, end) {
+      L.control.key({
+        position: 'topleft',
+      }).addTo(map);
+
+      $("#key-start").text(start);
+      $("#key-end").text(end);
     }
 
+
   };
+
+
 
 
 

@@ -19,6 +19,8 @@ var TimeChart = (function() {
 
   var startSelect, endSelect;
 
+  var drawLimit;
+
   var rawData;
   //Figures out what user selected
   function brushended() {
@@ -108,9 +110,9 @@ var TimeChart = (function() {
       total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
     }
     $("#count-warning span").text(total);
-    if (total > 50000) {
-      $("#count-warning div").show();
-
+    $("#count-warning").show();
+    if (total > drawLimit) {
+      $("#heatmap-warning").show();
     }
 
 
@@ -124,6 +126,7 @@ var TimeChart = (function() {
       startSelect = config.start;
       endSelect = config.end;
       rangeSelect = config.range;
+      drawLimit = config.limit;
       //Gives chart room to breathe inside parent
       margin = {
         top: 8,
@@ -207,7 +210,7 @@ var TimeChart = (function() {
       zoom();
     },
 
-    getTotal: function(start, end) {
+    getTotal: function (start, end) {
       return getTotal(start, end);
     },
 
