@@ -3,6 +3,7 @@ body {
   /* line-height: 1.37; */
   margin:0;
   font-weight: 400;
+  font-size: 14px;
 }
 
 .flex-container {
@@ -17,6 +18,37 @@ body {
   flex-direction: column;
 }
 
+button {
+  font-size: 1.1em;
+  color:white;
+  background-color: #107a10;
+  border-radius: 5px;
+  min-height: 25px;
+  border: none;
+  display:inline-block;
+}
+
+button:hover {
+  border: none;
+  background-color:#10381d;
+}
+
+button:disabled {
+  background-color: #ababab;
+}
+
+select {
+  overflow:hidden;
+  border: 1px solid transparent;
+  padding: .5em 1em;
+  font-size: 1em;
+  border-radius: .25em;
+  -webkit-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  color: #292b2c;
+  border-color: #adadad;
+}
 
 #header {
   width: 100%;
@@ -34,16 +66,13 @@ body {
   flex-wrap: wrap;
   min-height: 89px;
   width:90%;
-
-  margin:0 -5%;
-
   color:  white;
 }
 
 #header #info h2 {
   margin:0;
   align-self: center;
-  font-size: 50px;
+  font-size: 3em;
   font-weight: 700;
   display:inline-block;
 }
@@ -52,12 +81,12 @@ body {
   align-self: flex-end;
   margin-bottom: 10px;
   font-weight: 300;
-  font-size: 14px;
+  color:white;
 }
 
 
 h3 {
-  font-size: 30px;
+  font-size: 1.5em;
   font-weight: 400;
   margin: 0;
 }
@@ -71,56 +100,54 @@ h3 {
 
 #control-bar #search {
   display: inline-block;
-  min-width:320px;
-  margin-right:20px;
+  margin-right: 10px;
+  min-width:270px;
   min-height: 150px;
 }
 
-#range-select, #date-select {
-  font-size: 18px;
-  /* display:block; */
-}
 
-#date-select {
-  justify-content: space-between;
-}
-
-#date-select .selector input{
-  font-size: 16px;
-  font-family: inherit;
-  height: 30px;
-  border-radius: 5px;
+#date-range-picker {
+  padding: 2px 6px;
+  height: 20px;
+  font-size: 1em;
+  border-radius: 3px;
   border: solid 1px #10381d;
-  background-color: #ffffff;
 }
 
-#search #submit {
-  width:100%;
-  height: 34px;
-  border-radius: 5px;
-  background-color: #107a10;
-  border: none;
-  margin: 5px 0;
-}
-
-#search #submit.disabled {
-  background-color: #ababab;
-}
 
 #chart-container {
-  height: 100px;
+  height: 120px;
   width: 90%;
 }
 
-#chart-container #chart-info{
+#chart-info, #chart-buttons {
   font-weight: 300;
-  font-size: 12px;
+  font-size: .8em;
+  display:inline-block;
 }
+
+#chart-container #chart-buttons {
+  float:right;
+}
+
+#chart-container #chart-buttons a{
+  margin-left: 2px;
+}
+#chart-container #chart-buttons a:hover{
+  color: #10381d;
+  text-decoration: underline;
+}
+
+
 
 .warning{
   display:none;
   font-weight: 300;
   color:red;
+}
+
+#count-warning {
+  color: #10381d;
 }
 
 #count-warning span, #heatmap-warning span {
@@ -155,7 +182,7 @@ h3 {
 }
 
 .map-key div {
-  font-size: 10px;
+  font-size: .8em;
   width: 100%;
 }
 
@@ -176,16 +203,23 @@ h3 {
 }
 
 #content #loading-gif{
-  align-self: center;
   margin: auto;
-  font-size: 40px;
-  color: #107a10;
+  font-size: 3em;
+  color: #10381d;
+}
+
+#content #loading-warning{
+  display:none;;
+  margin: auto;
+  font-size: 2.5em;
+  color: #10381d;
 }
 
 #content #sidebar {
   /* top:0; */
   height:100%;
   padding: 0px 10px;
+  min-width: 260px;
   width: 20%;
   display:inline-block;
   background-color:white;
@@ -195,15 +229,27 @@ h3 {
   margin: 0;
 }
 
+#content #sidebar #date-range, #epicenters {
+  color:#666666;
+  font-weight: 300;
+}
 
+#date-range span, #epicenters span{
+  color: black;
+  font-weight: 400;
+}
 
+#sidebar #download-container{
+  justify-self: flex-end;
+  
+}
 
 #footer {
   width: 100%;
   height: 356px;
   background-color: #10381d;
+  color: white;
 }
-
 
 /* old css below */
 .selected {
@@ -211,13 +257,15 @@ h3 {
   stroke: brown;
 }
 
-ul.sidebar-list {
+#sidebar ul.sidebar-list {
+  display:none;
+  padding-left: 10px;
   list-style-type:none;
   overflow:scroll;
   max-height: 450px;
 }
 
-ul.toggle-nav li{
+#sidebar ul.toggle-nav li{
   padding-right:10px;
   margin-bottom: 3px;
 }
@@ -229,8 +277,9 @@ ul.toggle-nav li{
 }
 
 .event-nav{
-  font-size: .75em;
+  font-size: .9em;
 }
+
 .event-nav.active-event{
   color:Red;
 }

@@ -29,9 +29,10 @@ $(function () {
       end: ""
     };
 
+
+
     dateRange.start = start && moment(start).isValid() ? start : moment.utc();
     dateRange.end = end && moment(end).isValid() ? end : dateRange.start;
-
   
     if (!rangeSelector.prop("checked")) {
       $("#end-date-parent").hide();
@@ -95,11 +96,36 @@ $(function () {
       "start": start.format(dateFormat),
       "end": end.format(dateFormat)
     };
-
-    console.log(dateRange)
     TimeChart.updateBounds(dateRange.start, dateRange.end);
     TimeChart.getTotal(start.format(dateFormat), end.format(dateFormat));
-    console.log('New date range selected: ' + start.format('YYYY-MM-DD') + ' to ' +end.format('YYYY-MM-DD') + ' (predefined range: ' + label + ')');
+  
+  });
+
+  var datePicker = $('input[name="date-range"]').data('daterangepicker');
+
+  $("#chart-buttons a").click(function(){
+    var range = [];
+    switch($(this).attr("value")) {
+      case "week":
+      range = [moment().subtract(6, 'days'), moment()];
+        break;
+      case "month":
+      range = [moment().startOf('month'), moment().endOf('month')];
+      break;
+      default: 
+      range = [moment(), moment()];
+        // code block
+    }
+
+    dateRange = {
+      "start": range[0].format(dateFormat),
+      "end": range[1].format(dateFormat)
+    };
+
+    datePicker.setStartDate(dateRange.start);
+    datePicker.setEndDate(dateRange.end);
+    console.log(dateRange)
+    TimeChart.updateBounds(dateRange.start, dateRange.end);
   });
 
     var coloring = search_params.get('coloring');
@@ -117,6 +143,8 @@ $(function () {
     // UI Events
     coloringSelector.change(function () {
         TremorMap.recolorMarkers(coloringSelector.val());
+        $("#key-start").text(start);
+        $("#key-end").text(end);
     });
   
     $("#seismometers, #past-tremor, #plate-contours").change(function () {
@@ -129,8 +157,8 @@ $(function () {
       TremorMap.playFeatures();
     });
 
-    $("#download").click(function(){
-        alert("I haven't enabled CSV download yet.");
+    $("#download-container button").click(function(){
+      console.log($("#download-type").val())
     });
   
     //change to lose focus ?
@@ -139,8 +167,8 @@ $(function () {
       $("#play-events").prop('disabled', true);
 
       dateRange = {
-        "start" : $('input[name="date-range"]').data('daterangepicker').startDate.format(dateFormat),
-        "end" : $('input[name="date-range"]').data('daterangepicker').endDate.format(dateFormat)
+        "start" : datePicker.startDate.format(dateFormat),
+        "end" : datePicker.endDate.format(dateFormat)
       };
       
 
@@ -152,7 +180,6 @@ $(function () {
       }
 
       $("#event-nav ul").empty();
-
       getEvents(dateRange.start, dateRange.end).done(function(response) {
           updateMarkers(response);
       });
@@ -168,15 +195,17 @@ $(function () {
       //getTotalHours(dayCounts);
       TimeChart.init({
         container: "#chart",
-        height: $("#chart").height(),
+        height: $("#chart").height() - $("#chart-info").height(),
         width: $("#chart").width(),
         limit: drawLimit,
-        datePicker: $('input[name="date-range"]').data('daterangepicker')
+        datePicker: datePicker
       }); //some height and some width;
   
       TimeChart.addData(response);
 
+      console.log("start, end")
       TimeChart.getTotal(dateRange.start, dateRange.end);
+
       $(window).on('resize', function () {
         TimeChart.resize($("#chart-container").width())
       });
@@ -226,15 +255,17 @@ $(function () {
         $("#display-type").hide();
         $("#display-type-warning").show();
       } else {
-
-        TremorMap.addKey(dateRange.start, dateRange.end);
         TremorMap.updateMarkers(geojson, coloringSelector.val());
+        $("#key-start").text(start);
+        $("#key-end").text(end);
         $(".display-type").show();
       }
 
       if(response.features.length > 5000) {
           $("#event-limit-warning").show();
-      } 
+      } else {
+        $("#event-list").show();
+      }
 
       $("#epicenters span").text(response.features.length);
       $("#play-events").prop("disabled", false);
@@ -248,24 +279,30 @@ $(function () {
   //Fetches events for given start and endtime
   //Returns json object
   function getEvents(start, end) {
-    var request = $.ajax({
-      url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
-    //   headers: {
-    //     "accept": "application/json",
-    //     "Access-Control-Allow-Origin":"*",
-    //     },
-      dataType: "json"
-    });
-  
-    return request.done(function (response) {
-    $(".error").hide();
-      console.log("processing");
-      return response;
-    }).fail(function (jqXHR, textStatus) {
-        $(".error").show();
-      console.log(jqXHR.status);
-      console.log("Request failed: " + textStatus + " ");
-    }).promise();
+    if(start && end) {
+      if(start === end) {
+        end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
+      }
+      var request = $.ajax({
+        url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
+      //   headers: {
+      //     "accept": "application/json",
+      //     "Access-Control-Allow-Origin":"*",
+      //     },
+        dataType: "json"
+      });
+    
+      return request.done(function (response) {
+        $("#loading-warning").hide();
+        return response;
+      }).fail(function (jqXHR, textStatus) {
+        $("#loading-gif").hide();
+        $("#loading-warning").show();
+        console.log(jqXHR.status);
+        console.log("Request failed: " + textStatus + " ");
+      }).promise();
+    }
+
   }
   
   //Fetches events for given start and endtime

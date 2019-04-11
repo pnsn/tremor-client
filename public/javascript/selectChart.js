@@ -92,15 +92,19 @@ var TimeChart = (function() {
     var total = 0;
     var firstMeas = new Date(start);
     if(start && end) {
-      for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
-        dString = formatTime(d);
-        hours = rawData[dString] ? rawData[dString] : 0;
-  
-        total += hours;
+      if (start == end){
+        console.log("total");
+        total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
+      } else {
+        for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
+          dString = formatTime(d);
+          hours = rawData[dString] ? rawData[dString] : 0;
+    
+          total += hours;
+        }
       }
-    } else {
-      total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
-    }
+ 
+    } 
     $("#count-warning span").text(total);
     $("#count-warning").show();
     if (total > drawLimit) {
@@ -187,10 +191,12 @@ var TimeChart = (function() {
 
     //change start and end of chart
     updateBounds: function(start, end) {
-      svg.select(".brush").call(brush.move, null);
-
-      x.domain([parseTime(start), parseTime(end)]);
       getTotal(start, end);
+      svg.select(".brush").call(brush.move, null);
+      if (start == end) {
+        end = formatTime(moment.utc(start).add(1, "day"));
+      } 
+      x.domain([parseTime(start), parseTime(end)]);
       zoom();
     },
 

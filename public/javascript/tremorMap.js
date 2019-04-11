@@ -7,10 +7,6 @@ var TremorMap = (function () {
   var eventMarkers,
       heatmap;
 
-  // array of layer groups
-  //Index is the time index
-  var eventMarkerGroups = [];
-
   //stores the overlays
   var overlays = {};
 
@@ -26,6 +22,7 @@ var TremorMap = (function () {
     }
   });
 
+  var mapKey;
   L.Control.Key = L.Control.extend({
     onAdd: function(map) {
         var div = L.DomUtil.create('div', 'map-key');
@@ -235,6 +232,9 @@ var TremorMap = (function () {
     },
 
     recolorMarkers: function (coloring) {
+      if(mapKey) {
+        map.removeControl(mapKey);
+      }
       clearLayers();
       toggleLayer(true, eventMarkers);
 
@@ -250,6 +250,14 @@ var TremorMap = (function () {
               color: "#" + rainbowDark.colorAt(marker.options.timeIndex)
             });
           });
+
+          if(!mapKey) {
+            mapKey = L.control.key({
+              position: 'topleft',
+            });
+          }
+
+          mapKey.addTo(map);
           break;
         case "heat-map":
           drawHeatMap();
@@ -258,8 +266,8 @@ var TremorMap = (function () {
         default: 
           eventMarkers.eachLayer(function (marker) {
             marker.setStyle({
-              fillColor: "#e5172f",
-              color: "#ba1327"
+              fillColor: "#ef0b25",
+              color: "#770512"
             });
           });      
       }
@@ -279,18 +287,7 @@ var TremorMap = (function () {
     },
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);
-    },
-
-
-    addKey : function(start, end) {
-      L.control.key({
-        position: 'topleft',
-      }).addTo(map);
-
-      $("#key-start").text(start);
-      $("#key-end").text(end);
     }
-
 
   };
 
