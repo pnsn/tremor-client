@@ -57,15 +57,7 @@ $(function () {
           "toLabel": "To",
           "customRangeLabel": "Custom",
           "weekLabel": "W",
-          "daysOfWeek": [
-              "Su",
-              "Mo",
-              "Tu",
-              "We",
-              "Th",
-              "Fr",
-              "Sa"
-          ],
+          "daysOfWeek": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
           "monthNames": [
               "January",
               "February",

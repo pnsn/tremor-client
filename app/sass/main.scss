@@ -102,3 +102,12 @@ select {
   font-weight: 300;
   color:$warning;
 }
+
+.daterangepicker {
+  .active {
+    background-color: $accent !important;
+  }
+  .cancelBtn {
+    display:none !important;
+  }
+}

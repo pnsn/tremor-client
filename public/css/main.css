@@ -317,4 +317,11 @@ select {
   color: #e61a1a;
 }
 
+.daterangepicker .active {
+  background-color: #083f08 !important;
+}
+.daterangepicker .cancelBtn {
+  display: none !important;
+}
+
 /*# sourceMappingURL=main.css.map */
