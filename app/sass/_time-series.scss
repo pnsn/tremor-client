@@ -1,0 +1,44 @@
+#chart {
+	height: 100%;
+	width: 100%;
+
+	.line {
+		fill: none;
+		stroke: #ababab;
+		stroke-width: 2px;
+	}
+
+	path.line {
+		stroke-width: 1.5px;
+		clip-path: url(#clip);
+	}
+
+	text {
+		fill: black;
+		font-size: 12px;
+		font-family: $font-family;
+	}
+
+	.background {
+		fill: $gray-lighter;
+	}
+
+	.y-axis path, .x-axis path{
+		stroke:$gray;
+		stroke-width: px;
+	}
+
+	.brush {
+		.selection {
+			fill-opacity: .3;
+		}
+		.handle-line {
+			fill:$gray-darker;
+		}
+		.handle-mini {
+			fill: $contrast;
+			stroke-width: 1px;
+			stroke:$gray-darker;
+		}
+	}
+} 

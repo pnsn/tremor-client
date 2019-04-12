@@ -1,0 +1,44 @@
+#map-container  {
+  background-color: $gray-lighter;
+  padding: 20px;
+  display:inline-block;
+  height:775px;
+  width: 75%;
+
+
+  .leaflet-top,
+  .leaflet-bottom {
+    position: absolute;
+    z-index: 499; /* was 1000 */
+    pointer-events: none;
+    }
+
+  #tremor-map {
+    width:100%;
+    height:100%;
+    position:relative;
+  }
+
+  .event.active-event {
+    width: 11px !important;
+    height: 11px !important;
+    border: solid $accent 2px;
+  }
+
+  .map-key {
+    padding: 6px 8px;
+    background: $contrast;
+    border-radius: 5px;
+    border: 2px solid rgba(0,0,0,0.2);
+    background-clip: padding-box;
+    
+    div {
+      font-size: .8em;
+      width: 100%;
+    }
+    img {
+      margin: auto;
+      display:block;
+    }
+  }
+}

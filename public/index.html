@@ -7,11 +7,14 @@
     <!-- External Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- End External Styles -->
-    <link rel="stylesheet" href="css/tremor-map.css" />
-    <link rel="stylesheet" href="css/time-series.css"/>
+    <link rel="stylesheet" href="css/main.css" />
+
     <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
     <script src="javascript/external/rainbowvis.js"></script>
     <script src="javascript/external/leaflet-heat.js"></script>
@@ -24,50 +27,40 @@
           <div id="info-container" class="flex-container flex-column" >
               <div id="info" class="flex-container flex-row">
                   <h2>Episodic Tremor & Slip Events (ETS)</h2>
-                  <a class="info-text">learn more about ETS</a>
-                  <div id="updated" class="info-text">Updated <span></span> ago</div>
+                  <div id="updated" class="info-text">Updated <span></span></div>
+                  <a class="info-text" href="https://pnsn.org/tremor/overview" target="blank">learn more about ETS</a>
               </div>
           </div>
 
 
           <div id="control-bar" class="flex-container flex-row">
-            <div id="search" class="flex-container flex-column">
+            <div id="search">
               <h3>Search</h3>
-
-              <div id="range-select" >
-                <input type="radio" name="rangeSelect" id="singleDay" value="single" checked/>
-                <label for="singleDay"> Single</label>
-                <input  type="radio" name="rangeSelect" id="range" value="range"/>
-                <label for="range" > Range</label>
-              </div>
-              
-              <div id="date-select" class="flex-container flex-row">
-                <div class="selector">
-                    <label for="start-date"> Start</label>
-                    <input type="date" id="start-date">
-                </div>
-                <div class="selector" id="end-date-parent">
-                    <label for="end-date" > End</label>
-                    <input type="date" id="end-date">
-                </div>
-              </div>
-            
+              <input id="date-range-picker" name="date-range" type="text"/>
               <button id="submit" >Search</button>
+              <div id="warning-container">
+                  <div id="count-warning" class="warning">
+                    <span></span> epicenters selected.
+                  </div>
+                  <div id="heatmap-warning" class="warning">
+                    For more than <span></span> epicenters, only the heatmap will be available.
+                  </div>
+              </div>
+
             </div>
 
             <div id="chart-container">
                 <div id="chart-info">
                   Click and drag on chart to zoom in. Double click on chart to zoom out.
                 </div>
-                <div id="chart"></div>
-                <div id="warning-container">
-                  <span id="count-warning" class="warning">
-                    <span></span> epicenters selected.
-                  </span>
-                  <span id="heatmap-warning" class="warning">
-                    For more than <span></span> epicenters, only the heatmap will be available.
-                  </span>
+                <div id="chart-buttons">
+                  <a value="all">zoom to all</a>
+                  zoom to last:
+                  <a value="day">day</a>
+                  <a value="week">week</a>
+                  <a value="month">month</a>
                 </div>
+                <div id="chart"></div>
             </div>
 
           </div>
@@ -81,8 +74,8 @@
             <div id="tremor-map"></div>
         </div>
 
-        <div id="sidebar">
-          <h3>Settings</h3>
+        <div id="sidebar" class="flex-container flex-row">
+          <h3>Map Settings</h3>
           <div id="overlays">
             <h4>Map Overlays</h4>
               <div class="form-check">
@@ -100,7 +93,7 @@
 
               <select id="display-type">
                 <option value="color-time">Color vs. Time</option>
-                <option value="color-normal">Normal (red)</option>
+                <option value="color-normal"> Normal (red)</option>
                 <option value="heat-map">Heat Map</option>
               </select>
 
@@ -111,31 +104,44 @@
 
           <h3>Search Results</h3>
           <div id="date-range">
-            Date Range <span id="start"></span> - <span id="end"></span>
+            Date Range: <span id="start"></span> - <span id="end"></span>
           </div>
-          <div id="epicenters">Total Events: <span></span> Epicenters</div>
+          <div id="epicenters">Total Events: <span></span> epicenters</div>
 
 
-            <div id="event-nav">
-              <ul id="event-list" class="sidebar-list">
-              </ul>
+          <div id="event-nav">
               <div id="event-limit-warning" class="warning">
-                List not generated for more than 5000 epicenters.
-              </div>
-            </div>
+                  List not generated for more than 5000 epicenters.
+                </div>
+            <ul id="event-list" class="sidebar-list">
+            </ul>
+
+          </div>
+
+          <div id="download-container">
+            <select id="download-type">
+              <option value="">Select Type</option>
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+            </select>
+            <button>Download</button>
+          </div>
 
             <!-- download stuff here -->
         </div>
-        <div id="loading-overlay">
+        <div id="loading-overlay" class="flex-container">
           <div id="loading-gif">
             Loading...
+          </div>
+          <div id="loading-warning">
+            No tremor for selected time range. Please try new dates.
           </div>
         </div>
 
     </div>
 
-    <div id="footer">
-      Put Footer stuff here
+    <div id="footer" class="flex-container flex-column" >
+      Put Footer stuff here - or use pnsn.org footer. Up to you.
     </div>
 
     <!-- <div class="col-xs-12" >

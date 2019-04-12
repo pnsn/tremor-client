@@ -7,7 +7,7 @@ var TimeChart = (function() {
   var margin, height, width;
   // set the ranges
   var x, y;
-  var valueline, brush, svg;
+  var valueline, brush, svg, bg;
   // Add the valueline path.
   var line;
   var x0, y0, xAxis, yAxis;
@@ -16,8 +16,6 @@ var TimeChart = (function() {
   //     .attr("class", "area")
   //     .attr("d", area);
   var idleTimeout, idleDelay;
-
-  var startSelect, endSelect;
 
   var drawLimit;
 
@@ -30,14 +28,10 @@ var TimeChart = (function() {
       svg.select(".brush").call(brush.move, null);
       var start = x.domain()[0];
       var end = x.domain()[1];
-      if(startSelect && endSelect) {
-
-        startSelect.val(formatTime(start));
-        endSelect.val(formatTime(end));
-        endSelect.parent().show();
-        getTotal(start, end);
-        rangeSelect.prop("checked",true);
-      }
+      datePicker.setStartDate(start);
+      datePicker.setEndDate(end);
+      getTotal(start, end);
+      
 
     } else {
       if (!idleTimeout) {
@@ -94,21 +88,21 @@ var TimeChart = (function() {
 
   function getTotal(start, end) {
     var total = 0;
-
-    var formatTime = d3.utcFormat("%Y-%m-%d");
     var firstMeas = new Date(start);
-    console.log(firstMeas)
     if(start && end) {
-      for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
-        dString = formatTime(d);
-        hours = rawData[dString] ? rawData[dString] : 0;
-  
-        total += hours;
+      if (start == end){
+        console.log("total");
+        total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
+      } else {
+        for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
+          dString = formatTime(d);
+          hours = rawData[dString] ? rawData[dString] : 0;
+    
+          total += hours;
+        }
       }
-    } else {
-      console.log(formatTime(firstMeas))
-      total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
-    }
+ 
+    } 
     $("#count-warning span").text(total);
     $("#count-warning").show();
     if (total > drawLimit) {
@@ -123,10 +117,8 @@ var TimeChart = (function() {
 
     //Build a chart with no data in the given element
     init: function(config) {
-      startSelect = config.start;
-      endSelect = config.end;
-      rangeSelect = config.range;
       drawLimit = config.limit;
+      datePicker = config.datePicker;
       //Gives chart room to breathe inside parent
       margin = {
         top: 8,
@@ -164,7 +156,7 @@ var TimeChart = (function() {
         .append("svg:svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
-      svg.append("rect")
+      bg = svg.append("rect")
         .attr("class", "background")
         .attr("width", width)
         .attr("height", height);
@@ -192,14 +184,14 @@ var TimeChart = (function() {
       putDataInChart(chartData);
     },
 
-
-
     //change start and end of chart
     updateBounds: function(start, end) {
-      svg.select(".brush").call(brush.move, null);
-
-      x.domain([parseTime(start), parseTime(end)]);
       getTotal(start, end);
+      svg.select(".brush").call(brush.move, null);
+      if (start == end) {
+        end = formatTime(moment.utc(start).add(1, "day"));
+      } 
+      x.domain([parseTime(start), parseTime(end)]);
       zoom();
     },
 
@@ -226,17 +218,12 @@ var TimeChart = (function() {
         .attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom);
 
-      // //update the axis and line
-      // xAxis.scale(x);
-      // yAxis.scale(y);
-      
-      svg.select('.x-axis')
-        .call(xAxis);
+      bg
+        .attr('width', width)
+        .attr('height', height);
 
-      svg.select('.y-axis')
-        .call(yAxis);
+      zoom();
 
-      // path.attr('d', valueLine);
     }
 
   };
