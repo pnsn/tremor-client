@@ -119,19 +119,22 @@ $(function () {
         break;
 
       default: 
-
+        TimeChart.reset();
         // code block
     }
 
-    dateRange = {
-      "start": range[0].format(dateFormat),
-      "end": range[1].format(dateFormat)
-    };
+    if ( range ) {
+      dateRange = {
+        "start": range[0].format(dateFormat),
+        "end": range[1].format(dateFormat)
+      };
+  
+      datePicker.setStartDate(dateRange.start);
+      datePicker.setEndDate(dateRange.end);
 
-    datePicker.setStartDate(dateRange.start);
-    datePicker.setEndDate(dateRange.end);
-    console.log(dateRange)
-    TimeChart.updateBounds(dateRange.start, dateRange.end);
+      TimeChart.updateBounds(dateRange.start, dateRange.end);
+    }
+
   });
 
     var coloring = search_params.get('coloring');
