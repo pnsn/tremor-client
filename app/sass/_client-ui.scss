@@ -149,6 +149,11 @@
       color: black;
       font-weight: 400;
     }
+
+    #overlays .select {
+      max-width: 250px;
+    }
+
     #download-container{
       align-self: flex-end;
       margin-bottom: 10px;

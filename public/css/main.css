@@ -355,6 +355,9 @@ button:disabled {
   color: black;
   font-weight: 400;
 }
+#content #sidebar #overlays .select {
+  max-width: 250px;
+}
 #content #sidebar #download-container {
   align-self: flex-end;
   margin-bottom: 10px;
