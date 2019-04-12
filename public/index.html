@@ -84,17 +84,19 @@
           <h3>Map Settings</h3>
           <div id="overlays">
             <h4>Map Overlays</h4>
-              <div class="form-check">
-                <input type="checkbox" id="seismometers" value="seismometers" />
-                <label for="seismometers" > Seismometers</label>
-              </div>
-              <div class="form-check">
-                <input  type="checkbox" id="plate-contours" value="plateContours"/>
-                <label for="plate-contours" > JDF Plate Contours</label>
-              </div>
-              <div class="form-check">
-                <input  type="checkbox" id="past-tremor" value="pastTremor"/>
-                <label for="past-tremor" > Past Tremor</label>
+              <div class="control-group">
+                <label class="control control-checkbox">Seismometers
+                  <input type="checkbox" value="seismometers" id="seismometers"/>
+                  <div class="control-indicator"></div>
+                </label>
+                <label class="control control-checkbox">JDF Plate Contours
+                  <input type="checkbox" value="plateContours" id="plate-contours"/>
+                  <div class="control-indicator"></div>
+                </label>
+                <label class="control control-checkbox">Past Tremor
+                  <input type="checkbox" value="pastTremor" id="past-tremor"/>
+                  <div class="control-indicator"></div>
+                </label>
               </div>
 
               <div class="select">
