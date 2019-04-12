@@ -1,0 +1,105 @@
+$primary : #107a10;
+$accent :  darken($primary, 13%);
+$gray: #ababab;
+$gray-darker : darken($gray, 30%);
+$gray-lighter: lighten($gray, 30%);
+$warning: desaturate(red, 20%);
+$contrast: white;
+$font-family:  "Open Sans", Arial, "sans serif";
+
+@import 'map';
+@import 'time-series';
+@import 'client-ui';
+@import 'mixins';
+
+
+/* Medium screens */
+@media all and (max-width: 800px) {
+  .navigation {
+    /* When on medium sized screens, we center it by evenly distributing empty space around items */
+    justify-content: space-around;
+  }
+}
+
+/* Small screens */
+@media all and (max-width: 500px) {
+  .navigation {
+    /* On small screens, we are no longer using row direction but column */
+    flex-direction: column;
+  }
+}
+
+body {
+  font-family: $font-family;
+  /* line-height: 1.37; */
+  margin:0;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+h2 {
+  margin:0;
+  align-self: center;
+  font-size: 3em;
+  font-weight: 700;
+  display:inline-block;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 400;
+  margin: 5px 0px;
+}
+
+.flex-container {
+  @include flexbox();
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.hidden {
+	display:none;
+}
+
+button {
+  font-size: 1.1em;
+  color:white;
+  background-color:$primary;
+  border-radius: 5px;
+  min-height: 25px;
+  border: none;
+  display:inline-block;
+
+  &:hover{
+    border: none;
+    background-color: $accent;
+  }
+  &:disabled {
+    background-color: $gray;
+  }
+}
+
+select {
+  overflow:hidden;
+  border: 1px solid transparent;
+  padding: .5em 1em;
+  font-size: 1em;
+  border-radius: .25em;
+  -webkit-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+  color: $gray-darker;
+  border-color: $gray;
+}
+
+.warning{
+  display:none;
+  font-weight: 300;
+  color:$warning;
+}

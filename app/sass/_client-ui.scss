@@ -1,0 +1,159 @@
+
+#header {
+  width: 100%;
+  align-items: center;
+
+  #info-container {
+    width:100%;
+    background-color: $accent;
+    align-items: center
+  }
+
+  #info{
+    justify-content: space-between;
+    flex-wrap: wrap;
+    min-height: 89px;
+    width:90%;
+    color: $contrast;
+
+    .info-text {
+      align-self: flex-end;
+      margin-bottom: 10px;
+      font-weight: 300;
+      color: $contrast;
+    }
+  }
+}
+
+#control-bar {
+  padding: 10px 0px;
+  justify-content: space-between;
+  width: 90%;
+  align-items: center;
+
+  #search {
+    display: inline-block;
+    margin-right: 10px;
+    min-width:270px;
+    min-height: 150px;
+
+    #date-range-picker {
+      padding: 2px 6px;
+      width: 178px;
+      height: 20px;
+      font-size: 1em;
+      border-radius: 3px;
+      border: solid 1px $accent;
+    }
+    
+  }
+  #count-warning {
+    color: $accent;
+  }
+  
+  #count-warning span, #heatmap-warning span {
+    font-weight: 400;
+  }
+
+  #chart-container {
+    height: 120px;
+    width: 90%;
+
+    #chart-info, #chart-buttons {
+      font-weight: 300;
+      font-size: .8em;
+      display:inline-block;
+    }
+
+    #chart-buttons {
+      float:right;
+
+      a {
+        margin-left: 2px;
+        &:hover{
+          color: $accent;
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+
+#content {
+  position: relative;
+
+  #loading-overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    background-color: rgba( $gray, .66 );
+    
+    #loading-gif{
+      margin: auto;
+      font-size: 3em;
+      color: #10381d;
+    }
+
+    #loading-warning{
+      display:none;;
+      margin: auto;
+      font-size: 2.5em;
+      color: #10381d;
+    }
+    
+    
+  }
+  
+  #sidebar {
+    /* top:0; */
+    height:100%;
+    padding: 0px 10px;
+    min-width: 260px;
+    width: 20%;
+    display:inline-block;
+    background-color:white;
+    justify-content: flex-start;
+    h4 {
+      margin: 0;
+    }
+    #date-range, #epicenters {
+      color:#666666;
+      font-weight: 300;
+    }
+    #date-range span, #epicenters span{
+      color: black;
+      font-weight: 400;
+    }
+    #download-container{
+      align-self: flex-end;
+    }
+
+    ul.sidebar-list {
+      display:none;
+      padding-left: 10px;
+      list-style-type:none;
+      overflow:scroll;
+      max-height: 450px;
+      font-size: .9em;
+
+      .event-nav.active-event{
+        color:Red;
+      }
+    }
+
+  }
+}
+
+#footer {
+  width: 100%;
+  height: 356px;
+  background-color: #10381d;
+  color: white;
+}
+
+
+

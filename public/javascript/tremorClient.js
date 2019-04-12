@@ -223,7 +223,7 @@ $(function () {
       TimeChart.getTotal(dateRange.start, dateRange.end);
 
       $(window).on('resize', function () {
-        TimeChart.resize($("#chart-container").width())
+        TimeChart.resize($("#control-bar").width() - $("#search").width());
       });
 
     });

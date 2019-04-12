@@ -7,7 +7,7 @@ var TimeChart = (function() {
   var margin, height, width;
   // set the ranges
   var x, y;
-  var valueline, brush, svg;
+  var valueline, brush, svg, bg;
   // Add the valueline path.
   var line;
   var x0, y0, xAxis, yAxis;
@@ -16,8 +16,6 @@ var TimeChart = (function() {
   //     .attr("class", "area")
   //     .attr("d", area);
   var idleTimeout, idleDelay;
-
-  var startSelect, endSelect;
 
   var drawLimit;
 
@@ -119,9 +117,6 @@ var TimeChart = (function() {
 
     //Build a chart with no data in the given element
     init: function(config) {
-      startSelect = config.start;
-      endSelect = config.end;
-      rangeSelect = config.range;
       drawLimit = config.limit;
       datePicker = config.datePicker;
       //Gives chart room to breathe inside parent
@@ -161,7 +156,7 @@ var TimeChart = (function() {
         .append("svg:svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom);
-      svg.append("rect")
+      bg = svg.append("rect")
         .attr("class", "background")
         .attr("width", width)
         .attr("height", height);
@@ -223,17 +218,12 @@ var TimeChart = (function() {
         .attr('width', width + margin.right + margin.left)
         .attr('height', height + margin.top + margin.bottom);
 
-      // //update the axis and line
-      // xAxis.scale(x);
-      // yAxis.scale(y);
-      
-      svg.select('.x-axis')
-        .call(xAxis);
+      bg
+        .attr('width', width)
+        .attr('height', height);
 
-      svg.select('.y-axis')
-        .call(yAxis);
+      zoom();
 
-      // path.attr('d', valueLine);
     }
 
   };

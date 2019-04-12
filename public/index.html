@@ -7,10 +7,10 @@
     <!-- External Styles -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
-    <!-- End External Styles -->
-    <link rel="stylesheet" href="css/tremor-map.css" />
-    <link rel="stylesheet" href="css/time-series.css"/>
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <!-- End External Styles -->
+    <link rel="stylesheet" href="css/main.css" />
+
     <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -34,7 +34,7 @@
 
 
           <div id="control-bar" class="flex-container flex-row">
-            <div id="search" class="flex-container">
+            <div id="search">
               <h3>Search</h3>
               <input id="date-range-picker" name="date-range" type="text"/>
               <button id="submit" >Search</button>
@@ -129,7 +129,7 @@
 
             <!-- download stuff here -->
         </div>
-        <div id="loading-overlay">
+        <div id="loading-overlay" class="flex-container">
           <div id="loading-gif">
             Loading...
           </div>
