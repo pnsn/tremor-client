@@ -107,7 +107,10 @@ select {
   .active {
     background-color: $accent !important;
   }
-  .cancelBtn {
-    display:none !important;
-  }
+}
+
+.info-text {
+  font-weight: 300;
+  font-size: .8em;
+  display:inline-block;
 }

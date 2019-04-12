@@ -40,6 +40,7 @@ $(function () {
 
     $('input[name="date-range"]').daterangepicker({
       "showDropdowns": true,
+      "autoApply":true,
       ranges: {
           'Today': [moment(), moment()],
           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -51,10 +52,6 @@ $(function () {
       "locale": {
           "format": dateFormat,
           "separator": " - ",
-          "applyLabel": "Apply",
-          "cancelLabel": "Cancel",
-          "fromLabel": "From",
-          "toLabel": "To",
           "customRangeLabel": "Custom",
           "weekLabel": "W",
           "daysOfWeek": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],

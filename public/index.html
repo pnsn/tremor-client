@@ -31,7 +31,7 @@
               <div id="info" class="flex-container flex-row">
                   <h2>Episodic Tremor & Slip Events (ETS)</h2>
                   <div id="updated" class="info-text">Updated <span></span></div>
-                  <a class="info-text" href="https://pnsn.org/tremor/overview" target="blank">learn more about ETS</a>
+                  <a href="https://pnsn.org/tremor/overview" target="blank">learn more about ETS</a>
               </div>
           </div>
 
@@ -39,6 +39,9 @@
           <div id="control-bar" class="flex-container flex-row">
             <div id="search">
               <h3>Search</h3>
+              <div class="info-text">
+                Click to select new dates.
+              </div>
               <input id="date-range-picker" name="date-range" type="text"/>
               <button id="submit" >Search</button>
               <div id="warning-container">
@@ -53,10 +56,10 @@
             </div>
 
             <div id="chart-container">
-                <div id="chart-info">
+                <div id="chart-info" class="info-text">
                   Click and drag on chart to zoom in. Double click on chart to zoom out.
                 </div>
-                <div id="chart-buttons">
+                <div id="chart-buttons" class="info-text">
                   <a value="all">zoom to all</a>
                   zoom to last:
                   <a value="day">day</a>

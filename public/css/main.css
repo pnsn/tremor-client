@@ -14,7 +14,7 @@
   width: 90%;
   color: white;
 }
-#header #info .info-text {
+#header #info a {
   align-self: flex-end;
   margin-bottom: 10px;
   font-weight: 300;
@@ -60,11 +60,6 @@
   #control-bar #chart-container {
     display: block;
   }
-}
-#control-bar #chart-container #chart-info, #control-bar #chart-container #chart-buttons {
-  font-weight: 300;
-  font-size: 0.8em;
-  display: inline-block;
 }
 #control-bar #chart-container #chart-buttons {
   float: right;
@@ -320,8 +315,11 @@ select {
 .daterangepicker .active {
   background-color: #083f08 !important;
 }
-.daterangepicker .cancelBtn {
-  display: none !important;
+
+.info-text {
+  font-weight: 300;
+  font-size: 0.8em;
+  display: inline-block;
 }
 
 /*# sourceMappingURL=main.css.map */
