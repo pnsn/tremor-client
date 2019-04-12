@@ -106,14 +106,20 @@ $(function () {
   $("#chart-buttons a").click(function(){
     var range = [];
     switch($(this).attr("value")) {
+      case "day":
+      range = [moment(), moment()];
+        break;
+
       case "week":
       range = [moment().subtract(6, 'days'), moment()];
         break;
+
       case "month":
       range = [moment().startOf('month'), moment().endOf('month')];
-      break;
+        break;
+
       default: 
-      range = [moment(), moment()];
+
         // code block
     }
 
@@ -143,8 +149,8 @@ $(function () {
     // UI Events
     coloringSelector.change(function () {
         TremorMap.recolorMarkers(coloringSelector.val());
-        $("#key-start").text(start);
-        $("#key-end").text(end);
+        $("#key-start").text(dateRange.start);
+        $("#key-end").text(dateRange.end);
     });
   
     $("#seismometers, #past-tremor, #plate-contours").change(function () {
@@ -164,6 +170,8 @@ $(function () {
     //change to lose focus ?
     $("#submit").click(function () {
       $("#loading-overlay").show();
+      $("#loading-gif").show();
+      $("#loading-warning").hide();
       $("#play-events").prop('disabled', true);
 
       dateRange = {
@@ -171,7 +179,6 @@ $(function () {
         "end" : datePicker.endDate.format(dateFormat)
       };
       
-
       var coloring = coloringSelector.val();
 
       var url = "?start="+dateRange.start+"&end="+dateRange.end+"&coloring="+coloring;
@@ -256,8 +263,8 @@ $(function () {
         $("#display-type-warning").show();
       } else {
         TremorMap.updateMarkers(geojson, coloringSelector.val());
-        $("#key-start").text(start);
-        $("#key-end").text(end);
+        $("#key-start").text(dateRange.start);
+        $("#key-end").text(dateRange.end);
         $(".display-type").show();
       }
 

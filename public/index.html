@@ -28,7 +28,7 @@
               <div id="info" class="flex-container flex-row">
                   <h2>Episodic Tremor & Slip Events (ETS)</h2>
                   <div id="updated" class="info-text">Updated <span></span> ago</div>
-                  <a class="info-text" href="">learn more about ETS</a>
+                  <a class="info-text" href="https://pnsn.org/tremor/overview" target="blank">learn more about ETS</a>
               </div>
           </div>
 
@@ -54,6 +54,7 @@
                   Click and drag on chart to zoom in. Double click on chart to zoom out.
                 </div>
                 <div id="chart-buttons">
+                  <a value="all">zoom to all</a>
                   zoom to last:
                   <a value="day">day</a>
                   <a value="week">week</a>
@@ -92,7 +93,7 @@
 
               <select id="display-type">
                 <option value="color-time">Color vs. Time</option>
-                <option value="color-normal">Normal (red)</option>
+                <option value="color-normal"> Normal (red)</option>
                 <option value="heat-map">Heat Map</option>
               </select>
 
@@ -119,7 +120,7 @@
 
           <div id="download-container">
             <select id="download-type">
-              <option value="">Select Data Type</option>
+              <option value="">Select Type</option>
               <option value="csv">CSV</option>
               <option value="json">JSON</option>
             </select>
@@ -133,7 +134,7 @@
             Loading...
           </div>
           <div id="loading-warning">
-            Error: no epicenters returned. Please select new dates.
+            No tremor for selected time range. Please try new dates.
           </div>
         </div>
 
