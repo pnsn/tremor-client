@@ -131,6 +131,7 @@ $(function () {
       datePicker.setEndDate(dateRange.end);
 
       TimeChart.updateBounds(dateRange.start, dateRange.end);
+      TimeChart.getTotal(start.format(dateFormat), end.format(dateFormat));
     }
 
   });

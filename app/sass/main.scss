@@ -7,27 +7,20 @@ $warning: desaturate(red, 20%);
 $contrast: white;
 $font-family:  "Open Sans", Arial, "sans serif";
 
+
+// Screen size variables
+$screen-xs-min: 425px;  // Tiny phones
+$screen-sm-min: 576px;  // Small tablets and large smartphones (landscape view)
+$screen-md-min: 768px;  // Small tablets (portrait view)
+$screen-lg-min: 992px;  // Tablets and small desktops
+$screen-xl-min: 1200px; // Large tablets and desktops
+
+@import 'mixins';
+@import 'client-ui';
 @import 'map';
 @import 'time-series';
-@import 'client-ui';
-@import 'mixins';
 
 
-/* Medium screens */
-@media all and (max-width: 800px) {
-  .navigation {
-    /* When on medium sized screens, we center it by evenly distributing empty space around items */
-    justify-content: space-around;
-  }
-}
-
-/* Small screens */
-@media all and (max-width: 500px) {
-  .navigation {
-    /* On small screens, we are no longer using row direction but column */
-    flex-direction: column;
-  }
-}
 
 body {
   font-family: $font-family;
@@ -40,9 +33,15 @@ body {
 h2 {
   margin:0;
   align-self: center;
-  font-size: 3em;
-  font-weight: 700;
   display:inline-block;
+
+  font-size: 1.5em;
+  font-weight: 400;
+
+  @include md {
+    font-size: 3em;
+    font-weight: 700;
+  }
 }
 
 h3 {

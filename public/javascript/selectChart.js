@@ -105,6 +105,7 @@ var TimeChart = (function() {
     } 
     $("#count-warning span").text(total);
     $("#count-warning").show();
+    $("#heatmap-warning").hide();
     if (total > drawLimit) {
       $("#heatmap-warning").show();
     }
