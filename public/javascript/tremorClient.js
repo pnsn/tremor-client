@@ -155,7 +155,7 @@ $(function () {
     });
 
     $("#download-container button").click(function(){
-      console.log($("#download-type").val())
+      download($("download-type").val());
     });
   
     //change to lose focus ?
@@ -329,4 +329,8 @@ $(function () {
       console.log(jqXHR.status);
       console.log("Request failed: " + textStatus + " ");
     }).promise();
+  }
+
+  function download(format) {
+    console.log("Download! " + format);
   }

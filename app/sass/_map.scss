@@ -22,7 +22,7 @@
   border-radius: 5px;
   border: 2px solid rgba(0,0,0,0.2);
   background-clip: padding-box;
-  
+  height: 250px;
   div {
     font-size: .8em;
     width: 100%;
@@ -30,5 +30,6 @@
   img {
     margin: auto;
     display:block;
+    height:100%;
   }
 }

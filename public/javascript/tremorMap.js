@@ -26,7 +26,7 @@ var TremorMap = (function () {
   L.Control.Key = L.Control.extend({
     onAdd: function(map) {
         var div = L.DomUtil.create('div', 'map-key');
-        div.innerHTML = "<div id='key-start'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-end'></div>";
+        div.innerHTML = "<div id='key-end'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-start'></div>";
         return div;
     },
 
