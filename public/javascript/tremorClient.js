@@ -29,8 +29,6 @@ $(function () {
       end: ""
     };
 
-
-
     dateRange.start = start && moment(start).isValid() ? start : moment.utc();
     dateRange.end = end && moment(end).isValid() ? end : dateRange.start;
   
@@ -195,6 +193,14 @@ $(function () {
       });
   
     });
+
+    $.ajax({
+      url: "https://tremorapi.pnsn.org/api/v1.0/event/0",
+      dataType: "json"
+    }).done(function(response){
+      $("#updated span").text(moment(response.time).fromNow());
+    });
+  
   
     // Get some data
   
