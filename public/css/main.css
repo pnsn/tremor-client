@@ -340,6 +340,9 @@ button:disabled {
 #content #loading-overlay #loading-warning {
   display: none;
 }
+#content #loading-overlay #loading-warning div {
+  text-align: center;
+}
 #content #sidebar {
   /* top:0; */
   height: 100%;
