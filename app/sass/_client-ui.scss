@@ -65,6 +65,14 @@
       display: block;
     }
 
+    #chart-info{
+      float:left;
+    }
+
+    #chart-info, #chart-buttons {
+      display:inline;
+    }
+
     #chart-buttons {
       float:right;
 

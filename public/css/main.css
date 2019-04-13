@@ -275,6 +275,12 @@ button:disabled {
     display: block;
   }
 }
+#control-bar #chart-container #chart-info {
+  float: left;
+}
+#control-bar #chart-container #chart-info, #control-bar #chart-container #chart-buttons {
+  display: inline;
+}
 #control-bar #chart-container #chart-buttons {
   float: right;
 }

@@ -258,7 +258,7 @@ $(function () {
 
       $("#date-range #start").text(dateRange.start);
       $("#date-range #end").text(dateRange.end);
-
+      console.log(response.features.length)
       // console.log(geojson)
       if (response.features.length >= drawLimit) {
         $("#count-warning").show();
@@ -291,9 +291,8 @@ $(function () {
   //Returns json object
   function getEvents(start, end) {
     if(start && end) {
-      if(start === end) {
-        end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
-      }
+      //make it "end of day" since that is how old tremor is 
+      end += "T23:59:59";
       var request = $.ajax({
         url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
       //   headers: {
@@ -305,6 +304,7 @@ $(function () {
     
       return request.done(function (response) {
         $("#loading-warning").hide();
+        console.log(response)
         return response;
       }).fail(function (jqXHR, textStatus) {
         $("#loading-gif").hide();

@@ -28,6 +28,8 @@ var TimeChart = (function() {
       svg.select(".brush").call(brush.move, null);
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
+
+      console.log(start, end)
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);
@@ -116,7 +118,8 @@ var TimeChart = (function() {
 
         total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
       } else {
-        for (var d = firstMeas; d < moment.utc(end); d.add(1, 'days')) {
+        // just < because dates start at end of day?
+        for (var d = firstMeas; d <= moment.utc(end); d.add(1, 'days')) {
           dString = d.format("YYYY-MM-DD");
           hours = rawData[dString] ? rawData[dString] : 0;
           total += hours;
