@@ -155,8 +155,13 @@ $(function () {
     });
 
     $("#download-container button").click(function(){
-      download($("download-type").val());
+      download($("#download-type").val());
     });
+
+
+    // $("#download-container select").change(function(){
+    //   $("#download-container button").attr("disabled", false);
+    // });
   
     //change to lose focus ?
     $("#submit").click(function () {
@@ -258,7 +263,7 @@ $(function () {
       if (response.features.length >= drawLimit) {
         $("#count-warning").show();
         TremorMap.updateMarkers(geojson, "heat-map");
-        $("#display-type").hide();
+        $("#display-type-container").hide();
         $("#display-type-warning").show();
       } else {
         TremorMap.updateMarkers(geojson, coloringSelector.val());
@@ -332,5 +337,11 @@ $(function () {
   }
 
   function download(format) {
+
+    if(format == "json") {
+      
+    } else if (format == "csv"){
+
+    }
     console.log("Download! " + format);
   }

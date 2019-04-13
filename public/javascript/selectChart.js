@@ -26,8 +26,8 @@ var TimeChart = (function() {
     if (s) {
       x.domain(s.map(x.invert, x));
       svg.select(".brush").call(brush.move, null);
-      var start = x.domain()[0];
-      var end = x.domain()[1];
+      var start = moment.utc(x.domain()[0]);
+      var end = moment.utc(x.domain()[1]);
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);
@@ -56,15 +56,36 @@ var TimeChart = (function() {
 
   // Add data to the chart
   function putDataInChart(data) {
-    // Scale the range of the data
+    // Scale the range of the data    
     x0 = d3.extent(data, function(d) {
-      return d.date;
+      return d.date.toDate();
     });
+
     y0 = [0, d3.max(data, function(d) {
       return d.count;
     })];
-    x.domain(x0);
-    y.domain(y0);
+    x = d3.scaleUtc().domain(x0).range([0, width]);
+
+    y = d3.scaleLinear().domain(y0).range([height, 0]);
+
+    // define the line
+    valueline = d3.line()
+      .x(function(d) {
+        return x(d.date);
+      })
+      .y(function(d) {
+        return y(d.count);
+      });
+    brush = d3.brushX()
+      .extent([
+        [0, 0],
+        [width, height]
+      ])
+      .on("end", brushended)
+      .handleSize(height);
+    
+    idleDelay = 350;
+
 
     line = svg.append("path")
       .data([data])
@@ -73,7 +94,7 @@ var TimeChart = (function() {
     var brushg = svg.append("g")
       .attr("class", "brush")
       .call(brush);
-    // .call(brush.move, x.domain().map(x)); //make it have a starting selection
+
     // Add the X Axis
     xAxis = svg.append("g")
       .attr("class", "x-axis")
@@ -87,22 +108,22 @@ var TimeChart = (function() {
   }
 
   function getTotal(start, end) {
+
     var total = 0;
-    var firstMeas = new Date(start);
+    var firstMeas = moment.utc(start);
     if(start && end) {
       if (start == end){
-        console.log("total");
+
         total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
       } else {
-        for (var d = firstMeas; d < new Date(end); d.setDate(d.getDate() + 1)) {
-          dString = formatTime(d);
+        for (var d = firstMeas; d < moment.utc(end); d.add(1, 'days')) {
+          dString = d.format("YYYY-MM-DD");
           hours = rawData[dString] ? rawData[dString] : 0;
-    
           total += hours;
         }
       }
- 
     } 
+
     $("#count-warning span").text(total);
     $("#count-warning").show();
     $("#heatmap-warning").hide();
@@ -132,31 +153,10 @@ var TimeChart = (function() {
       height = config.height - margin.top - margin.bottom;
       width = config.width - margin.right - margin.left;
 
-      x = d3.scaleTime().range([0, width]);
-      y = d3.scaleLinear().range([height, 0]);
-
-      // define the line
-      valueline = d3.line()
-        .x(function(d) {
-          return x(d.date);
-        })
-        .y(function(d) {
-          return y(d.count);
-        });
-      brush = d3.brushX()
-        .extent([
-          [0, 0],
-          [width, height]
-        ])
-        .on("end", brushended)
-        .handleSize(height);
-      
-      idleDelay = 350;
-
       svg = d3.select(config.container)
-        .append("svg:svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom);
+      .append("svg:svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom);
       bg = svg.append("rect")
         .attr("class", "background")
         .attr("width", width)
@@ -164,24 +164,23 @@ var TimeChart = (function() {
       svg.append("g")
         .attr('clip-path', 'url(#clipper)')
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
     },
 
     addData: function(data) {
       rawData = data;
       var chartData = [],
-      today = new Date(),
-      firstMeas = new Date(Object.keys(rawData)[0]);
+      today = moment.utc(),
+      firstMeas = moment.utc(Object.keys(rawData)[0]);
 
-      for (var d = firstMeas; d <= today; d.setDate(d.getDate() + 1)) {
-        dString = formatTime(d);
+      for (var d = firstMeas; d <= today; d.add(1, "days")) {
+        dString = d.format("YYYY-MM-DD");
         hours = rawData[dString] ? rawData[dString] : 0;
-
         chartData.push({
-          "date": new Date(d),
+          "date": moment.utc(d),
           "count": hours
         });
       }
-
       putDataInChart(chartData);
     },
 

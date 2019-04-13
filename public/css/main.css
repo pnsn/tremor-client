@@ -344,9 +344,6 @@ button:disabled {
   background-color: white;
   justify-content: flex-start;
 }
-#content #sidebar h4 {
-  margin: 0;
-}
 #content #sidebar #date-range, #content #sidebar #epicenters {
   color: #666666;
   font-weight: 300;
@@ -420,6 +417,11 @@ h3 {
   h3 {
     margin: 5px 0px;
   }
+}
+
+h4 {
+  margin: 0;
+  font-weight: 400;
 }
 
 .flex-container {
