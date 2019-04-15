@@ -37,20 +37,21 @@
 
 
           <div id="control-bar" class="flex-container flex-row">
-            <div id="chart-container">
-                <div id="chart-info" class="info-text">
-                  Click and drag on chart to zoom in. Double click on chart to zoom out.
-                </div>
-                <div id="chart-buttons" class="info-text">
-                  zoom to last:
-                  <a value="day">day</a>
-                  <a value="week">week</a>
-                  <a value="month">month</a>
-                  <a value="all" id="zoom-all">all data</a>
+            <div id="chart-container" class="left-column">
+                <div id="chart-info" class="flex-container flex-row">
+                  <div class="info-text">Click and drag on chart to zoom in. Double click to zoom out.</div>
+
+                  <div id="chart-buttons" class="info-text">
+                    zoom to last:
+                    <a value="day">day</a>
+                    <a value="week">week</a>
+                    <a value="month">month</a>
+                    <a value="all" id="zoom-all">all data</a>
+                  </div>
                 </div>
                 <div id="chart"></div>
             </div>
-            <div id="search">
+            <div id="search" class="right-column">
               <h3>Search</h3>
               <div class="info-text">
                 Click to select new dates.
@@ -77,11 +78,11 @@
       <div id="content" class="flex-container">
 
 
-        <div id="map-container">
+        <div id="map-container" class="left-column">
             <div id="tremor-map"></div>
         </div>
 
-        <div id="sidebar" class="flex-container flex-row">
+        <div id="sidebar" class="flex-container flex-row right-column">
           <h3>Map Settings</h3>
           <div id="overlays">
             <h4>Map Overlays</h4>

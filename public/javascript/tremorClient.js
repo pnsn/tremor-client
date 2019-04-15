@@ -7,7 +7,6 @@ $(function () {
     //map
     TremorMap.init({
       mapContainer: 'tremor-map',
-      playbackSpeed: $('#playbackSpeed'),
       center: [45.5122, -122.6587],
       leafletOptions: {
         minZoom: 5.5,
@@ -225,7 +224,7 @@ $(function () {
       TimeChart.getTotal(dateRange.start, dateRange.end);
 
       $(window).on('resize', function () {
-        TimeChart.resize($("#control-bar").width() - $("#search").width());
+        TimeChart.resize($("#control-bar").width() - $("#search").width()-20);
       });
 
     });

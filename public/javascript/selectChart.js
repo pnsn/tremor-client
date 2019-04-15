@@ -1,7 +1,6 @@
 //This makes a D3 chart that can zoom in and select a period of time
 
 var TimeChart = (function() {
-  var formatTime = d3.utcFormat("%Y-%m-%d");
   var parseTime = d3.utcParse("%Y-%m-%d");
   //Sizes - keep out here for potential resizing?
   var margin, height, width;
@@ -55,14 +54,56 @@ var TimeChart = (function() {
     idleTimeout = null;
   }
 
-  // Add data to the chart
-  function putDataInChart(data) {
+  function getTotal(start, end) {
+
+    var total = 0;
+    var firstMeas = moment.utc(start);
+    if(start && end) {
+      if (start == end){
+
+        total = rawData[firstMeas.format("YYYY-MM-DD")]? rawData[firstMeas.format("YYYY-MM-DD")] :0; 
+      } else {
+        // just < because dates start at end of day?
+        for (var d = firstMeas; d <= moment.utc(end); d.add(1, 'days')) {
+          dString = d.format("YYYY-MM-DD");
+          hours = rawData[dString] ? rawData[dString] : 0;
+          total += hours;
+        }
+      }
+    } 
+
+    $("#count-warning span").text(total);
+    $("#count-warning").show();
+    $("#heatmap-warning").hide();
+    if (total > drawLimit) {
+      $("#heatmap-warning").show();
+    }
+
+
+    return total;
+  }
+
+  function addData(data) {
+    rawData = data;
+    var chartData = [],
+    today = moment.utc(),
+    firstMeas = moment.utc(Object.keys(rawData)[0]);
+
+    for (var d = firstMeas; d <= today; d.add(1, "days")) {
+      dString = d.format("YYYY-MM-DD");
+      hours = rawData[dString] ? rawData[dString] : 0;
+      chartData.push({
+        "date": moment.utc(d),
+        "count": hours
+      });
+    }
+
     // Scale the range of the data    
-    x0 = d3.extent(data, function(d) {
+    x0 = d3.extent(chartData, function(d) {
       return d.date.toDate();
     });
 
-    y0 = [0, d3.max(data, function(d) {
+    y0 = [0, d3.max(chartData, function(d) {
       return d.count;
     })];
     
@@ -88,12 +129,11 @@ var TimeChart = (function() {
     
     idleDelay = 350;
 
-
     line = svg.append("path")
-      .data([data])
+      .data([chartData])
       .attr("class", "line")
       .attr("d", valueline);
-    var brushg = svg.append("g")
+      svg.append("g")
       .attr("class", "brush")
       .call(brush);
 
@@ -109,34 +149,49 @@ var TimeChart = (function() {
     //do stuff with data
   }
 
-  function getTotal(start, end) {
-
-    var total = 0;
-    var firstMeas = moment.utc(start);
-    if(start && end) {
-      if (start == end){
-
-        total = rawData[formatTime(firstMeas)]? rawData[formatTime(firstMeas)] :0; 
-      } else {
-        // just < because dates start at end of day?
-        for (var d = firstMeas; d <= moment.utc(end); d.add(1, 'days')) {
-          dString = d.format("YYYY-MM-DD");
-          hours = rawData[dString] ? rawData[dString] : 0;
-          total += hours;
-        }
-      }
+  function updateBounds(start, end) {
+    getTotal(start, end);
+    svg.select(".brush").call(brush.move, null);
+    if (start == end) {
+      end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
     } 
-
-    $("#count-warning span").text(total);
-    $("#count-warning").show();
-    $("#heatmap-warning").hide();
-    if (total > drawLimit) {
-      $("#heatmap-warning").show();
-    }
-
-
-    return total;
+    x.domain([parseTime(start), parseTime(end)]);
+    zoom();
   }
+  function reset() {
+    x.domain(x0);
+    y.domain(y0);
+    zoom();
+  }
+
+  function resize(innerWidth){
+    width = innerWidth - margin.right - margin.left;
+    
+    //update x and y scales to new dimensions
+    x.range([0, width]);
+    y.range([height, 0]);
+
+    //update svg elements to new dimensions
+    svg
+      .attr('width', width + margin.right + margin.left)
+      .attr('height', height + margin.top + margin.bottom);
+
+    bg
+      .attr('width', width)
+      .attr('height', height);
+    
+      brush = d3.brushX()
+      .extent([
+        [0, 0],
+        [width, height]
+      ])
+      .on("end", brushended)
+      .handleSize(height);
+
+    zoom();
+
+  }
+
 
   return {
 
@@ -170,64 +225,17 @@ var TimeChart = (function() {
 
     },
 
-    addData: function(data) {
-      rawData = data;
-      var chartData = [],
-      today = moment.utc(),
-      firstMeas = moment.utc(Object.keys(rawData)[0]);
-
-      for (var d = firstMeas; d <= today; d.add(1, "days")) {
-        dString = d.format("YYYY-MM-DD");
-        hours = rawData[dString] ? rawData[dString] : 0;
-        chartData.push({
-          "date": moment.utc(d),
-          "count": hours
-        });
-      }
-      putDataInChart(chartData);
-    },
+    addData: addData,
 
     //change start and end of chart
-    updateBounds: function(start, end) {
-      getTotal(start, end);
-      svg.select(".brush").call(brush.move, null);
-      if (start == end) {
-        end = formatTime(moment.utc(start).add(1, "day"));
-      } 
-      x.domain([parseTime(start), parseTime(end)]);
-      zoom();
-    },
+    updateBounds: updateBounds,
 
     //zoom chart out to full view
-    reset: function() {
-      x.domain(x0);
-      y.domain(y0);
-      zoom();
-    },
+    reset: reset,
 
-    getTotal: function (start, end) {
-      return getTotal(start, end);
-    },
+    getTotal: getTotal,
 
-    resize: function(innerWidth){
-      width = innerWidth - margin.right - margin.left;
-      
-      //update x and y scales to new dimensions
-      x.range([0, width]);
-      y.range([height, 0]);
-
-      //update svg elements to new dimensions
-      svg
-        .attr('width', width + margin.right + margin.left)
-        .attr('height', height + margin.top + margin.bottom);
-
-      bg
-        .attr('width', width)
-        .attr('height', height);
-
-      zoom();
-
-    }
+    resize: resize
 
   };
 })();
