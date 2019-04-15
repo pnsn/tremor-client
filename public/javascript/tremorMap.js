@@ -160,19 +160,19 @@ var TremorMap = (function () {
     //TODO: clean up list logic
     updateMarkers: function (response, coloring) {
       clearLayers();
-      var firstEventTime = (new Date(response.features[0].properties.time)).getTime();
-      var lastEventTime = (new Date(response.features[response.features.length - 1].properties.time)).getTime();
+      var firstEventTime = moment.utc(response.features[0].properties.time);
+      var lastEventTime = moment.utc(response.features[response.features.length - 1].properties.time);
       eventMarkers = L.geoJSON(response, {
         pointToLayer: function(feature, latlng){
-          var timeIndex = 0;
+          var timeIndex;
 
-          var time = feature.properties.time;
+          var time = moment.utc(feature.properties.time);
           var id = feature.properties.id;
           var lat = latlng.lat;
           var lng = latlng.lng;
 
           if (lastEventTime > firstEventTime) {
-            var t = (new Date(feature.properties.time)).getTime();
+            var t = time;
             timeIndex = (t - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           }
 
@@ -190,7 +190,7 @@ var TremorMap = (function () {
 
           // do all the listy stuff
           if(response.features.length < 5000 ) {
-            var listItem = $("<li class='event-nav event-" + id + "'>" + time + "</li>");  
+            var listItem = $("<li class='event-nav event-" + id + "'>" + time.format("YYYY-MM-DD HH:mm:ss") + "UTC"+ "</li>");  
             listItem.click(function () {
                 $(".active-event").removeClass("active-event");
                 $(".event-" + id).addClass("active-event");
@@ -207,7 +207,7 @@ var TremorMap = (function () {
               $("#event-list").append(listItem);
           }
 
-          marker.bindPopup("<div> Time: " + time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
+          marker.bindPopup("<div> Time: " + time.format("YYYY-MM-DD HH:mm:ss") + "UTC" + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
             $(".event-" + id).addClass("active-event");

@@ -366,7 +366,7 @@ button:disabled {
   font-weight: 400;
 }
 #content #sidebar #overlays .select {
-  max-width: 250px;
+  max-width: 210px;
 }
 #content #sidebar #download-container {
   align-self: flex-end;

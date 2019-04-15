@@ -99,7 +99,7 @@ $(function () {
     var range = [];
     switch($(this).attr("value")) {
       case "day":
-      range = [moment(), moment()];
+      range = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
         break;
 
       case "week":
@@ -297,16 +297,14 @@ $(function () {
 
     if(start && end) {
       //make it "end of day" since that is how old tremor is 
+      start += "T00:00:00";
       end += "T23:59:59";
       var request = $.ajax({
         url: baseUrl+"/events?starttime=" + start + "&endtime=" + end,
-      //   headers: {
-      //     "accept": "application/json",
-      //     "Access-Control-Allow-Origin":"*",
-      //     },
         dataType: "json"
       });
-    
+      
+      console.log(baseUrl+"/events?starttime=" + start + "&endtime=" + end);
       return request.done(function (response) {
         $("#loading-warning").hide();
 
