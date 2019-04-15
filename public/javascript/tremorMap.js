@@ -158,11 +158,44 @@ var TremorMap = (function () {
     },
 
     //TODO: clean up list logic
-    updateMarkers: function (response, coloring) {
+    updateMarkers: function (data, coloring) {
       clearLayers();
-      var firstEventTime = (new Date(response.features[0].properties.time)).getTime();
-      var lastEventTime = (new Date(response.features[response.features.length - 1].properties.time)).getTime();
-      eventMarkers = L.geoJSON(response, {
+      var firstEventTime = (new Date(data.features[0].properties.time)).getTime();
+      var lastEventTime = (new Date(data.features[data.features.length - 1].properties.time)).getTime();
+
+      var getInterval = function(quake) {
+        return {
+          start: quake.properties.time,
+          end:   quake.properties.time + 3 * 1800000
+        };
+      };
+      var timelineControl = L.timelineSliderControl({
+        formatOutput: function(date){
+          return moment.utc(date).format("YYYY-MM-DD HH:MM:SS");
+        },
+        start: firstEventTime
+      });
+      var timeline = L.timeline(data, {
+        getInterval: getInterval,
+        pointToLayer: function(data, latlng){
+          return L.circleMarker(latlng, {
+            radius: 5,
+            color: "black",
+            fillColor: "Red"
+          }).bindPopup('<a href="' + data.properties.id + '">click for more info</a>');
+        }
+      });
+      timelineControl.addTo(map);
+      timelineControl.addTimelines(timeline);
+      timeline.addTo(map);
+      // timeline.on('change', function(e){
+      //   updateList(e.target);
+      // });
+      // updateList(timeline);
+
+      // console.log(timeline.getDisplayed())
+
+      eventMarkers = L.geoJSON(data, {
         pointToLayer: function(feature, latlng){
           var timeIndex = 0;
 
@@ -189,7 +222,7 @@ var TremorMap = (function () {
           });
 
           // do all the listy stuff
-          if(response.features.length < 5000 ) {
+          if(data.features.length < 5000 ) {
             var listItem = $("<li class='event-nav event-" + id + "'>" + time + "</li>");  
             listItem.click(function () {
                 $(".active-event").removeClass("active-event");
@@ -224,9 +257,8 @@ var TremorMap = (function () {
       });
       
       
-      map.addLayer(eventMarkers);
+      // map.addLayer(eventMarkers);
 
-      // eventMarkerGroups[index] = 
       console.log("done!"); 
       this.recolorMarkers(coloring);
     },
@@ -236,7 +268,7 @@ var TremorMap = (function () {
         map.removeControl(mapKey);
       }
       clearLayers();
-      toggleLayer(true, eventMarkers);
+      // toggleLayer(true, eventMarkers);
 
       switch (coloring) {
         case "color-time":

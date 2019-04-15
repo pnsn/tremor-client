@@ -28,8 +28,6 @@ var TimeChart = (function() {
       svg.select(".brush").call(brush.move, null);
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
-
-      console.log(start, end)
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);
@@ -66,7 +64,6 @@ var TimeChart = (function() {
     y0 = [0, d3.max(data, function(d) {
       return d.count;
     })];
-    
     x = d3.scaleUtc().domain(x0).range([0, width]);
 
     y = d3.scaleLinear().domain(y0).range([height, 0]);
