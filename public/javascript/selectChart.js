@@ -29,7 +29,6 @@ var TimeChart = (function() {
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
 
-      console.log(start, end)
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);

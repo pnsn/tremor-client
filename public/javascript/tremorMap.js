@@ -182,8 +182,8 @@ var TremorMap = (function () {
           var marker = new customMarker([lat, lng], {
             weight: 1,
             opacity: 1,
-            fillOpacity: 0.8,
-            radius: 5,
+            fillOpacity: 0.9,
+            radius: 4,
             riseOnHover: true,
             timeIndex: timeIndex
           });

@@ -1,6 +1,8 @@
 $(function () {
     var drawLimit = 50000;
     var dateFormat = "YYYY-MM-DD";
+    var baseUrl = "https://tremorapi.pnsn.org/api/v1.0";
+
     $("#heatmap-warning span").text(drawLimit);
     //map
     TremorMap.init({
@@ -29,8 +31,10 @@ $(function () {
       end: ""
     };
 
-    dateRange.start = start && moment(start).isValid() ? start : moment.utc();
+    dateRange.start = start && moment(start).isValid() ? start : moment.utc().format(dateFormat);
     dateRange.end = end && moment(end).isValid() ? end : dateRange.start;
+
+    console.log(dateRange.start)
   
     if (!rangeSelector.prop("checked")) {
       $("#end-date-parent").hide();
@@ -41,6 +45,7 @@ $(function () {
     $('input[name="date-range"]').daterangepicker({
       "showDropdowns": true,
       "autoApply":true,
+      "opens": "left",
       ranges: {
           'Today': [moment(), moment()],
           'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -110,7 +115,7 @@ $(function () {
         // code block
     }
 
-    if ( range ) {
+    if ( range.length > 0 ) {
       dateRange = {
         "start": range[0].format(dateFormat),
         "end": range[1].format(dateFormat)
@@ -120,7 +125,7 @@ $(function () {
       datePicker.setEndDate(dateRange.end);
 
       TimeChart.updateBounds(dateRange.start, dateRange.end);
-      TimeChart.getTotal(start.format(dateFormat), end.format(dateFormat));
+      TimeChart.getTotal(dateRange.start, dateRange.end);
     }
 
   });
@@ -155,7 +160,13 @@ $(function () {
     });
 
     $("#download-container button").click(function(){
-      download($("#download-type").val());
+      format = $("#download-type").val();
+      if(format === "json" || format === "csv") {
+        var url = baseUrl+"/events?starttime=" + dateRange.start + "&endtime=" + dateRange.end + "&format=" + format;
+        window.open(url, "_blank");
+      }
+
+
     });
 
 
@@ -190,20 +201,16 @@ $(function () {
     });
 
     $.ajax({
-      url: "https://tremorapi.pnsn.org/api/v1.0/event/0",
+      url: baseUrl+"/event/0",
       dataType: "json"
     }).done(function(response){
-      $("#updated span").text(moment(response.time).fromNow());
+      $("#updated span").text(moment.utc(response.time).fromNow());
     });
   
   
     // Get some data
   
     getCounts().done(function (response) {
-      // tremorCounts = response;
-
-  
-      //getTotalHours(dayCounts);
       TimeChart.init({
         container: "#chart",
         height: $("#chart").height() - $("#chart-info").height(),
@@ -258,8 +265,7 @@ $(function () {
 
       $("#date-range #start").text(dateRange.start);
       $("#date-range #end").text(dateRange.end);
-      console.log(response.features.length)
-      // console.log(geojson)
+
       if (response.features.length >= drawLimit) {
         $("#count-warning").show();
         TremorMap.updateMarkers(geojson, "heat-map");
@@ -273,9 +279,10 @@ $(function () {
       }
 
       if(response.features.length > 5000) {
-          $("#event-limit-warning").show();
+        $("#event-limit-warning").show();
       } else {
         $("#event-list").show();
+        $("#event-limit-warning").hide();
       }
 
       $("#epicenters span").text(response.features.length);
@@ -284,17 +291,15 @@ $(function () {
       $("#loading-overlay").hide();
     }
 
-  });
-  
-  
   //Fetches events for given start and endtime
   //Returns json object
   function getEvents(start, end) {
+
     if(start && end) {
       //make it "end of day" since that is how old tremor is 
       end += "T23:59:59";
       var request = $.ajax({
-        url: "https://tremorapi.pnsn.org/api/v1.0/events?starttime=" + start + "&endtime=" + end,
+        url: baseUrl+"/events?starttime=" + start + "&endtime=" + end,
       //   headers: {
       //     "accept": "application/json",
       //     "Access-Control-Allow-Origin":"*",
@@ -304,7 +309,7 @@ $(function () {
     
       return request.done(function (response) {
         $("#loading-warning").hide();
-        console.log(response)
+
         return response;
       }).fail(function (jqXHR, textStatus) {
         $("#loading-gif").hide();
@@ -320,11 +325,7 @@ $(function () {
   //Returns json object
   function getCounts() {
     var request = $.ajax({
-      url: "https://tremorapi.pnsn.org/api/v1.0/day_counts",
-    //   headers: {
-    //     "accept": "application/json",
-    //     "Access-Control-Allow-Origin":"*",
-    //     },
+      url: baseUrl+"/day_counts",
       dataType: "json"
     });
   
@@ -336,12 +337,6 @@ $(function () {
     }).promise();
   }
 
-  function download(format) {
-
-    if(format == "json") {
-      
-    } else if (format == "csv"){
-
-    }
-    console.log("Download! " + format);
-  }
+  });
+  
+  

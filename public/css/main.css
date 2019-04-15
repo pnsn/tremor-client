@@ -247,8 +247,11 @@ button:disabled {
 }
 #control-bar #search {
   display: inline-block;
-  margin-right: 10px;
+  margin-left: 20px;
   min-width: 270px;
+}
+#control-bar #search #submit {
+  float: right;
 }
 @media (min-width: 576px) {
   #control-bar #search {
@@ -266,7 +269,7 @@ button:disabled {
   font-weight: 400;
 }
 #control-bar #chart-container {
-  height: 120px;
+  height: 135px;
   width: 90%;
   display: none;
 }
@@ -285,10 +288,11 @@ button:disabled {
   float: right;
 }
 #control-bar #chart-container #chart-buttons a {
+  color: #107a10;
   margin-left: 2px;
 }
 #control-bar #chart-container #chart-buttons a#zoom-all {
-  margin-right: 5px;
+  margin-left: 5px;
 }
 #control-bar #chart-container #chart-buttons a:hover {
   color: #083f08;
@@ -370,6 +374,9 @@ button:disabled {
 }
 #content #sidebar #download-container .select {
   width: 50%;
+}
+#content #sidebar #event-list {
+  display: none;
 }
 #content #sidebar #event-nav ul {
   padding-left: 10px;

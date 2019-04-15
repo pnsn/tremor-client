@@ -31,12 +31,25 @@
               <div id="info" class="flex-container flex-row">
                   <h2>Episodic Tremor & Slip Events <span>(ETS)</span></h2>
                   <div id="updated">Updated <span></span></div>
-                  <a href="https://pnsn.org/tremor/overview" target="blank">learn more about ETS</a>
+                  <a href="https://pnsn.org/tremor/overview" target="blank">about tremor</a>
               </div>
           </div>
 
 
           <div id="control-bar" class="flex-container flex-row">
+            <div id="chart-container">
+                <div id="chart-info" class="info-text">
+                  Click and drag on chart to zoom in. Double click on chart to zoom out.
+                </div>
+                <div id="chart-buttons" class="info-text">
+                  zoom to last:
+                  <a value="day">day</a>
+                  <a value="week">week</a>
+                  <a value="month">month</a>
+                  <a value="all" id="zoom-all">all data</a>
+                </div>
+                <div id="chart"></div>
+            </div>
             <div id="search">
               <h3>Search</h3>
               <div class="info-text">
@@ -55,19 +68,7 @@
 
             </div>
 
-            <div id="chart-container">
-                <div id="chart-info" class="info-text">
-                  Click and drag on chart to zoom in. Double click on chart to zoom out.
-                </div>
-                <div id="chart-buttons" class="info-text">
-                  <a value="all" id="zoom-all">zoom to all</a>
-                  zoom to last:
-                  <a value="day">day</a>
-                  <a value="week">week</a>
-                  <a value="month">month</a>
-                </div>
-                <div id="chart"></div>
-            </div>
+
 
           </div>
 
@@ -132,13 +133,13 @@
           <div id="download-container">
             <div class="select">
                 <select id="download-type">
-                    <option value="" disabled selected>Select Type</option>
+                    <option value="" selected disabled>Select Type</option>
                     <option value="csv">CSV</option>
                     <option value="json">JSON</option>
                   </select>
                   <div class="select-arrow"></div>
             </div>
-            <button disabled>Download</button>
+            <button>Download</button>
           </div>
 
             <!-- download stuff here -->

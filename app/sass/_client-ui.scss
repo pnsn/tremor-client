@@ -36,8 +36,11 @@
 
   #search {
     display: inline-block;
-    margin-right: 10px;
+    margin-left: 20px;
     min-width:270px;
+    #submit {
+      float:right;
+    }
     @include sm {
       min-height: 150px;
     }
@@ -57,7 +60,7 @@
   }
 
   #chart-container {
-    height: 120px;
+    height: 135px;
     width: 90%;
     display:none;
 
@@ -77,8 +80,9 @@
       float:right;
 
       a {
+        color: $primary;
         &#zoom-all {
-          margin-right:5px;
+          margin-left:5px;
         }
         margin-left: 2px;
         &:hover{
@@ -169,7 +173,9 @@
         width: 50%;
       }
     }
-
+    #event-list{
+      display:none;
+    }
     #event-nav ul {
       padding-left: 10px;
       list-style-type:none;
