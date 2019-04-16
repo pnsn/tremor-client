@@ -105,7 +105,50 @@
     }
   
   }
+  // I got this from codepen
+  $width: 15px;
+  $height: 15px;
 
+  $bounce_height: 30px;
+  .text {
+    margin-left: 5px;
+  }
+  
+  .bounceball {
+    position: relative;
+    display: inline-block;
+    height: 37px;
+    width: $width;
+    &:before {
+      position: absolute;
+      content: '';
+      display: block;
+      top: 0;
+      width: $width;
+      height: $height;
+      border-radius: 50%;
+      background-color: $accent;
+      transform-origin: 50%;
+      animation: bounce 500ms alternate infinite ease;
+    }
+  }
+  
+  @keyframes bounce {
+    0% {
+      top: $bounce_height;
+      height: 5px;
+      border-radius: 60px 60px 20px 20px;
+      transform: scaleX(2);
+    }
+    35% {
+      height: $height;
+      border-radius: 50%;
+      transform: scaleX(1);
+    }
+    100% {
+      top: 0;
+    }
+  }
   #loading-overlay{
     position: absolute;
     top: 0;
@@ -115,6 +158,7 @@
     z-index: 1000;
     background-color: rgba( $gray, .66 );
   
+    
     #loading-gif, #loading-warning{
       font-size: 1.6em;
       margin: 20% auto;

@@ -270,30 +270,32 @@ $(function () {
     }).promise();
   }
 
-  //Fetches events for given start and endtime
-  //Returns json object
-  function getEvents(baseUrl, start, end) {
 
-    if (start && end) {
-      //make it "end of day" since that is how old tremor is 
-      start += "T00:00:00";
-      end += "T23:59:59";
-      var request = $.ajax({
-        url: baseUrl + "/events?starttime=" + start + "&endtime=" + end,
-        dataType: "json"
-      });
-      return request.done(function (response) {
-        $("#loading-warning").hide();
 
-        return response;
-      }).fail(function (jqXHR, textStatus) {
-        $("#loading-gif").hide();
-        $("#loading-warning").show();
-        console.log(jqXHR.status);
-        console.log("Request failed: " + textStatus + " ");
-      }).promise();
-    }
+}); 
+//Fetches events for given start and endtime
+//Returns json object
+function getEvents(baseUrl, start, end) {
 
+  if (start && end) {
+    //make it "end of day" since that is how old tremor is 
+    start += "T00:00:00";
+    end += "T23:59:59";
+    var request = $.ajax({
+      url: baseUrl + "/events?starttime=" + start + "&endtime=" + end,
+      dataType: "json"
+    });
+    console.log(baseUrl + "/events?starttime=" + start + "&endtime=" + end)
+    return request.done(function (response) {
+      $("#loading-warning").hide();
+
+      return response;
+    }).fail(function (jqXHR, textStatus) {
+      $("#loading-gif").hide();
+      $("#loading-warning").show();
+      console.log(jqXHR.status);
+      console.log("Request failed: " + textStatus + " ");
+    }).promise();
   }
 
-});
+}
