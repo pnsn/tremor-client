@@ -1,8 +1,5 @@
 //This makes a D3 chart that can zoom in and select a period of time
-
-var TimeChart = (function() {
-  var parseTime = d3.utcParse("%Y-%m-%d");
-  //Sizes - keep out here for potential resizing?
+function TimeChart(chartOptions, datePicker) {
   var margin, height, width;
   // set the ranges
   var x, y;
@@ -10,15 +7,41 @@ var TimeChart = (function() {
   // Add the valueline path.
   var line;
   var x0, y0, xAxis, yAxis;
-  // svg.append("path")
-  //     .data([data])
-  //     .attr("class", "area")
-  //     .attr("d", area);
+
   var idleTimeout, idleDelay;
 
   var drawLimit;
 
   var rawData;
+
+  drawLimit = chartOptions.limit;
+  datePicker = datePicker;
+
+  //Gives chart room to breathe inside parent
+  margin = {
+    top: 8,
+    right: 0,
+    bottom: 12,
+    left: 0
+  };
+  
+  //actual Size of data area
+  height = chartOptions.height - margin.top - margin.bottom;
+  width = chartOptions.width - margin.right - margin.left;
+
+  svg = d3.select(chartOptions.container)
+    .append("svg:svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom);
+  bg = svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height);
+  svg.append("g")
+    .attr('clip-path', 'url(#clipper)')
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
   //Figures out what user selected
   function brushended() {
     var s = d3.event.selection;
@@ -55,7 +78,6 @@ var TimeChart = (function() {
   }
 
   function getTotal(start, end) {
-
     var total = 0;
     var firstMeas = moment.utc(start);
     if(start && end) {
@@ -78,8 +100,6 @@ var TimeChart = (function() {
     if (total > drawLimit) {
       $("#heatmap-warning").show();
     }
-
-
     return total;
   }
 
@@ -155,9 +175,10 @@ var TimeChart = (function() {
     if (start == end) {
       end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
     } 
-    x.domain([parseTime(start), parseTime(end)]);
+    x.domain([moment.utc(start), moment.utc(end)]);
     zoom();
   }
+
   function reset() {
     x.domain(x0);
     y.domain(y0);
@@ -189,39 +210,14 @@ var TimeChart = (function() {
       .handleSize(height);
 
     zoom();
-
   }
 
 
   return {
 
     //Build a chart with no data in the given element
-    init: function(config) {
-      drawLimit = config.limit;
-      datePicker = config.datePicker;
-      //Gives chart room to breathe inside parent
-      margin = {
-        top: 8,
-        right: 0,
-        bottom: 12,
-        left: 0
-      };
-      
-      //actual Size of data area
-      height = config.height - margin.top - margin.bottom;
-      width = config.width - margin.right - margin.left;
+    init: function(chartOptions) {
 
-      svg = d3.select(config.container)
-      .append("svg:svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom);
-      bg = svg.append("rect")
-        .attr("class", "background")
-        .attr("width", width)
-        .attr("height", height);
-      svg.append("g")
-        .attr('clip-path', 'url(#clipper)')
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     },
 
@@ -238,4 +234,4 @@ var TimeChart = (function() {
     resize: resize
 
   };
-})();
+};

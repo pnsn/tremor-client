@@ -26,9 +26,6 @@
 
 #control-bar {
   padding: 5px 0px;
-  @include md {
-    padding: 10px 0px;
-  }
   justify-content: space-between;
   width: 90%;
   align-items: center;

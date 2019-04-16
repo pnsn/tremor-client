@@ -1,15 +1,11 @@
 // Makes a map 
-var TremorMap = (function () {
+function TremorMap(mapOptions) {
 
-  var map, //actual map
+  var map,
       eventMarkers,
       heatmap,
       overlays = {},
       mapKey;
-
-  var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-  });
 
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
@@ -19,6 +15,14 @@ var TremorMap = (function () {
     }
   });
 
+  map = new L.Map(mapOptions.mapContainer, mapOptions.leafletOptions).setView(mapOptions.center, 5);
+
+  var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+  });
+
+  map.addLayer(osm);
+  L.control.scale().addTo(map);
 
   L.Control.Key = L.Control.extend({
     onAdd: function(map) {
@@ -36,30 +40,29 @@ var TremorMap = (function () {
     return new L.Control.Key(opts);
   };
 
-  // Makes the overlays
-  function makeLayers() {
-    var icon = L.icon({
-      iconUrl: 'assets/Station.png',
-      iconSize: [10, 8]
-    });
-    overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, {
-          icon: icon
-        }).bindPopup("<div>" + feature.properties.station + "</div>");
-      }
-    });
 
-    overlays.pastTremor = L.geoJSON(pastTremorGeoJSON, {
-      style: pastTremorGeoJSON.properties.style
-    });
+  overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
+    pointToLayer: function (feature, latlng) {
+      return L.marker(latlng, {
+        icon: L.icon({
+          iconUrl: 'assets/Station.png',
+          iconSize: [10, 8]
+        })
+      }).bindPopup("<div>" + feature.properties.station + "</div>");
+    }
+  });
 
-    overlays.plateContours = L.geoJSON(contoursGeoJSON, {
-      style: function (feature) {
-        return feature.properties.style;
-      }
-    });
-  }
+  overlays.pastTremor = L.geoJSON(pastTremorGeoJSON, {
+    style: pastTremorGeoJSON.properties.style
+  });
+
+  overlays.plateContours = L.geoJSON(contoursGeoJSON, {
+    style: function (feature) {
+      return feature.properties.style;
+    }
+  });
+
+  // Helper functions // 
 
   //removes event based layers
   function clearLayers() {
@@ -111,7 +114,6 @@ var TremorMap = (function () {
         }
       }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
     });
-
   }
 
   function playEvents(){
@@ -134,7 +136,6 @@ var TremorMap = (function () {
         }, playbackSpeed.val() * 10);
       }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
     });
-
   }
 
   function recolorMarkers(coloring) {
@@ -250,40 +251,12 @@ var TremorMap = (function () {
     
     recolorMarkers(coloring);
   }
-  
-
 
   return {
-
-    init: function (opts) {
-
-      makeLayers();
-
-      map = new L.Map(opts.mapContainer, opts.leafletOptions).setView(opts.center, 5);
-
-      map.addLayer(osm);
-
-      L.control.scale().addTo(map);
-
-    },
 
     recolorMarkers: recolorMarkers,
 
     updateMarkers: updateMarkers, 
-
-
-    // Removes events from map and adds them one by one
-    // FIXME: Takes a while to remove
-    playFeatures: function () {
-      //case switch for heatmap/markers
-      if(map.hasLayer(heatmap)){
-        playHeatmap();
-
-      } else { //mapHas
-        playEvents();
-
-      }
-    },
 
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);
@@ -291,4 +264,4 @@ var TremorMap = (function () {
 
   };
 
-})();
+}
