@@ -97,47 +97,6 @@ function TremorMap(mapOptions) {
     }
   }
 
-  function playHeatmap() {
-    toggleLayer(false, heatmap);
-    heatmap = new L.heatLayer([],{
-      radius: 25
-    }
-    );
-    map.addLayer(heatmap);
-
-    var markersCopy = eventMarkers.getLayers();
-    $.each(markersCopy, function (i, marker) {
-      setTimeout(function () {
-        heatmap.addLatLng(marker.getLatLng());
-        if (i == markersCopy.length - 1) {
-          $("#play-events").prop("disabled", false);
-        }
-      }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
-    });
-  }
-
-  function playEvents(){
-    toggleLayer(false, eventMarkers);
-
-    var markersCopy = eventMarkers.getLayers();
-
-    $.each(markersCopy, function (i, marker) {
-      setTimeout(function () {
-        map.addLayer(marker);
-
-        setTimeout(function(){
-          map.removeLayer(marker);
-          if (i == markersCopy.length - 1) {
-            setTimeout(function(){
-              $("#play-events").prop("disabled", false);
-              toggleLayer(true, eventMarkers);
-            }, 100);
-          }
-        }, playbackSpeed.val() * 10);
-      }, marker.options.timeIndex * playbackSpeed.val()); //change the 30 to .val() for someinput to change speed
-    });
-  }
-
   function recolorMarkers(coloring) {
     if(mapKey) {
       map.removeControl(mapKey);
