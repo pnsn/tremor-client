@@ -96,7 +96,7 @@
   }
 
   #map-container  {
-    background-color: $gray-lighter;
+    // background-color: $gray-lighter;
     min-height: 500px;
     width:100%;
     padding-bottom:10px;
@@ -104,7 +104,7 @@
       min-height: 750px;
     }
     #tremor-map{
-      margin: 5px;
+      border: 5px solid  $gray-lighter;
     }
   
   }
