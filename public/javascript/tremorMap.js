@@ -2,10 +2,10 @@
 function TremorMap(mapOptions) {
 
   var map,
-      eventMarkers,
-      heatmap,
-      overlays = {},
-      mapKey;
+    eventMarkers,
+    heatmap,
+    overlays = {},
+    mapKey;
 
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
@@ -25,21 +25,20 @@ function TremorMap(mapOptions) {
   L.control.scale().addTo(map);
 
   L.Control.Key = L.Control.extend({
-    onAdd: function(map) {
-        var div = L.DomUtil.create('div', 'map-key');
-        div.innerHTML = "<div id='key-end'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-start'></div>";
-        return div;
+    onAdd: function (map) {
+      var div = L.DomUtil.create('div', 'map-key');
+      div.innerHTML = "<div id='key-end'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-start'></div>";
+      return div;
     },
 
-    onRemove: function(map) {
-        // Nothing to do here
+    onRemove: function (map) {
+      // Nothing to do here
     }
   });
 
-  L.control.key = function(opts) {
+  L.control.key = function (opts) {
     return new L.Control.Key(opts);
   };
-
 
   overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
@@ -83,59 +82,59 @@ function TremorMap(mapOptions) {
     });
     map.addLayer(heatmap);
   }
-  
+
   // Toogles given layer using passed bool
-  function toggleLayer (show, layer) {
+  function toggleLayer(show, layer) {
     if (show) {
-      if(!map.hasLayer(layer)) {
+      if (!map.hasLayer(layer)) {
         map.addLayer(layer);
       }
     } else {
-      if(map.hasLayer(layer)) {
+      if (map.hasLayer(layer)) {
         map.removeLayer(layer);
       }
     }
   }
 
   function recolorMarkers(coloring) {
-    if(mapKey) {
+    if (mapKey) {
       map.removeControl(mapKey);
     }
     clearLayers();
     toggleLayer(true, eventMarkers);
 
     switch (coloring) {
-      case "color-time":
-        var rainbow = new Rainbow();
-        var rainbowDark = new Rainbow();
-        rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
-        rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
-        eventMarkers.eachLayer(function (marker) {
-          marker.setStyle({
-            fillColor: "#" + rainbow.colorAt(marker.options.timeIndex),
-            color: "#" + rainbowDark.colorAt(marker.options.timeIndex)
-          });
+    case "color-time":
+      var rainbow = new Rainbow();
+      var rainbowDark = new Rainbow();
+      rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
+      rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
+      eventMarkers.eachLayer(function (marker) {
+        marker.setStyle({
+          fillColor: "#" + rainbow.colorAt(marker.options.timeIndex),
+          color: "#" + rainbowDark.colorAt(marker.options.timeIndex)
         });
+      });
 
-        if(!mapKey) {
-          mapKey = L.control.key({
-            position: 'topleft',
-          });
-        }
+      if (!mapKey) {
+        mapKey = L.control.key({
+          position: 'topleft',
+        });
+      }
 
-        mapKey.addTo(map);
-        break;
-      case "heat-map":
-        drawHeatMap();
-        break;
+      mapKey.addTo(map);
+      break;
+    case "heat-map":
+      drawHeatMap();
+      break;
 
-      default: 
-        eventMarkers.eachLayer(function (marker) {
-          marker.setStyle({
-            fillColor: "#ef0b25",
-            color: "#770512"
-          });
-        });      
+    default:
+      eventMarkers.eachLayer(function (marker) {
+        marker.setStyle({
+          fillColor: "#ef0b25",
+          color: "#770512"
+        });
+      });
     }
   }
 
@@ -143,9 +142,9 @@ function TremorMap(mapOptions) {
     clearLayers();
     var firstEventTime = moment.utc(response.features[0].properties.time);
     var lastEventTime = moment.utc(response.features[response.features.length - 1].properties.time);
-    
+
     eventMarkers = L.geoJSON(response, {
-      pointToLayer: function(feature, latlng){
+      pointToLayer: function (feature, latlng) {
         var timeIndex;
 
         var time = moment.utc(feature.properties.time);
@@ -158,8 +157,6 @@ function TremorMap(mapOptions) {
           timeIndex = (t - firstEventTime) / (lastEventTime - firstEventTime) * 100;
         }
 
-        // console.log(timeIndex);
-
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           weight: 1,
@@ -171,43 +168,40 @@ function TremorMap(mapOptions) {
         });
 
         // do all the listy stuff
-        if(response.features.length < 5000 ) {
-          var listItem = $("<li class='event-nav event-" + id + "'>" + time.format("YYYY-MM-DD HH:mm:ss") + " UTC"+ "</li>");  
+        if (response.features.length < 5000) {
+          var listItem = $("<li class='event-nav event-" + id + "'>" + time.format("YYYY-MM-DD HH:mm:ss") + " UTC" + "</li>");
           listItem.click(function () {
-              $(".active-event").removeClass("active-event");
-              $(".event-" + id).addClass("active-event");
-              marker.openPopup();
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+            marker.openPopup();
           }).on('mouseover', function () {
-              $(".active-event").removeClass("active-event");
-              $(".event-" + id).addClass("active-event");
-            });
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+          });
 
-            marker.on('click', function () {
-              $('#event-nav ul').scrollTop(listItem.position().top);
-            });
+          marker.on('click', function () {
+            $('#event-nav ul').scrollTop(listItem.position().top);
+          });
 
-            $("#event-list").append(listItem);
+          $("#event-list").append(listItem);
         }
 
         marker.bindPopup("<div> Time: " + time.format("YYYY-MM-DD HH:mm:ss") + " UTC" + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
-        .on('mouseover', function () {
-          $(".active-event").removeClass("active-event");
-          $(".event-" + id).addClass("active-event");
-        });
+          .on('mouseover', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+          });
 
         marker.on('click', function () {
           $(".active-event").removeClass("active-event");
           $(".event-" + id).addClass("active-event");
           $('#event-nav ul').scrollTop(listItem.position().top);
         });
-        
+
         return marker;
       }
     });
-  
     map.addLayer(eventMarkers);
-    console.log("done!"); 
-    
     recolorMarkers(coloring);
   }
 
@@ -215,7 +209,7 @@ function TremorMap(mapOptions) {
 
     recolorMarkers: recolorMarkers,
 
-    updateMarkers: updateMarkers, 
+    updateMarkers: updateMarkers,
 
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);

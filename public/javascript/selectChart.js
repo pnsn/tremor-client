@@ -1,46 +1,34 @@
 //This makes a D3 chart that can zoom in and select a period of time
-function TimeChart(chartOptions, datePicker) {
-  var margin, height, width;
-  // set the ranges
-  var x, y;
-  var valueline, brush, svg, bg;
-  // Add the valueline path.
-  var line;
-  var x0, y0, xAxis, yAxis;
+function TimeChart(chartOptions, datePickerElem) {
+  var margin = {
+      top: 8,
+      right: 0,
+      bottom: 12,
+      left: 0
+    },
+    height = chartOptions.height - margin.top - margin.bottom,
+    width = chartOptions.width - margin.right - margin.left,
+    drawLimit = chartOptions.limit,
+    datePicker = datePickerElem;
 
-  var idleTimeout, idleDelay;
+  // all the d3 components
+  var x, y, x0, y0, xAxis, yAxis, line, valueline, brush,
+    idleTimeout, idleDelay,
+    rawData;
 
-  var drawLimit;
-
-  var rawData;
-
-  drawLimit = chartOptions.limit;
-  datePicker = datePicker;
-
-  //Gives chart room to breathe inside parent
-  margin = {
-    top: 8,
-    right: 0,
-    bottom: 12,
-    left: 0
-  };
-  
-  //actual Size of data area
-  height = chartOptions.height - margin.top - margin.bottom;
-  width = chartOptions.width - margin.right - margin.left;
-
-  svg = d3.select(chartOptions.container)
+  var svg = d3.select(chartOptions.container)
     .append("svg:svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
-  bg = svg.append("rect")
-    .attr("class", "background")
-    .attr("width", width)
-    .attr("height", height);
   svg.append("g")
     .attr('clip-path', 'url(#clipper)')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+  var bg = svg.append("rect")
+    .attr("class", "background")
+    .attr("width", width)
+    .attr("height", height);
 
+  // Helper functions //
 
   //Figures out what user selected
   function brushended() {
@@ -54,12 +42,11 @@ function TimeChart(chartOptions, datePicker) {
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);
-      
 
     } else {
       if (!idleTimeout) {
         return idleTimeout = setTimeout(idled, idleDelay);
-      } 
+      }
       x.domain(x0);
       y.domain(y0);
     }
@@ -80,10 +67,10 @@ function TimeChart(chartOptions, datePicker) {
   function getTotal(start, end) {
     var total = 0;
     var firstMeas = moment.utc(start);
-    if(start && end) {
-      if (start == end){
+    if (start && end) {
+      if (start == end) {
 
-        total = rawData[firstMeas.format("YYYY-MM-DD")]? rawData[firstMeas.format("YYYY-MM-DD")] :0; 
+        total = rawData[firstMeas.format("YYYY-MM-DD")] ? rawData[firstMeas.format("YYYY-MM-DD")] : 0;
       } else {
         // just < because dates start at end of day?
         for (var d = firstMeas; d <= moment.utc(end); d.add(1, 'days')) {
@@ -92,7 +79,7 @@ function TimeChart(chartOptions, datePicker) {
           total += hours;
         }
       }
-    } 
+    }
 
     $("#count-warning span").text(total);
     $("#count-warning").show();
@@ -106,8 +93,8 @@ function TimeChart(chartOptions, datePicker) {
   function addData(data) {
     rawData = data;
     var chartData = [],
-    today = moment.utc(),
-    firstMeas = moment.utc(Object.keys(rawData)[0]);
+      today = moment.utc(),
+      firstMeas = moment.utc(Object.keys(rawData)[0]);
 
     for (var d = firstMeas; d <= today; d.add(1, "days")) {
       dString = d.format("YYYY-MM-DD");
@@ -119,24 +106,24 @@ function TimeChart(chartOptions, datePicker) {
     }
 
     // Scale the range of the data    
-    x0 = d3.extent(chartData, function(d) {
+    x0 = d3.extent(chartData, function (d) {
       return d.date.toDate();
     });
 
-    y0 = [0, d3.max(chartData, function(d) {
+    y0 = [0, d3.max(chartData, function (d) {
       return d.count;
     })];
-    
+
     x = d3.scaleUtc().domain(x0).range([0, width]);
 
     y = d3.scaleLinear().domain(y0).range([height, 0]);
 
     // define the line
     valueline = d3.line()
-      .x(function(d) {
+      .x(function (d) {
         return x(d.date);
       })
-      .y(function(d) {
+      .y(function (d) {
         return y(d.count);
       });
     brush = d3.brushX()
@@ -146,14 +133,14 @@ function TimeChart(chartOptions, datePicker) {
       ])
       .on("end", brushended)
       .handleSize(height);
-    
+
     idleDelay = 350;
 
     line = svg.append("path")
       .data([chartData])
       .attr("class", "line")
       .attr("d", valueline);
-      svg.append("g")
+    svg.append("g")
       .attr("class", "brush")
       .call(brush);
 
@@ -174,7 +161,7 @@ function TimeChart(chartOptions, datePicker) {
     svg.select(".brush").call(brush.move, null);
     if (start == end) {
       end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
-    } 
+    }
     x.domain([moment.utc(start), moment.utc(end)]);
     zoom();
   }
@@ -185,9 +172,9 @@ function TimeChart(chartOptions, datePicker) {
     zoom();
   }
 
-  function resize(innerWidth){
+  function resize(innerWidth) {
     width = innerWidth - margin.right - margin.left;
-    
+
     //update x and y scales to new dimensions
     x.range([0, width]);
     y.range([height, 0]);
@@ -200,8 +187,8 @@ function TimeChart(chartOptions, datePicker) {
     bg
       .attr('width', width)
       .attr('height', height);
-    
-      brush = d3.brushX()
+
+    brush = d3.brushX()
       .extent([
         [0, 0],
         [width, height]
@@ -212,26 +199,13 @@ function TimeChart(chartOptions, datePicker) {
     zoom();
   }
 
-
   return {
-
-    //Build a chart with no data in the given element
-    init: function(chartOptions) {
-
-
-    },
-
     addData: addData,
-
     //change start and end of chart
     updateBounds: updateBounds,
-
     //zoom chart out to full view
     reset: reset,
-
     getTotal: getTotal,
-
     resize: resize
-
   };
-};
+}
