@@ -374,18 +374,17 @@ button:disabled {
 #content #sidebar {
   height: 100%;
   background-color: white;
-  justify-content: flex-start;
 }
-#content #sidebar #date-range, #content #sidebar #epicenters {
+#content #sidebar #settings-container #overlays .select {
+  max-width: 210px;
+}
+#content #sidebar #search-container #date-range, #content #sidebar #search-container #epicenters {
   color: #666666;
   font-weight: 300;
 }
-#content #sidebar #date-range span, #content #sidebar #epicenters span {
+#content #sidebar #search-container #date-range span, #content #sidebar #search-container #epicenters span {
   color: black;
   font-weight: 400;
-}
-#content #sidebar #overlays .select {
-  max-width: 210px;
 }
 #content #sidebar #download-container {
   align-self: flex-end;

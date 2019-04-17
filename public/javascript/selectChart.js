@@ -10,6 +10,7 @@ function TimeChart(chartOptions, datePickerElem) {
     width = chartOptions.width - margin.right - margin.left,
     drawLimit = chartOptions.limit,
     datePicker = datePickerElem;
+    dateFormat = chartOptions.format;
 
   // all the d3 components
   var x, y, x0, y0, xAxis, yAxis, line, valueline, brush,
@@ -70,11 +71,11 @@ function TimeChart(chartOptions, datePickerElem) {
     if (start && end) {
       if (start == end) {
 
-        total = rawData[firstMeas.format("YYYY-MM-DD")] ? rawData[firstMeas.format("YYYY-MM-DD")] : 0;
+        total = rawData[firstMeas.format(dateFormat)] ? rawData[firstMeas.format(dateFormat)] : 0;
       } else {
         // just < because dates start at end of day?
         for (var d = firstMeas; d <= moment.utc(end); d.add(1, 'days')) {
-          dString = d.format("YYYY-MM-DD");
+          dString = d.format(dateFormat);
           hours = rawData[dString] ? rawData[dString] : 0;
           total += hours;
         }
@@ -95,9 +96,8 @@ function TimeChart(chartOptions, datePickerElem) {
     var chartData = [],
       today = moment.utc(),
       firstMeas = moment.utc(Object.keys(rawData)[0]);
-
     for (var d = firstMeas; d <= today; d.add(1, "days")) {
-      dString = d.format("YYYY-MM-DD");
+      dString = d.format(dateFormat);
       hours = rawData[dString] ? rawData[dString] : 0;
       chartData.push({
         "date": moment.utc(d),
@@ -160,7 +160,7 @@ function TimeChart(chartOptions, datePickerElem) {
     getTotal(start, end);
     svg.select(".brush").call(brush.move, null);
     if (start == end) {
-      end = moment.utc(start).add(1, "day").format("YYYY-MM-DD");
+      end = moment.utc(start).add(1, "day").format(dateFormat);
     }
     x.domain([moment.utc(start), moment.utc(end)]);
     zoom();

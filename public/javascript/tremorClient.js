@@ -19,7 +19,8 @@ $(function () {
       "container": "#chart",
       "height": $("#chart").height() - $("#chart-info").height(),
       "width": $("#chart").width(),
-      "limit": drawLimit
+      "limit": drawLimit,
+      "format" : dateFormat
     },
     dateRange = {
       "start": "",
@@ -218,6 +219,7 @@ $(function () {
     }
 
     if (response.features.length > 5000) {
+      $("#event-list").hide();
       $("#event-limit-warning").show();
     } else {
       $("#event-list").show();

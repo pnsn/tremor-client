@@ -181,19 +181,23 @@
   #sidebar {
     height:100%;
     background-color:white;
-    justify-content: flex-start;
 
-    #date-range, #epicenters {
-      color:#666666;
-      font-weight: 300;
+    #settings-container {
+      #overlays .select {
+        max-width: 210px;
+      }
     }
-    #date-range span, #epicenters span{
-      color: black;
-      font-weight: 400;
-    }
+ 
 
-    #overlays .select {
-      max-width: 210px;
+    #search-container {
+      #date-range, #epicenters {
+        color:#666666;
+        font-weight: 300;
+      }
+      #date-range span, #epicenters span{
+        color: black;
+        font-weight: 400;
+      }
     }
 
     #download-container{

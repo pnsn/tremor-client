@@ -82,54 +82,60 @@
             <div id="tremor-map"></div>
         </div>
 
-        <div id="sidebar" class="flex-container flex-row right-column">
-          <h3>Map Settings</h3>
-          <div id="overlays">
-            <h4>Map Overlays</h4>
-              <div class="control-group">
-                <label class="control control-checkbox">Seismometers
-                  <input type="checkbox" value="seismometers" id="seismometers"/>
-                  <div class="control-indicator"></div>
-                </label>
-                <label class="control control-checkbox">JDF Plate Contours
-                  <input type="checkbox" value="plateContours" id="plate-contours"/>
-                  <div class="control-indicator"></div>
-                </label>
-                <label class="control control-checkbox">Past Tremor
-                  <input type="checkbox" value="pastTremor" id="past-tremor"/>
-                  <div class="control-indicator"></div>
-                </label>
-              </div>
-
-              <div class="select" id="display-type-container">
-                  <select id="display-type">
-                      <option value="color-time">View as <span>Color vs. Time</span></option>
-                      <option value="color-normal">View as <span>Normal (red)</span></option>
-                      <option value="heat-map">View as <span>Heat Map</span></option>
-                  </select> 
-                  <div class="select-arrow"></div>   
-              </div>
-
-              <div id="display-type-warning" class="warning">
-                Reduce time range to view individual epicenters.
+        <div id="sidebar" class="flex-container flex-column right-column">
+          <div id="settings-container">
+              <h3>Map Settings</h3>
+              <div id="overlays">
+                <h4>Map Overlays</h4>
+                  <div class="control-group">
+                    <label class="control control-checkbox">Seismometers
+                      <input type="checkbox" value="seismometers" id="seismometers"/>
+                      <div class="control-indicator"></div>
+                    </label>
+                    <label class="control control-checkbox">JDF Plate Contours
+                      <input type="checkbox" value="plateContours" id="plate-contours"/>
+                      <div class="control-indicator"></div>
+                    </label>
+                    <label class="control control-checkbox">Past Tremor
+                      <input type="checkbox" value="pastTremor" id="past-tremor"/>
+                      <div class="control-indicator"></div>
+                    </label>
+                  </div>
+    
+                  <div class="select" id="display-type-container">
+                      <select id="display-type">
+                          <option value="color-time">View as <span>Color vs. Time</span></option>
+                          <option value="color-normal">View as <span>Normal (red)</span></option>
+                          <option value="heat-map">View as <span>Heat Map</span></option>
+                      </select> 
+                      <div class="select-arrow"></div>   
+                  </div>
+    
+                  <div id="display-type-warning" class="warning">
+                    Reduce time range to view individual epicenters.
+                  </div>
               </div>
           </div>
 
-          <h3>Search Results</h3>
-          <div id="date-range">
-            Dates: <span id="start"></span> - <span id="end"></span>
+          <div id="search-container">
+
+              <h3>Search Results</h3>
+              <div id="date-range">
+                Dates: <span id="start"></span> - <span id="end"></span>
+              </div>
+              <div id="epicenters">Total: <span></span> epicenters</div>
+    
+    
+              <div id="event-nav">
+                  <div id="event-limit-warning" class="warning">
+                      List not generated for more than 5000 epicenters.
+                    </div>
+                <ul id="event-list" class="sidebar-list">
+                </ul>
+    
+              </div>
           </div>
-          <div id="epicenters">Total: <span></span> epicenters</div>
 
-
-          <div id="event-nav">
-              <div id="event-limit-warning" class="warning">
-                  List not generated for more than 5000 epicenters.
-                </div>
-            <ul id="event-list" class="sidebar-list">
-            </ul>
-
-          </div>
 
           <div id="download-container">
             <div class="select">
