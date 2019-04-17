@@ -155,12 +155,16 @@ button:disabled {
   border: solid #083f08 2px;
 }
 
-.map-key {
+.map-control {
+  font-family: "Open Sans", Arial, "sans serif";
   padding: 6px 8px;
   background: white;
   border-radius: 5px;
   border: 2px solid rgba(0, 0, 0, 0.2);
   background-clip: padding-box;
+}
+
+.map-key {
   height: 250px;
 }
 .map-key div {

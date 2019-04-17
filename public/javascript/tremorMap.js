@@ -26,7 +26,7 @@ function TremorMap(mapOptions) {
 
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
-      var div = L.DomUtil.create('div', 'map-key');
+      var div = L.DomUtil.create('div', 'map-key map-control');
       div.innerHTML = "<div id='key-end'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-start'></div>";
       return div;
     },
@@ -39,6 +39,76 @@ function TremorMap(mapOptions) {
   L.control.key = function (opts) {
     return new L.Control.Key(opts);
   };
+
+  L.EditToolbar.Delete.include({
+    save: false
+  });
+
+  //Trigger with external UI - default map controls too restrictive
+  // Add, edit, delete
+
+
+  var editableLayers = new L.FeatureGroup();
+  map.addLayer(editableLayers);
+
+  var drawControl = new L.Control.Draw({
+    position:"topright",
+    draw: {
+      polygon: false,
+      marker: false,
+      polyline: false,
+      circle: false,
+      circlemarker: false,
+      rectangle: {
+        shapeOptions: {
+          color: '#f357a1',
+          weight: 2
+        }
+    },
+    },
+    edit: {
+        featureGroup: editableLayers
+    }
+  });
+
+  map.on(L.Draw.Event.CREATED, function (e) {
+    var type = e.layerType,
+        layer = e.layer;
+
+    editableLayers.clearLayers();
+    editableLayers.addLayer(layer);
+    //filter now
+});
+
+map.on(L.Draw.Event.EDITED, function (e) {
+  var layers = e.layers;
+ 
+  editableLayers.clearLayers();
+  layers.eachLayer(function (layer) {
+
+    editableLayers.addLayer(layer);
+  });
+
+  //filternow
+
+});
+
+map.on(L.Draw.Event.DELETED, function (e) {
+  console.log("removed")
+  //remove filter
+});
+
+//on draw edi/save - restrict markers
+
+
+    // Set the button title text for the polygon button
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Select a region.';
+  
+    // Set the tooltip start text for the rectangle
+    L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Click and drag to select a region.';
+  map.addControl(drawControl);
+
+  // add drawing
 
   overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
