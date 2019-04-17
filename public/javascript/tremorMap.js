@@ -64,6 +64,7 @@ function TremorMap(mapOptions) {
   
     onRemove: function (map) {
       console.log("Remove");
+      drawControl.addTo(map);
       delete map.hasRemoveControl;
     }
   });
@@ -71,14 +72,14 @@ function TremorMap(mapOptions) {
   var removeControl = new L.Control.Clear();
 
   L.Control.Draw = L.Control.extend({
+    options: {
+      position: 'topright'
+    },
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
-      container.innerHTML = "<div id='filter'>filter by area</div> <div id='draw'>select region</div>";
-      container.title = "draw box to filter events";
+      container.innerHTML = "<div id='filter'>filter by area</div>";
+      container.title = "draw a box to filter events";
       container.onclick = function(){
-        $("#filter").hide();
-        $("#draw").show();
-
         if(!map.hasRemoveControl){
          removeControl.addTo(map);
         }
@@ -91,6 +92,7 @@ function TremorMap(mapOptions) {
           }
         });
         self.HandlerPolyline.enable();
+        drawControl.remove();
       };
       return container;
     },
@@ -99,21 +101,9 @@ function TremorMap(mapOptions) {
       // Nothing to do her
     }
   });
-
-
-  L.control.draw = function (opts) {
-    return new L.Control.Draw(opts);
-  };
-
-  $("#clear-bounds").click(function(){
-    console.log("remove")
-    filterMarkers();
-    $("#filter").show();
-    $("#draw").hide();
-    removeControl.remove();
-  });
-
-  L.control.draw({position:'topright'}).addTo(map);
+  
+  var drawControl = new L.Control.Draw();
+  drawControl.addTo(map);
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
@@ -124,9 +114,7 @@ function TremorMap(mapOptions) {
 
     editableLayers.clearLayers();
     editableLayers.addLayer(layer);
-    //filter now
-    $("#filter").show();
-    $("#draw").hide();
+    drawControl.remove();
     filterMarkers(layer.getBounds());
 
 });
@@ -310,6 +298,11 @@ function TremorMap(mapOptions) {
           });
 
           $("#event-list").append(listItem);
+          marker.on('click', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+            $('#event-nav ul').scrollTop(listItem.position().top);
+          });
         }
 
         marker.bindPopup("<div> Time: " + time.format("YYYY-MM-DD HH:mm:ss") + " UTC" + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
@@ -318,11 +311,7 @@ function TremorMap(mapOptions) {
             $(".event-" + id).addClass("active-event");
           });
 
-        marker.on('click', function () {
-          $(".active-event").removeClass("active-event");
-          $(".event-" + id).addClass("active-event");
-          $('#event-nav ul').scrollTop(listItem.position().top);
-        });
+
 
         return marker;
       }
