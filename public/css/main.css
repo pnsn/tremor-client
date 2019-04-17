@@ -156,6 +156,14 @@ button:disabled {
   border: solid #083f08 2px;
 }
 
+.map-bounds {
+  background: white;
+  width: 75px;
+  height: 20px;
+  padding: 3px;
+  text-align: center;
+  cursor: pointer;
+}
 .map-control {
   padding: 6px 8px;
   background: white;

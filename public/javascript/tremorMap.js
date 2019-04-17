@@ -41,34 +41,80 @@ function TremorMap(mapOptions) {
     return new L.Control.Key(opts);
   };
 
+  L.Control.Clear = L.Control.extend({
+    onAdd: function (map) {
+      var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
+      container.title = "remove filter";
+      container.innerHTML = "remove filter";
+      container.onclick = function(){
+        filterMarkers();
+        editableLayers.clearLayers();
+      };
+      return container;
+    },
+  
+    onRemove: function (map) {
+      // Nothing to do here
+    }
+  });
+  
+  L.control.clear = function (opts) {
+    return new L.Control.Clear(opts);
+  };
 
-  //Trigger with external UI - default map controls too restrictive
-  // Add, edit, delete
+  L.Control.Draw = L.Control.extend({
+    onAdd: function (map) {
+      var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
+      container.innerHTML = "filter by area";
+      container.title = "draw box to filter events";
+      container.onclick = function(){
+        self.HandlerPolyline = new L.Draw.Rectangle(map, {
+                  shapeOptions: {
+          color: '#083f08',
+          weight: 2,
+          fillOpacity: 0
+        }
+        });
+        self.HandlerPolyline.enable();
+      };
+      return container;
+    },
+  
+    onRemove: function (map) {
+      // Nothing to do here
+    }
+  });
+
+
+  L.control.draw = function (opts) {
+    return new L.Control.Draw(opts);
+  };
+
+
+
+  $("#clear-bounds").click(function(){
+    filterMarkers();
+  });
+  L.control.draw({position:'topright'}).addTo(map);
+  L.control.clear({position:'topright'}).addTo(map);
 
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
 
-  var drawControl = new L.Control.Draw({
-    position:"topright",
-    draw: {
-      polygon: false,
-      marker: false,
-      polyline: false,
-      circle: false,
-      circlemarker: false,
-      rectangle: {
-        shapeOptions: {
-          color: '#083f08',
-          weight: 2,
-          fillOpacity: 0
-        }
-    },
-    },
-    edit: {
-        featureGroup: editableLayers
-    }
-  });
+  // var drawControl = new L.Control.Draw({
+  //   position:"topright",
+  //   draw: {
+  //     polygon: false,
+  //     marker: false,
+  //     polyline: false,
+  //     circle: false,
+  //     circlemarker: false,
+  //     rectangle: {
+
+  //     },
+  //   }
+  // });
 
   map.on(L.Draw.Event.CREATED, function (e) {
     var type = e.layerType,
@@ -77,34 +123,11 @@ function TremorMap(mapOptions) {
     editableLayers.clearLayers();
     editableLayers.addLayer(layer);
     //filter now
+    $("#clear-bounds").prop("disabled", false);
     filterMarkers(layer.getBounds());
-});
-
-map.on(L.Draw.Event.EDITED, function (e) {
-  var layers = e.layers;
- 
-  editableLayers.clearLayers();
-  layers.eachLayer(function (layer) {
-
-    editableLayers.addLayer(layer);
-    filterMarkers(layer.getBounds());
-  });
 
 });
 
-map.on(L.Draw.Event.DELETED, function (e) {
-  filterMarkers();
-});
-
-//on draw edi/save - restrict markers
-
-
-    // Set the button title text for the polygon button
-    L.drawLocal.draw.toolbar.buttons.rectangle = 'Select a region.';
-  
-    // Set the tooltip start text for the rectangle
-    L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Click and drag to select a region.';
-  map.addControl(drawControl);
 
   // add drawing
 
@@ -131,21 +154,23 @@ map.on(L.Draw.Event.DELETED, function (e) {
 
 
   function filterMarkers(bounds){
+    console.log('filter!')
     var count = 0;
-    eventMarkers.eachLayer(function (marker) {
 
-      if(bounds && !bounds.contains(marker.getLatLng())){
-        $(".event-"+marker.options.eId).hide();
-        marker.remove();
-        
-      } else {
+    eventMarkers.eachLayer(function (marker) {
+      marker.remove();
+      $(".event-"+marker.options.eId).hide();
+      if(bounds && bounds.contains(marker.getLatLng()) || !bounds){
         $(".event-"+marker.options.eId).show();
         marker.addTo(map);
-
         count++;
       }
 
     });
+
+    if(!bounds) {
+
+    }
     $("#epicenters span").text(count);
     console.log(count);
   }
@@ -302,7 +327,9 @@ map.on(L.Draw.Event.DELETED, function (e) {
 
     toggleOverlays: function (show, overlay) {
       toggleLayer(show, overlays[overlay]);
-    }
+    },
+
+    filterMarkers: filterMarkers
 
   };
 

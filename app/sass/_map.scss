@@ -25,6 +25,18 @@
 //   }
 // }
 
+.map-bounds {
+  background : white;
+  width : 75px;
+  height : 20px;
+  padding: 3px;
+  text-align:center;
+  cursor: pointer;
+  &:hover {
+
+  }
+}
+
 .map-control {
 
   padding: 6px 8px;
