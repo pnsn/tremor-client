@@ -32,18 +32,18 @@
   padding: 3px;
   text-align:center;
   cursor: pointer;
-  &:hover {
-
+  &:hover, &:focus{
+    background-color: $gray-lighter;
   }
 }
 
 .map-control {
-
   padding: 6px 8px;
   background: $contrast;
   border-radius: 5px;
   border: 2px solid rgba(0,0,0,0.2);
   background-clip: padding-box;
+
 }
 
 .map-key {

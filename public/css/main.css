@@ -164,6 +164,10 @@ button:disabled {
   text-align: center;
   cursor: pointer;
 }
+.map-bounds:hover, .map-bounds:focus {
+  background-color: #f8f8f8;
+}
+
 .map-control {
   padding: 6px 8px;
   background: white;

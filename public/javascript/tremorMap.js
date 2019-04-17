@@ -3,6 +3,8 @@ function TremorMap(mapOptions) {
 
   var map,
     eventMarkers,
+    allMarkers,
+    filteredMarkers = new L.layerGroup(),
     heatmap,
     overlays = {},
     mapKey;
@@ -154,32 +156,34 @@ function TremorMap(mapOptions) {
 
 
   function filterMarkers(bounds){
-    console.log('filter!')
     var count = 0;
-
+    filteredMarkers.clearLayers();
     eventMarkers.eachLayer(function (marker) {
-      marker.remove();
       $(".event-"+marker.options.eId).hide();
-      if(bounds && bounds.contains(marker.getLatLng()) || !bounds){
+      if(!bounds || bounds.contains(marker.getLatLng())){
         $(".event-"+marker.options.eId).show();
-        marker.addTo(map);
+        filteredMarkers.addLayer(marker);
         count++;
+      } else {
+        filteredMarkers.removeLayer(marker);
       }
-
     });
+
+    if(map.hasLayer(heatmap)) {
+      drawHeatMap();
+    }
 
     if(!bounds) {
 
     }
     $("#epicenters span").text(count);
-    console.log(count);
   }
   // Helper functions // 
 
   //removes event based layers
   function clearLayers() {
     toggleLayer(false, heatmap);
-    toggleLayer(false, eventMarkers);
+    toggleLayer(false, filteredMarkers);
   }
 
   // Makes a heat map using the eventMarkers
@@ -187,7 +191,7 @@ function TremorMap(mapOptions) {
   function drawHeatMap() {
     clearLayers();
     var points = [];
-    eventMarkers.eachLayer(function (marker) {
+    filteredMarkers.eachLayer(function (marker) {
       points.push(marker.getLatLng());
     });
     heatmap = L.heatLayer(points, {
@@ -210,11 +214,12 @@ function TremorMap(mapOptions) {
   }
 
   function recolorMarkers(coloring) {
+
     if (mapKey) {
       map.removeControl(mapKey);
     }
     clearLayers();
-    toggleLayer(true, eventMarkers);
+    toggleLayer(true, filteredMarkers);
 
     switch (coloring) {
     case "color-time":
@@ -242,12 +247,18 @@ function TremorMap(mapOptions) {
       break;
 
     default:
-      eventMarkers.eachLayer(function (marker) {
+    eventMarkers.eachLayer(function (marker) {
         marker.setStyle({
           fillColor: "#ef0b25",
           color: "#770512"
         });
       });
+    }
+    
+    if(editableLayers.getLayers().length>0){
+      filterMarkers(editableLayers.getLayers()[0].getBounds());
+    } else {
+      filterMarkers();
     }
   }
 
@@ -315,7 +326,7 @@ function TremorMap(mapOptions) {
         return marker;
       }
     });
-    map.addLayer(eventMarkers);
+
     recolorMarkers(coloring);
   }
 
