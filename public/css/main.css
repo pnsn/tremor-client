@@ -167,6 +167,9 @@ button:disabled {
 .map-bounds:hover, .map-bounds:focus {
   background-color: #f8f8f8;
 }
+.map-bounds #draw {
+  display: none;
+}
 
 .map-control {
   padding: 6px 8px;

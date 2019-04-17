@@ -44,38 +44,51 @@ function TremorMap(mapOptions) {
   };
 
   L.Control.Clear = L.Control.extend({
+    options: {
+      position:'topright'
+    },
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
       container.title = "remove filter";
       container.innerHTML = "remove filter";
       container.onclick = function(){
         filterMarkers();
+        $("#filter").show();
+        $("#draw").hide();
+        removeControl.remove();
         editableLayers.clearLayers();
       };
+      map.hasRemoveControl = this;
       return container;
     },
   
     onRemove: function (map) {
-      // Nothing to do here
+      console.log("Remove");
+      delete map.hasRemoveControl;
     }
   });
   
-  L.control.clear = function (opts) {
-    return new L.Control.Clear(opts);
-  };
+  var removeControl = new L.Control.Clear();
 
   L.Control.Draw = L.Control.extend({
     onAdd: function (map) {
       var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
-      container.innerHTML = "filter by area";
+      container.innerHTML = "<div id='filter'>filter by area</div> <div id='draw'>select region</div>";
       container.title = "draw box to filter events";
       container.onclick = function(){
-        self.HandlerPolyline = new L.Draw.Rectangle(map, {
-                  shapeOptions: {
-          color: '#083f08',
-          weight: 2,
-          fillOpacity: 0
+        $("#filter").hide();
+        $("#draw").show();
+
+        if(!map.hasRemoveControl){
+         removeControl.addTo(map);
         }
+
+        self.HandlerPolyline = new L.Draw.Rectangle(map, {
+          shapeOptions: {
+            color: '#083f08',
+            weight: 2,
+            fillOpacity: 0
+          }
         });
         self.HandlerPolyline.enable();
       };
@@ -83,7 +96,7 @@ function TremorMap(mapOptions) {
     },
   
     onRemove: function (map) {
-      // Nothing to do here
+      // Nothing to do her
     }
   });
 
@@ -92,31 +105,18 @@ function TremorMap(mapOptions) {
     return new L.Control.Draw(opts);
   };
 
-
-
   $("#clear-bounds").click(function(){
+    console.log("remove")
     filterMarkers();
+    $("#filter").show();
+    $("#draw").hide();
+    removeControl.remove();
   });
-  L.control.draw({position:'topright'}).addTo(map);
-  L.control.clear({position:'topright'}).addTo(map);
 
+  L.control.draw({position:'topright'}).addTo(map);
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
-
-  // var drawControl = new L.Control.Draw({
-  //   position:"topright",
-  //   draw: {
-  //     polygon: false,
-  //     marker: false,
-  //     polyline: false,
-  //     circle: false,
-  //     circlemarker: false,
-  //     rectangle: {
-
-  //     },
-  //   }
-  // });
 
   map.on(L.Draw.Event.CREATED, function (e) {
     var type = e.layerType,
@@ -125,7 +125,8 @@ function TremorMap(mapOptions) {
     editableLayers.clearLayers();
     editableLayers.addLayer(layer);
     //filter now
-    $("#clear-bounds").prop("disabled", false);
+    $("#filter").show();
+    $("#draw").hide();
     filterMarkers(layer.getBounds());
 
 });

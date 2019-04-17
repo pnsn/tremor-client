@@ -35,6 +35,9 @@
   &:hover, &:focus{
     background-color: $gray-lighter;
   }
+  #draw {
+    display:none;
+  }
 }
 
 .map-control {
