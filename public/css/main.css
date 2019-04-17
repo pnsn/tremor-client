@@ -147,6 +147,7 @@ button:disabled {
 #tremor-map {
   height: 100%;
   position: relative;
+  font-family: "Open Sans", Arial, "sans serif";
 }
 
 .event.active-event {
@@ -156,7 +157,6 @@ button:disabled {
 }
 
 .map-control {
-  font-family: "Open Sans", Arial, "sans serif";
   padding: 6px 8px;
   background: white;
   border-radius: 5px;

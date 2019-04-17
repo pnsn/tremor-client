@@ -8,6 +8,7 @@
 #tremor-map {
   height:100%;
   position:relative;
+  font-family: $font-family;
 }
 
 .event.active-event {
@@ -16,8 +17,16 @@
   border: solid $accent 2px;
 }
 
+// .leaflet-draw-toolbar .leaflet-draw-draw-rectangle {
+//   background-image: none;
+//   width: 50px !important;
+//   &:before{
+//     content:"constrain";
+//   }
+// }
+
 .map-control {
-  font-family: $font-family;
+
   padding: 6px 8px;
   background: $contrast;
   border-radius: 5px;

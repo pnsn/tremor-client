@@ -10,7 +10,8 @@ function TremorMap(mapOptions) {
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
     options: {
-      timeIndex: 0
+      timeIndex: 0,
+      eId: ""
       // depth: ? Future feature
     }
   });
@@ -40,9 +41,6 @@ function TremorMap(mapOptions) {
     return new L.Control.Key(opts);
   };
 
-  L.EditToolbar.Delete.include({
-    save: false
-  });
 
   //Trigger with external UI - default map controls too restrictive
   // Add, edit, delete
@@ -61,8 +59,9 @@ function TremorMap(mapOptions) {
       circlemarker: false,
       rectangle: {
         shapeOptions: {
-          color: '#f357a1',
-          weight: 2
+          color: '#083f08',
+          weight: 2,
+          fillOpacity: 0
         }
     },
     },
@@ -78,6 +77,7 @@ function TremorMap(mapOptions) {
     editableLayers.clearLayers();
     editableLayers.addLayer(layer);
     //filter now
+    filterMarkers(layer.getBounds());
 });
 
 map.on(L.Draw.Event.EDITED, function (e) {
@@ -87,15 +87,13 @@ map.on(L.Draw.Event.EDITED, function (e) {
   layers.eachLayer(function (layer) {
 
     editableLayers.addLayer(layer);
+    filterMarkers(layer.getBounds());
   });
-
-  //filternow
 
 });
 
 map.on(L.Draw.Event.DELETED, function (e) {
-  console.log("removed")
-  //remove filter
+  filterMarkers();
 });
 
 //on draw edi/save - restrict markers
@@ -131,6 +129,26 @@ map.on(L.Draw.Event.DELETED, function (e) {
     }
   });
 
+
+  function filterMarkers(bounds){
+    var count = 0;
+    eventMarkers.eachLayer(function (marker) {
+
+      if(bounds && !bounds.contains(marker.getLatLng())){
+        $(".event-"+marker.options.eId).hide();
+        marker.remove();
+        
+      } else {
+        $(".event-"+marker.options.eId).show();
+        marker.addTo(map);
+
+        count++;
+      }
+
+    });
+    $("#epicenters span").text(count);
+    console.log(count);
+  }
   // Helper functions // 
 
   //removes event based layers
@@ -234,7 +252,8 @@ map.on(L.Draw.Event.DELETED, function (e) {
           fillOpacity: 0.9,
           radius: 4,
           riseOnHover: true,
-          timeIndex: timeIndex
+          timeIndex: timeIndex,
+          eId: id
         });
 
         // do all the listy stuff
