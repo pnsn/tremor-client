@@ -8,7 +8,6 @@ function TimeChart(chartOptions, datePickerElem) {
     },
     height = chartOptions.height - margin.top - margin.bottom,
     width = chartOptions.width - margin.right - margin.left,
-    drawLimit = chartOptions.limit,
     datePicker = datePickerElem;
     dateFormat = chartOptions.format;
 
@@ -84,10 +83,6 @@ function TimeChart(chartOptions, datePickerElem) {
 
     $("#count-warning span").text(total);
     $("#count-warning").show();
-    $("#heatmap-warning").hide();
-    if (total > drawLimit) {
-      $("#heatmap-warning").show();
-    }
     return total;
   }
 

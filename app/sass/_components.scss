@@ -8,24 +8,35 @@ input[type="text"], select {
     font-size: 1em;
 }
 button {
-    font-size: 1.1em;
+    font-size: 1em;
     color:white;
-    background-color:$primary;
     border-radius: 5px;
     min-height: 26px;
     border: none;
     display:inline-block;
-  
-    &:hover, &:focus{
-      border: none;
-      background-color: $accent;
+    &.primary {
+      background-color:$primary;
+      &:hover, &:focus{
+        border: none;
+        background-color: $accent;
+      }
     }
+    &.secondary {
+      background-color: white;
+      color:$accent;
+      border: solid 1px white;
+      &:hover, &:focus{
+        border: solid 1px $accent;
+      }
+    }
+
+
     &:disabled {
       background-color: $gray;
       opacity: 0.5;
       color: black;
     }
-  }
+}
 
 //   following css is from the internet, customized by me
 .select {

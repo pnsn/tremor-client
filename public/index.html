@@ -58,17 +58,17 @@
               <div class="info-text">
                 Click to select new dates.
               </div>
+              <button id="previous-day" class="secondary">Prev</button>
               <input id="date-range-picker" name="date-range" type="text"/>
-              <button id="submit" >Search</button>
+              <button id="next-day"  class="secondary">Next</button>
+
               <div id="warning-container">
                   <div id="count-warning" class="warning">
                     <span></span> epicenters selected.
                   </div>
-                  <div id="heatmap-warning" class="warning">
-                    For more than <span></span> epicenters, only the heatmap will be available.
-                  </div>
               </div>
-
+              <button id="filter-area"  class="secondary">Filter by area</button>
+              <button id="submit" class="primary" >Search</button>
             </div>
 
 
@@ -123,7 +123,7 @@
 
               <h3>Search Results</h3>
               <div id="date-range">
-                Dates: <span id="start"></span> - <span id="end"></span>
+                Dates: <span class="start"></span> - <span class="end"></span>
               </div>
               <div id="epicenters">Total: <span></span> epicenters</div>
     
@@ -148,7 +148,7 @@
                   </select>
                   <div class="select-arrow"></div>
             </div>
-            <button>Download</button>
+            <button class="secondary">Download</button>
           </div>
 
             <!-- download stuff here -->

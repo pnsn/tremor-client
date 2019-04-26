@@ -3,8 +3,6 @@ function TremorMap(mapOptions) {
 
   var map,
     eventMarkers,
-    allMarkers,
-    filteredMarkers = new L.layerGroup(),
     heatmap,
     overlays = {},
     mapKey;
@@ -18,6 +16,11 @@ function TremorMap(mapOptions) {
     }
   });
 
+  var rainbow = new Rainbow();
+  var rainbowDark = new Rainbow();
+  rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
+  rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
+
   map = new L.Map(mapOptions.mapContainer, mapOptions.leafletOptions).setView(mapOptions.center, 5);
 
   var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -30,7 +33,7 @@ function TremorMap(mapOptions) {
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
-      div.innerHTML = "<div id='key-end'></div><div><img src='./assets/tremor_key.png'/></div><div id='key-start'></div>";
+      div.innerHTML = "<div class='end'></div><div><img src='./assets/tremor_key.png'/></div><div class='start'></div>";
       return div;
     },
 
@@ -42,68 +45,7 @@ function TremorMap(mapOptions) {
   L.control.key = function (opts) {
     return new L.Control.Key(opts);
   };
-
-  L.Control.Clear = L.Control.extend({
-    options: {
-      position:'topright'
-    },
-    onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
-      container.title = "remove filter";
-      container.innerHTML = "remove filter";
-      container.onclick = function(){
-        filterMarkers();
-        $("#filter").show();
-        $("#draw").hide();
-        removeControl.remove();
-        editableLayers.clearLayers();
-      };
-      map.hasRemoveControl = this;
-      return container;
-    },
   
-    onRemove: function (map) {
-      console.log("Remove");
-      drawControl.addTo(map);
-      delete map.hasRemoveControl;
-    }
-  });
-  
-  var removeControl = new L.Control.Clear();
-
-  L.Control.Draw = L.Control.extend({
-    options: {
-      position: 'topright'
-    },
-    onAdd: function (map) {
-      var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom map-bounds');
-      container.innerHTML = "<div id='filter'>filter by area</div>";
-      container.title = "draw a box to filter events";
-      container.onclick = function(){
-        if(!map.hasRemoveControl){
-         removeControl.addTo(map);
-        }
-
-        self.HandlerPolyline = new L.Draw.Rectangle(map, {
-          shapeOptions: {
-            color: '#083f08',
-            weight: 2,
-            fillOpacity: 0
-          }
-        });
-        self.HandlerPolyline.enable();
-        drawControl.remove();
-      };
-      return container;
-    },
-  
-    onRemove: function (map) {
-      // Nothing to do her
-    }
-  });
-  
-  var drawControl = new L.Control.Draw();
-  drawControl.addTo(map);
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
@@ -112,15 +54,39 @@ function TremorMap(mapOptions) {
     var type = e.layerType,
         layer = e.layer;
 
-    editableLayers.clearLayers();
     editableLayers.addLayer(layer);
-    drawControl.remove();
-    filterMarkers(layer.getBounds());
+  });
 
-});
+  function startDrawing(){
+    editableLayers.clearLayers();
+    var rectangle = new L.Draw.Rectangle(map, {
+      shapeOptions: {
+        color: '#083f08',
+        weight: 2,
+        fillOpacity: 0
+      }
+    });
+    rectangle.enable();
+  }
+
+  function getBounds(){
+    if(editableLayers.getLayers().length > 0) {
+    
+     var layer = editableLayers.getLayers()[0];
+     var bounds = layer.getBounds();
+      return {
+        "lat_max" : bounds.getNorth(),
+        "lat_min" : bounds.getSouth(),
+        "lon_max" : bounds.getEast(),
+        "lon_min" : bounds.getWest()
+      }
+    } else {
+      return;
+    }
 
 
-  // add drawing
+  }
+
 
   overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
@@ -143,36 +109,12 @@ function TremorMap(mapOptions) {
     }
   });
 
-
-  function filterMarkers(bounds){
-    var count = 0;
-    filteredMarkers.clearLayers();
-    eventMarkers.eachLayer(function (marker) {
-      $(".event-"+marker.options.eId).hide();
-      if(!bounds || bounds.contains(marker.getLatLng())){
-        $(".event-"+marker.options.eId).show();
-        filteredMarkers.addLayer(marker);
-        count++;
-      } else {
-        filteredMarkers.removeLayer(marker);
-      }
-    });
-
-    if(map.hasLayer(heatmap)) {
-      drawHeatMap();
-    }
-
-    if(!bounds) {
-
-    }
-    $("#epicenters span").text(count);
-  }
   // Helper functions // 
 
   //removes event based layers
   function clearLayers() {
     toggleLayer(false, heatmap);
-    toggleLayer(false, filteredMarkers);
+    toggleLayer(false, eventMarkers);
   }
 
   // Makes a heat map using the eventMarkers
@@ -180,7 +122,7 @@ function TremorMap(mapOptions) {
   function drawHeatMap() {
     clearLayers();
     var points = [];
-    filteredMarkers.eachLayer(function (marker) {
+    eventMarkers.eachLayer(function (marker) {
       points.push(marker.getLatLng());
     });
     heatmap = L.heatLayer(points, {
@@ -208,14 +150,10 @@ function TremorMap(mapOptions) {
       map.removeControl(mapKey);
     }
     clearLayers();
-    toggleLayer(true, filteredMarkers);
+
 
     switch (coloring) {
     case "color-time":
-      var rainbow = new Rainbow();
-      var rainbowDark = new Rainbow();
-      rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
-      rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
       eventMarkers.eachLayer(function (marker) {
         marker.setStyle({
           fillColor: "#" + rainbow.colorAt(marker.options.timeIndex),
@@ -230,60 +168,54 @@ function TremorMap(mapOptions) {
       }
 
       mapKey.addTo(map);
+      toggleLayer(true, eventMarkers);
       break;
     case "heat-map":
       drawHeatMap();
       break;
 
     default:
-    eventMarkers.eachLayer(function (marker) {
-        marker.setStyle({
-          fillColor: "#ef0b25",
-          color: "#770512"
+      eventMarkers.eachLayer(function (marker) {
+          marker.setStyle({
+            fillColor: "#ef0b25",
+            color: "#770512"
+          });
         });
-      });
-    }
-    
-    if(editableLayers.getLayers().length>0){
-      filterMarkers(editableLayers.getLayers()[0].getBounds());
-    } else {
-      filterMarkers();
+      toggleLayer(true, eventMarkers);
     }
   }
 
   function updateMarkers(response, coloring) {
+    console.log("update");
     clearLayers();
-    var firstEventTime = moment.utc(response.features[0].properties.time);
-    var lastEventTime = moment.utc(response.features[response.features.length - 1].properties.time);
+    var firstEventTime = new Date(response.features[0].properties.time);
+    var lastEventTime = new Date(response.features[response.features.length - 1].properties.time);
 
-    eventMarkers = L.geoJSON(response, {
+    var timeIndex, time, id, lat, lng, marker, listItem;
+
+    eventMarkers = L.geoJSON(response.features, {
       pointToLayer: function (feature, latlng) {
-        var timeIndex;
+        time = new Date(feature.properties.time);
+        id = feature.properties.id;
+        lat = latlng.lat;
+        lng = latlng.lng;
 
-        var time = moment.utc(feature.properties.time);
-        var id = feature.properties.id;
-        var lat = latlng.lat;
-        var lng = latlng.lng;
-
-        if (lastEventTime > firstEventTime) {
-          var t = time;
-          timeIndex = (t - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-        }
-
+        timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
+        
         //Defaults to black - gets overwritten
-        var marker = new customMarker([lat, lng], {
+        marker = new customMarker([lat, lng], {
           weight: 1,
           opacity: 1,
           fillOpacity: 0.9,
           radius: 4,
           riseOnHover: true,
           timeIndex: timeIndex,
-          eId: id
+          eId: id,
         });
 
         // do all the listy stuff
         if (response.features.length < 5000) {
-          var listItem = $("<li class='event-nav event-" + id + "'>" + time.format("YYYY-MM-DD HH:mm:ss") + " UTC" + "</li>");
+          listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
           listItem.click(function () {
             $(".active-event").removeClass("active-event");
             $(".event-" + id).addClass("active-event");
@@ -305,13 +237,11 @@ function TremorMap(mapOptions) {
           });
         }
 
-        marker.bindPopup("<div> Time: " + time.format("YYYY-MM-DD HH:mm:ss") + " UTC" + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
+        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
             $(".event-" + id).addClass("active-event");
           });
-
-
 
         return marker;
       }
@@ -330,8 +260,13 @@ function TremorMap(mapOptions) {
       toggleLayer(show, overlays[overlay]);
     },
 
-    filterMarkers: filterMarkers
+    startDrawing: startDrawing,
 
+    getBounds: getBounds,
+
+    clear: function () {
+      clearLayers();
+    },
   };
 
 }
