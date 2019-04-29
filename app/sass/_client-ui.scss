@@ -32,6 +32,7 @@
 
   #search {
     #submit {
+      width: 70px;
       float:right;
     }
     @include sm {
@@ -42,7 +43,10 @@
       width: 178px;
       height: 20px;
     }
-    
+
+    #filter-container {
+      margin:3px 0px;
+    }
   }
   #count-warning {
     color: $accent;
@@ -190,7 +194,7 @@
     }
  
 
-    #search-container {
+    #search-results-container {
       #date-range, #epicenters {
         color:#666666;
         font-weight: 300;
@@ -199,6 +203,7 @@
         color: black;
         font-weight: 400;
       }
+
     }
 
     #download-container{

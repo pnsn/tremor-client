@@ -16,6 +16,15 @@ function TremorMap(mapOptions) {
     }
   });
 
+  var drawOptions =  {
+    shapeOptions: {
+      color: '#083f08',
+      weight: 2,
+      fillOpacity: 0,
+      opacity: 1
+    }
+  };   
+
   var rainbow = new Rainbow();
   var rainbowDark = new Rainbow();
   rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
@@ -56,18 +65,26 @@ function TremorMap(mapOptions) {
 
     editableLayers.addLayer(layer);
   });
+  var rectangle;
+
+  function removeBounds(){
+    editableLayers.clearLayers();
+    rectangle.disable();
+    rectangle = null;
+  }
 
   function startDrawing(){
     editableLayers.clearLayers();
-    var rectangle = new L.Draw.Rectangle(map, {
-      shapeOptions: {
-        color: '#083f08',
-        weight: 2,
-        fillOpacity: 0
-      }
-    });
+    rectangle = new L.Draw.Rectangle(map, drawOptions);
     rectangle.enable();
   }
+
+  function addBounds(bounds){
+
+    editableLayers.clearLayers();
+    var rectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
+    editableLayers.addLayer(rectangle);
+  };
 
   function getBounds(){
     if(editableLayers.getLayers().length > 0) {
@@ -260,13 +277,18 @@ function TremorMap(mapOptions) {
       toggleLayer(show, overlays[overlay]);
     },
 
+    addBounds: addBounds,
+
     startDrawing: startDrawing,
+
+    removeBounds: removeBounds,
 
     getBounds: getBounds,
 
     clear: function () {
       clearLayers();
     },
+
   };
 
 }

@@ -36,19 +36,21 @@ $(function () {
   dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, "YYYY-MM-DD").format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
   dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, "YYYY-MM-DD").format(dateFormat) : dateRange.start;
 
+
+
   // Datepicker needs to init before chart made //
   datePickerContainer.daterangepicker({
     "showDropdowns": true,
     "autoApply": true,
     "opens": "left",
-    ranges: {
-      'Today': [moment(), moment()],
-      'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-      'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-      'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-      'This Month': [moment().startOf('month'), moment().endOf('month')],
-      'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
-    },
+    // ranges: {
+    //   'Today': [moment.utc(), moment.utc()],
+    //   'Yesterday': [moment.utc().subtract(1, 'days'), moment.utc().subtract(1, 'days')],
+    //   'Last 7 Days': [moment.utc().subtract(6, 'days'), moment.utc()],
+    //   'Last 30 Days': [moment.utc().subtract(29, 'days'), moment.utc()],
+    //   'This Month': [moment.utc().startOf('month'), moment.utc().endOf('month')],
+    //   'Last Month': [moment.utc().subtract(1, 'month').startOf('month'), moment.utc().subtract(1, 'month').endOf('month')]
+    // },
     "locale": {
       "format": dateFormat,
       "separator": " - ",
@@ -80,6 +82,25 @@ $(function () {
   tremorMap = new TremorMap(mapOptions);
   timeChart = new TimeChart(chartOptions, datePicker);
 
+  var bounds;
+  //initial boundary stuff
+  if(search_params.get("lat_min") && search_params.get("lat_max") && search_params.get("lon_min") && search_params.get("lon_max")) {
+
+    bounds = {
+      "lat_max" : search_params.get("lat_max"),
+      "lat_min" : search_params.get("lat_min"),
+      "lon_max" : search_params.get("lon_max"),
+      "lon_min" : search_params.get("lon_min")
+    };
+    tremorMap.addBounds(bounds);
+    $("#draw-filter").hide()
+    //add filter to map
+    // $("draw filter should be shown")
+  } else {
+    $("#remove-filter").hide();
+    //remove filter should be shown
+  } 
+
   if (search_params.get('coloring')) {
     coloringSelector.val(search_params.get('coloring'));
   }
@@ -104,7 +125,7 @@ $(function () {
 
   });
 
-  getEvents(baseUrl, dateRange.start, dateRange.end).done(function (response) {
+  getEvents(baseUrl, dateRange.start, dateRange.end, getBoundsString(bounds)).done(function (response) {
     updateMarkers(response);
   });
 
@@ -113,15 +134,15 @@ $(function () {
     var range = [];
     switch ($(this).attr("value")) {
     case "day":
-      range = [moment().subtract(1, 'days'), moment().subtract(1, 'days')];
+      range = [moment.utc().subtract(1, 'days'), moment.utc().subtract(1, 'days')];
       break;
 
     case "week":
-      range = [moment().subtract(6, 'days'), moment()];
+      range = [moment.utc().subtract(6, 'days'), moment.utc()];
       break;
 
     case "month":
-      range = [moment().startOf('month'), moment().endOf('month')];
+      range = [moment.utc().startOf('month'), moment.utc().endOf('month')];
       break;
 
     default:
@@ -129,18 +150,20 @@ $(function () {
     }
 
     if (range.length > 0) {
-      dateRange = {
-        "start": range[0].format(dateFormat),
-        "end": range[1].format(dateFormat)
-      };
-
-      datePicker.setStartDate(dateRange.start);
-      datePicker.setEndDate(dateRange.end);
-
-      timeChart.updateBounds(dateRange.start, dateRange.end);
-      timeChart.getTotal(dateRange.start, dateRange.end);
+      updateDateRange(range);
     }
 
+  });
+
+  $("#previous-day").click(function(){
+    var range = [moment.utc(dateRange.start).subtract(1, 'days'), moment.utc(dateRange.end).subtract(1, 'days')];
+    updateDateRange(range);
+
+  });
+
+  $("#next-day").click(function(){
+    var range = [moment.utc(dateRange.start).add(1, 'days'), moment.utc(dateRange.end).add(1, 'days')];
+    updateDateRange(range);
   });
 
   $("#seismometers, #past-tremor, #plate-contours").each(function () {
@@ -163,9 +186,20 @@ $(function () {
     tremorMap.playFeatures();
   });
 
-  $("#filter-area").click(function() {
+  $("#draw-filter").click(function() {
+    $(this).hide();
+    $("#remove-filter").show();
     //map/.startdraw
+    // $(this).text("Remove filter");
     tremorMap.startDrawing();
+  });
+
+  $("#remove-filter").click(function() {
+    $(this).hide();
+    $("#draw-filter").show()
+    //map/.startdraw
+    // $(this).text("Remove filter");
+    tremorMap.removeBounds();
   });
 
   $("#download-container button").click(function () {
@@ -191,15 +225,9 @@ $(function () {
 
     var url = "?start=" + dateRange.start + "&end=" + dateRange.end + "&coloring=" + coloring;
 
+    var boundsStr = getBoundsString(tremorMap.getBounds());
 
-    var boundsStr = "";
-    var bounds = tremorMap.getBounds();
-    if(bounds) {
-      $.each(bounds, function(key, value){
-        boundsStr += "&" + key + "=" + value;
-      });
-      url += boundsStr;
-    }
+    url += boundsStr;
 
     if (window.history.replaceState) {
       window.history.replaceState({}, "Tremor Map", url);
@@ -214,7 +242,11 @@ $(function () {
 
   //End UI events//
 
+
+
   // Helper functions //
+
+
   function updateMarkers(response) {
     console.log("sort")
     response.features.sort(function(a, b){
@@ -231,9 +263,7 @@ $(function () {
     } else {
       $("#count-warning").hide();
     }
-    
-
-
+  
 
     if (response.features.length > 5000) {
       $("#event-list").hide();
@@ -265,22 +295,45 @@ $(function () {
     }).promise();
   }
 
+  function updateDateRange(range){
+    dateRange = {
+      "start": range[0].format(dateFormat),
+      "end": range[1].format(dateFormat)
+    };
 
+    datePicker.setStartDate(dateRange.start);
+    datePicker.setEndDate(dateRange.end);
+
+    timeChart.updateBounds(dateRange.start, dateRange.end);
+    timeChart.getTotal(dateRange.start, dateRange.end);
+  };
 
 }); 
+
+
+function getBoundsString(bounds) {
+  boundsStr = "";
+  if( bounds ){
+    $.each(bounds, function(key, value){
+      boundsStr += "&" + key + "=" + value;
+    });
+  }
+  return boundsStr;
+}
+
 //Fetches events for given start and endtime
 //Returns json object
-function getEvents(baseUrl, start, end, bounds) {
+function getEvents(baseUrl, start, end, boundsStr) {
 
   if (start && end) {
     //make it "end of day" since that is how old tremor is 
     start += "T00:00:00";
     end += "T23:59:59";
     var request = $.ajax({
-      url: baseUrl + "/events?starttime=" + start + "&endtime=" + end + (bounds ? bounds:""),
+      url: baseUrl + "/events?starttime=" + start + "&endtime=" + end + boundsStr,
       dataType: "json"
     });
-    console.log(baseUrl + "/events?starttime=" + start + "&endtime=" + end + (bounds ? bounds:""))
+
     return request.done(function (response) {
       $("#loading-warning").hide();
 

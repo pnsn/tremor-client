@@ -55,20 +55,25 @@
             </div>
             <div id="search" class="right-column">
               <h3>Search</h3>
-              <div class="info-text">
-                Click to select new dates.
+
+              <div class="row">
+                <button id="previous-day" class="secondary" title="Previous day"><</button>
+                <input id="date-range-picker" name="date-range" type="text"/>
+                <button id="next-day"  class="secondary" title="Next day">></button>
               </div>
-              <button id="previous-day" class="secondary">Prev</button>
-              <input id="date-range-picker" name="date-range" type="text"/>
-              <button id="next-day"  class="secondary">Next</button>
+
+              <div class="row" id="filter-container">
+                <button id="draw-filter"  class="secondary">Add geographic filter</button>
+                <button id="remove-filter"  class="secondary">Remove filter</button>
+                <button id="submit" class="primary" >Search</button>
+              </div>
 
               <div id="warning-container">
-                  <div id="count-warning" class="warning">
-                    <span></span> epicenters selected.
-                  </div>
-              </div>
-              <button id="filter-area"  class="secondary">Filter by area</button>
-              <button id="submit" class="primary" >Search</button>
+                <div id="count-warning" class="warning">
+                  <span></span> epicenters selected.
+                </div>
+            </div>
+
             </div>
 
 
@@ -119,7 +124,7 @@
               </div>
           </div>
 
-          <div id="search-container">
+          <div id="search-results-container">
 
               <h3>Search Results</h3>
               <div id="date-range">

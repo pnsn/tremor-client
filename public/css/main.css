@@ -270,6 +270,7 @@ button:disabled {
   align-items: center;
 }
 #control-bar #search #submit {
+  width: 70px;
   float: right;
 }
 @media (min-width: 576px) {
@@ -280,6 +281,9 @@ button:disabled {
 #control-bar #search #date-range-picker {
   width: 178px;
   height: 20px;
+}
+#control-bar #search #filter-container {
+  margin: 3px 0px;
 }
 #control-bar #count-warning {
   color: #083f08;
@@ -332,7 +336,7 @@ button:disabled {
 @media (min-width: 768px) {
   #content #map-container {
     min-height: 750px;
-    width: inherit;
+    width: 77%;
   }
 }
 #content #map-container #tremor-map {
@@ -408,11 +412,11 @@ button:disabled {
 #content #sidebar #settings-container #overlays .select {
   max-width: 210px;
 }
-#content #sidebar #search-container #date-range, #content #sidebar #search-container #epicenters {
+#content #sidebar #search-results-container #date-range, #content #sidebar #search-results-container #epicenters {
   color: #666666;
   font-weight: 300;
 }
-#content #sidebar #search-container #date-range span, #content #sidebar #search-container #epicenters span {
+#content #sidebar #search-results-container #date-range span, #content #sidebar #search-results-container #epicenters span {
   color: black;
   font-weight: 400;
 }
