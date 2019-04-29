@@ -36,6 +36,7 @@
       display: inline-block;
     }
     #submit {
+      float:right;
       width: 70px;
     }
     @include sm {
@@ -50,16 +51,6 @@
     #filter-container {
       margin:3px 0px;
     }
-    #count-warning {
-      margin: 3px 0px 0px 10px;
-      color: $accent;
-      font-weight: 300;
-    }
-  }
-
-  
-  #count-warning span, #heatmap-warning span {
-    font-weight: 400;
   }
 
   #chart-container {

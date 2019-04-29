@@ -80,9 +80,6 @@ function TimeChart(chartOptions, datePickerElem) {
         }
       }
     }
-
-    $("#count-warning span").text(total);
-    $("#count-warning").show();
     return total;
   }
 
