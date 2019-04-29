@@ -26,7 +26,7 @@ button.primary:hover, button.primary:focus {
 button.secondary {
   background-color: white;
   color: #083f08;
-  border: solid 1px white;
+  border: solid 1px #ababab;
 }
 button.secondary:hover, button.secondary:focus {
   border: solid 1px #083f08;
@@ -274,16 +274,17 @@ button:disabled {
   width: 90%;
   align-items: center;
 }
-#control-bar #search div {
-  display: inline-block;
-}
 #control-bar #search #submit {
+  float: right;
   width: 70px;
 }
 @media (min-width: 576px) {
   #control-bar #search {
     min-height: 150px;
   }
+}
+#control-bar #search #date-container {
+  justify-content: space-between;
 }
 #control-bar #search #date-range-picker {
   width: 178px;
@@ -292,13 +293,8 @@ button:disabled {
 #control-bar #search #filter-container {
   margin: 3px 0px;
 }
-#control-bar #search #count-warning {
-  margin: 3px;
-  color: #083f08;
-  font-weight: 300;
-}
-#control-bar #count-warning span, #control-bar #heatmap-warning span {
-  font-weight: 400;
+#control-bar #search #filter-container #remove-filter {
+  display: none;
 }
 #control-bar #chart-container {
   height: 135px;

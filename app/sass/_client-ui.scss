@@ -32,9 +32,6 @@
 
   #search {
 
-    div {
-      display: inline-block;
-    }
     #submit {
       float:right;
       width: 70px;
@@ -43,6 +40,9 @@
       min-height: 150px;
     }
 
+    #date-container {
+      justify-content: space-between;
+    }
     #date-range-picker {
       width: 178px;
       height: 20px;
@@ -50,6 +50,9 @@
 
     #filter-container {
       margin:3px 0px;
+      #remove-filter {
+        display:none;
+      }
     }
   }
 

@@ -34,11 +34,12 @@ function TimeChart(chartOptions, datePickerElem) {
   function brushended() {
     var s = d3.event.selection;
     if (s) {
+      $("#submit").removeClass("inactive");
+
       x.domain(s.map(x.invert, x));
       svg.select(".brush").call(brush.move, null);
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
-
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
       getTotal(start, end);
@@ -49,6 +50,7 @@ function TimeChart(chartOptions, datePickerElem) {
       }
       x.domain(x0);
       y.domain(y0);
+
     }
     zoom();
   }

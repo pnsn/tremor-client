@@ -24,8 +24,8 @@ button {
     }
     &.secondary {
       background-color: white;
-      color:$accent;
-      border: solid 1px white;
+      color: $accent;
+      border: solid 1px $gray;
       &:hover, &:focus{
         border: solid 1px $accent;
       }

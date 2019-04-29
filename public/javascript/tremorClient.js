@@ -92,10 +92,12 @@ $(function () {
       "lon_min" : search_params.get("lon_min")
     };
     tremorMap.addBounds(bounds);
-    $("#draw-filter").hide()
+    $("#draw-filter").hide();
+    $("#remove-filter").show();
     //add filter to map
     // $("draw filter should be shown")
   } else {
+    $("#draw-filter").show();
     $("#remove-filter").hide();
     //remove filter should be shown
   } 
@@ -244,10 +246,7 @@ $(function () {
   //End UI events//
 
 
-
   // Helper functions //
-
-
   function updateMarkers(response) {
     console.log("sort")
     response.features.sort(function(a, b){
@@ -260,12 +259,6 @@ $(function () {
     $(".end").text(dateRange.end);
 
     $("#submit").addClass("inactive");
-
-    // if (response.features.length >= drawLimit) {
-    //   $("#count-warning").show();
-    // } else {
-    //   $("#count-warning").hide();
-    // }
   
     if (response.features.length > 5000) {
       $("#event-list").hide();
@@ -310,7 +303,7 @@ $(function () {
     timeChart.getTotal(dateRange.start, dateRange.end);
 
     $("#submit").removeClass("inactive");
-  };
+  }
 
 }); 
 
