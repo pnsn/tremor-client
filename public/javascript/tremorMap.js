@@ -65,13 +65,8 @@ function TremorMap(mapOptions) {
 
     editableLayers.addLayer(layer);
   });
-  var rectangle;
 
-  function removeBounds(){
-    editableLayers.clearLayers();
-    rectangle.disable();
-    rectangle = null;
-  }
+  var rectangle;
 
   function startDrawing(){
     editableLayers.clearLayers();
@@ -79,10 +74,15 @@ function TremorMap(mapOptions) {
     rectangle.enable();
   }
 
-  function addBounds(bounds){
-
+  function removeBounds(){
     editableLayers.clearLayers();
-    var rectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
+    rectangle.disable();
+    rectangle = null;
+  }
+
+  function addBounds(bounds){
+    editableLayers.clearLayers();
+    rectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
     editableLayers.addLayer(rectangle);
   };
 

@@ -56,11 +56,17 @@
             <div id="search" class="right-column">
               <h3>Search</h3>
 
-              <div class="row">
+              <div class="row" id="date-container"> 
                 <button id="previous-day" class="secondary" title="Previous day"><</button>
                 <input id="date-range-picker" name="date-range" type="text"/>
                 <button id="next-day"  class="secondary" title="Next day">></button>
               </div>
+
+
+              <div id="count-warning">
+                <span></span> epicenters selected.
+              </div>
+
 
               <div class="row" id="filter-container">
                 <button id="draw-filter"  class="secondary">Add geographic filter</button>
@@ -68,11 +74,7 @@
                 <button id="submit" class="primary" >Search</button>
               </div>
 
-              <div id="warning-container">
-                <div id="count-warning" class="warning">
-                  <span></span> epicenters selected.
-                </div>
-            </div>
+
 
             </div>
 

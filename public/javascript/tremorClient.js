@@ -36,8 +36,6 @@ $(function () {
   dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, "YYYY-MM-DD").format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
   dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, "YYYY-MM-DD").format(dateFormat) : dateRange.start;
 
-
-
   // Datepicker needs to init before chart made //
   datePickerContainer.daterangepicker({
     "showDropdowns": true,
@@ -75,6 +73,7 @@ $(function () {
     };
     timeChart.updateBounds(dateRange.start, dateRange.end);
     timeChart.getTotal(start.format(dateFormat), end.format(dateFormat));
+    $("#submit").removeClass("inactive");
   });
 
   datePicker = datePickerContainer.data('daterangepicker'); //actual datePicker
@@ -192,6 +191,7 @@ $(function () {
     //map/.startdraw
     // $(this).text("Remove filter");
     tremorMap.startDrawing();
+    $("#submit").removeClass("inactive");
   });
 
   $("#remove-filter").click(function() {
@@ -200,6 +200,7 @@ $(function () {
     //map/.startdraw
     // $(this).text("Remove filter");
     tremorMap.removeBounds();
+    $("#submit").removeClass("inactive");
   });
 
   $("#download-container button").click(function () {
@@ -258,13 +259,14 @@ $(function () {
     $(".start").text(dateRange.start);
     $(".end").text(dateRange.end);
 
-    if (response.features.length >= drawLimit) {
-      $("#count-warning").show();
-    } else {
-      $("#count-warning").hide();
-    }
-  
+    $("#submit").addClass("inactive");
 
+    // if (response.features.length >= drawLimit) {
+    //   $("#count-warning").show();
+    // } else {
+    //   $("#count-warning").hide();
+    // }
+  
     if (response.features.length > 5000) {
       $("#event-list").hide();
       $("#event-limit-warning").show();
@@ -306,6 +308,8 @@ $(function () {
 
     timeChart.updateBounds(dateRange.start, dateRange.end);
     timeChart.getTotal(dateRange.start, dateRange.end);
+
+    $("#submit").removeClass("inactive");
   };
 
 }); 

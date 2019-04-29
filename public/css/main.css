@@ -31,6 +31,11 @@ button.secondary {
 button.secondary:hover, button.secondary:focus {
   border: solid 1px #083f08;
 }
+button.inactive {
+  background-color: #ababab;
+  opacity: 0.5;
+  color: black;
+}
 button:disabled {
   background-color: #ababab;
   opacity: 0.5;
@@ -269,9 +274,11 @@ button:disabled {
   width: 90%;
   align-items: center;
 }
+#control-bar #search div {
+  display: inline-block;
+}
 #control-bar #search #submit {
   width: 70px;
-  float: right;
 }
 @media (min-width: 576px) {
   #control-bar #search {
@@ -285,8 +292,10 @@ button:disabled {
 #control-bar #search #filter-container {
   margin: 3px 0px;
 }
-#control-bar #count-warning {
+#control-bar #search #count-warning {
+  margin: 3px;
   color: #083f08;
+  font-weight: 300;
 }
 #control-bar #count-warning span, #control-bar #heatmap-warning span {
   font-weight: 400;
