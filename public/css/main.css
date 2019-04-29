@@ -293,7 +293,7 @@ button:disabled {
 #control-bar #search #filter-container {
   margin: 3px 0px;
 }
-#control-bar #search #filter-container #remove-filter {
+#control-bar #search #filter-container #remove-filter, #control-bar #search #filter-container #draw-filter-text {
   display: none;
 }
 #control-bar #chart-container {

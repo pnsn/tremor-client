@@ -190,6 +190,7 @@ $(function () {
   $("#draw-filter").click(function() {
     $(this).hide();
     $("#remove-filter").show();
+    $("#draw-filter-text").show();
     //map/.startdraw
     // $(this).text("Remove filter");
     tremorMap.startDrawing();
@@ -199,6 +200,7 @@ $(function () {
   $("#remove-filter").click(function() {
     $(this).hide();
     $("#draw-filter").show()
+    $("#draw-filter-text").hide();
     //map/.startdraw
     // $(this).text("Remove filter");
     tremorMap.removeBounds();
