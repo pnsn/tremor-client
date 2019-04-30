@@ -230,7 +230,7 @@ function TremorMap(mapOptions) {
           weight: 1,
           opacity: 1,
           fillOpacity: 0.9,
-          radius: 4,
+          radius: 3,
           riseOnHover: true,
           timeIndex: timeIndex,
           eId: id,
