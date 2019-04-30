@@ -173,8 +173,9 @@ $(function () {
 
   coloringSelector.change(function () {
     tremorMap.recolorMarkers(coloringSelector.val());
-    $("#key-start").text(dateRange.start);
-    $("#key-end").text(dateRange.end);
+    $(".start").text(dateRange.start);
+    $(".end").text(dateRange.end);
+    console.log(dateRange.end)
   });
 
   $("#seismometers, #past-tremor, #plate-contours").change(function () {
