@@ -262,13 +262,17 @@ $(function () {
     $(".end").text(dateRange.end);
 
     $("#submit").addClass("inactive");
-  
-    if (response.features.length > 5000) {
-      $("#event-list").hide();
+    if (response.features.length >= drawLimit) {
       $("#event-limit-warning").show();
     } else {
-      $("#event-list").show();
       $("#event-limit-warning").hide();
+    }
+    if (response.features.length > 5000) {
+      $("#event-list").hide();
+      $("#event-list-warning").show();
+    } else {
+      $("#event-list").show();
+      $("#event-list-warning").hide();
     }
     console.log(response.features.length)
     $("#epicenters span").text(response.features.length);
