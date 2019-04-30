@@ -66,7 +66,7 @@ function TremorMap(mapOptions) {
     editableLayers.addLayer(layer);
   });
 
-  var rectangle;
+  var rectangle, drawnRectangle;
 
   function startDrawing(){
     editableLayers.clearLayers();
@@ -76,15 +76,21 @@ function TremorMap(mapOptions) {
 
   function removeBounds(){
     editableLayers.clearLayers();
-    rectangle.disable();
-    rectangle = null;
+    if(rectangle) {
+      rectangle.disable();
+      rectangle = null;
+    }
+    if(drawnRectangle) {
+      drawnRectangle = null;
+    }
+
   }
 
   function addBounds(bounds){
     editableLayers.clearLayers();
-    rectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
-    editableLayers.addLayer(rectangle);
-  };
+    drawnRectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
+    editableLayers.addLayer(drawnRectangle);
+  }
 
   function getBounds(){
     if(editableLayers.getLayers().length > 0) {
@@ -208,7 +214,7 @@ function TremorMap(mapOptions) {
     var firstEventTime = new Date(response.features[0].properties.time);
     var lastEventTime = new Date(response.features[response.features.length - 1].properties.time);
 
-    var timeIndex, time, id, lat, lng, marker, listItem;
+    var timeIndex, time, id, lat, lng;
 
     eventMarkers = L.geoJSON(response.features, {
       pointToLayer: function (feature, latlng) {
@@ -220,7 +226,7 @@ function TremorMap(mapOptions) {
         timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
         
         //Defaults to black - gets overwritten
-        marker = new customMarker([lat, lng], {
+        var marker = new customMarker([lat, lng], {
           weight: 1,
           opacity: 1,
           fillOpacity: 0.9,
@@ -230,35 +236,36 @@ function TremorMap(mapOptions) {
           eId: id,
         });
 
+        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
+        .on('mouseover', function () {
+          $(".active-event").removeClass("active-event");
+          $(".event-" + id).addClass("active-event");
+        });
+
         // do all the listy stuff
         if (response.features.length < 5000) {
-          listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
+          var listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
           listItem.click(function () {
             $(".active-event").removeClass("active-event");
-            $(".event-" + id).addClass("active-event");
+            $(this).addClass("active-event");
             marker.openPopup();
           }).on('mouseover', function () {
             $(".active-event").removeClass("active-event");
-            $(".event-" + id).addClass("active-event");
+            $(this).addClass("active-event");
           });
 
-          marker.on('click', function () {
-            $('#event-nav ul').scrollTop(listItem.position().top);
-          });
-
-          $("#event-list").append(listItem);
           marker.on('click', function () {
             $(".active-event").removeClass("active-event");
-            $(".event-" + id).addClass("active-event");
-            $('#event-nav ul').scrollTop(listItem.position().top);
+            listItem.addClass("active-event");
+            console.log(listItem.position().top, $('#event-list').scrollTop());
+
+            $('#event-list').scrollTop(listItem.position().top - $('#event-list').scrollTop());
+            console.log(listItem.position().top, $('#event-list').scrollTop());
           });
+          $("#event-list").append(listItem);
         }
 
-        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
-          .on('mouseover', function () {
-            $(".active-event").removeClass("active-event");
-            $(".event-" + id).addClass("active-event");
-          });
+
 
         return marker;
       }

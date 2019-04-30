@@ -201,10 +201,10 @@ $(function () {
     $(this).hide();
     $("#draw-filter").show()
     $("#draw-filter-text").hide();
+    $("#submit").removeClass("inactive");
     //map/.startdraw
     // $(this).text("Remove filter");
     tremorMap.removeBounds();
-    $("#submit").removeClass("inactive");
   });
 
   $("#download-container button").click(function () {
@@ -250,10 +250,10 @@ $(function () {
 
   // Helper functions //
   function updateMarkers(response) {
-    console.log("sort")
-    response.features.sort(function(a, b){
-      return new Date(a.properties.time) - new Date(b.properties.time);
-    });
+    // console.log("sort")
+    // response.features.sort(function(a, b){
+    //   return new Date(a.properties.time) - new Date(b.properties.time);
+    // });
 
     tremorMap.updateMarkers(response, coloringSelector.val());
 
