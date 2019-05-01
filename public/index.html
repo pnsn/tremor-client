@@ -57,9 +57,9 @@
               <h3>Search</h3>
 
               <div class="row flex-container flex-row" id="date-container"> 
-                <button id="previous-day" class="secondary" title="Previous day"><</button>
+                <button id="previous-day" class="secondary" title="Previous day"><span class="icon"><</span><span class="skip-day"> -1 day</span></button>
                 <input id="date-range-picker" name="date-range" type="text"/>
-                <button id="next-day"  class="secondary" title="Next day">></button>
+                <button id="next-day"  class="secondary" title="Next day"><span class="skip-day">+1 day </span><span class="icon">></span></button>
               </div>
               <div class="row" id="filter-container">
                 <button id="draw-filter"  class="secondary">Add filter</button>
@@ -151,6 +151,7 @@
 
 
           <div id="download-container">
+            <h3>Download</h3>
             <div class="select">
                 <select id="download-type">
                     <option value="" selected disabled>Select Type</option>
@@ -177,14 +178,6 @@
 
     </div>
 
-    <div id="footer" class="flex-container flex-column" >
-      Put Footer stuff here - or use pnsn.org footer. Up to you.
-    </div>
-
-    <!-- <div class="col-xs-12" >
-      <div class="row" id="chart"></div>
-      </div> -->
-    <!-- End External JS -->
     <script src="assets/plateContours.js"></script>
     <script src="assets/pastTremor.js"></script>
     <script src="assets/seismometers.js"></script>

@@ -257,7 +257,7 @@ button:disabled {
   justify-content: space-between;
   flex-wrap: wrap;
   width: 90%;
-  min-height: 75px;
+  min-height: 70px;
   color: white;
 }
 #header #info div, #header #info a {
@@ -285,6 +285,19 @@ button:disabled {
 }
 #control-bar #search #date-container {
   justify-content: space-between;
+}
+#control-bar #search #date-container span.skip-day {
+  display: none;
+}
+@media (min-width: 992px) {
+  #control-bar #search #date-container span.skip-day {
+    display: inline;
+  }
+}
+@media (min-width: 992px) {
+  #control-bar #search #date-container span.icon {
+    display: none;
+  }
 }
 #control-bar #search #date-range-picker {
   width: 178px;
@@ -474,7 +487,7 @@ h2 span {
 }
 @media (min-width: 768px) {
   h2 {
-    font-size: 3em;
+    font-size: 2em;
     font-weight: 700;
   }
   h2 span {

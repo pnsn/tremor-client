@@ -9,8 +9,9 @@ $(function () {
     mapOptions = {
       "mapContainer": 'tremor-map',
       "center": [45.5122, -122.6587],
+      "zoom": 5.5,
       "leafletOptions": {
-        "minZoom": 5.5,
+        "minZoom": 5,
         "zoomSnap": 0.5,
         "preferCanvas": true
       }

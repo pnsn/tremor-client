@@ -5,14 +5,14 @@
   #info-container {
     width:100%;
     background-color: $accent;
-    align-items: center
+    align-items: center;
   }
 
   #info{
     justify-content: space-between;
     flex-wrap: wrap;
     width:90%;
-    min-height: 75px;
+    min-height: 70px;
     color: $contrast;
     div, a {
       display: inline-block;
@@ -42,6 +42,19 @@
 
     #date-container {
       justify-content: space-between;
+
+      span.skip-day {
+        display: none;
+        @include lg {
+          display: inline;
+        }
+      }
+      span.icon {
+        @include lg {
+          display: none;
+        }
+      }
+
     }
     #date-range-picker {
       width: 178px;

@@ -30,7 +30,7 @@ function TremorMap(mapOptions) {
   rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
   rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
 
-  map = new L.Map(mapOptions.mapContainer, mapOptions.leafletOptions).setView(mapOptions.center, 5);
+  map = new L.Map(mapOptions.mapContainer, mapOptions.leafletOptions).setView(mapOptions.center, mapOptions.zoom);
 
   var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
