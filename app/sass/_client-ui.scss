@@ -85,6 +85,7 @@
     #chart-buttons {
 
       a {
+        cursor: pointer;
         color: $primary;
         &#zoom-all {
           margin-left:5px;
@@ -93,6 +94,7 @@
         &:hover{
           color: $accent;
           text-decoration: underline;
+
         }
       }
     }
@@ -176,7 +178,7 @@
     height: 100%;
     z-index: 1000;
     background-color: rgba( $gray, .66 );
-  
+    cursor: progress;
     
     #loading-gif, #loading-warning{
       font-size: 1.6em;

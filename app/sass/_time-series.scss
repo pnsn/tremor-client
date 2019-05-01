@@ -23,9 +23,15 @@
 		fill: $gray-lighter;
 	}
 
+	.y-axis {
+		.tick {
+			display:none;
+		}
+	}
+
 	.y-axis path, .x-axis path{
 		stroke:$gray;
-		stroke-width: px;
+		// stroke-width: px;
 	}
 
 	.brush {

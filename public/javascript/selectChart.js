@@ -4,7 +4,7 @@ function TimeChart(chartOptions, datePickerElem) {
       top: 8,
       right: 0,
       bottom: 12,
-      left: 0
+      left: 14
     },
     height = chartOptions.height - margin.top - margin.bottom,
     width = chartOptions.width - margin.right - margin.left,
@@ -20,13 +20,22 @@ function TimeChart(chartOptions, datePickerElem) {
     .append("svg:svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
+  svg.append('defs')
+    .append('clipPath')
+    .attr('id', 'clip')
+    .append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', width)
+      .attr('height', height);
   svg.append("g")
-    .attr('clip-path', 'url(#clipper)')
+    .attr('clip-path', 'url(#clip)')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   var bg = svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height)
+    .attr("transform", "translate(" + margin.left  + ")");
 
   // Helper functions //
 
@@ -129,24 +138,35 @@ function TimeChart(chartOptions, datePickerElem) {
       .handleSize(height);
 
     idleDelay = 350;
-
     line = svg.append("path")
       .data([chartData])
       .attr("class", "line")
-      .attr("d", valueline);
+      .attr("d", valueline)
+      .attr("transform", "translate(" + margin.left  + ")");
     svg.append("g")
       .attr("class", "brush")
-      .call(brush);
-
+      .call(brush)
+      .attr("transform", "translate(" + margin.left  + ")");
     // Add the X Axis
     xAxis = svg.append("g")
       .attr("class", "x-axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("transform", "translate(" + margin.left  + "," + height + ")")
       .call(d3.axisBottom(x));
     // // Add the Y Axis
     yAxis = svg.append("g")
       .attr("class", "y-axis")
-      .call(d3.axisLeft(y));
+      .call(d3.axisLeft(y))
+      .attr("transform", "translate(" + margin.left +")");
+      
+    svg.append("text")
+      .attr("class", "y-axis-text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Counts");      
+
     //do stuff with data
   }
 

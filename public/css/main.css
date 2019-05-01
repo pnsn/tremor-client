@@ -228,9 +228,11 @@ button:disabled {
 #chart .background {
   fill: #f8f8f8;
 }
+#chart .y-axis .tick {
+  display: none;
+}
 #chart .y-axis path, #chart .x-axis path {
   stroke: #ababab;
-  stroke-width: px;
 }
 #chart .brush .selection {
   fill-opacity: 0.3;
@@ -323,6 +325,7 @@ button:disabled {
   justify-content: space-between;
 }
 #control-bar #chart-container #chart-buttons a {
+  cursor: pointer;
   color: #107a10;
   margin-left: 2px;
 }

@@ -12,6 +12,7 @@ $(function () {
       "zoom": 5.5,
       "leafletOptions": {
         "minZoom": 5,
+        "maxZoom": 11,
         "zoomSnap": 0.5,
         "preferCanvas": true
       }
