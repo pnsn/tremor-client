@@ -239,10 +239,6 @@ $(function () {
     updateDateRange(range);
   });
 
-  $("#seismometers, #past-tremor, #plate-contours").each(function () {
-    tremorMap.toggleOverlays($(this).is(":checked"), $(this).val());
-  });
-
   coloringSelector.change(function () {
     tremorMap.recolorMarkers(coloringSelector.val());
     $(".start").text(dateRange.start);
@@ -250,9 +246,6 @@ $(function () {
     console.log(dateRange.end)
   });
 
-  $("#seismometers, #past-tremor, #plate-contours").change(function () {
-    tremorMap.toggleOverlays($(this).is(":checked"), $(this).val());
-  });
 
   $("#play-events").click(function () {
     $(this).prop("disabled", true);
@@ -313,7 +306,7 @@ $(function () {
 
     $("#event-nav ul").empty();
     getEvents(baseUrl, dateRange.start, dateRange.end, boundsStr).done(function (response) {
-      updateMarkers(response);
+      updateMarkers(response, coloringSelector.val());
     });
 
   });
