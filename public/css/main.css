@@ -408,6 +408,7 @@ button:disabled {
   height: 100%;
   z-index: 1000;
   background-color: rgba(171, 171, 171, 0.66);
+  cursor: progress;
 }
 #content #loading-overlay #loading-gif, #content #loading-overlay #loading-warning {
   font-size: 1.6em;
