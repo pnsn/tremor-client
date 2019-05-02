@@ -14,12 +14,15 @@
     width:90%;
     min-height: 70px;
     color: $contrast;
-    div, a {
+    div, a, button {
       display: inline-block;
       align-self: flex-end;
       margin-bottom: 10px;
       font-weight: 300;
       color: $contrast;
+    }
+    #start-tour {
+      height: 10px;
     }
   }
 }
@@ -203,14 +206,10 @@
     height:100%;
     background-color:white;
 
-    #settings-container {
-      #overlays .select {
-        max-width: 210px;
-      }
-    }
- 
-
     #search-results-container {
+      #display-type-container {
+        width: 210px;
+      }
       #date-range, #epicenters {
         color:#666666;
         font-weight: 300;
