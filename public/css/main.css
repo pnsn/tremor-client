@@ -262,12 +262,15 @@ button:disabled {
   min-height: 70px;
   color: white;
 }
-#header #info div, #header #info a {
+#header #info div, #header #info a, #header #info button {
   display: inline-block;
   align-self: flex-end;
   margin-bottom: 10px;
   font-weight: 300;
   color: white;
+}
+#header #info #start-tour {
+  height: 10px;
 }
 
 #control-bar {
@@ -431,8 +434,8 @@ button:disabled {
   height: 100%;
   background-color: white;
 }
-#content #sidebar #settings-container #overlays .select {
-  max-width: 210px;
+#content #sidebar #search-results-container #display-type-container {
+  width: 210px;
 }
 #content #sidebar #search-results-container #date-range, #content #sidebar #search-results-container #epicenters {
   color: #666666;

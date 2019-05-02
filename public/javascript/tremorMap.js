@@ -5,14 +5,37 @@ function TremorMap(mapOptions) {
     eventMarkers,
     heatmap,
     overlays = {},
-    mapKey;
+    mapKey,
+    markerLayers = {
+      "All Red" : null, 
+      "Color vs Time" : null,
+      "Heatmap": null
+    };
 
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
     options: {
       timeIndex: 0,
       eId: ""
-      // depth: ? Future feature
+      //
+    },
+    setColoring : function(coloring){
+      if(coloring == "color-time") {
+        this.setStyle({
+          fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
+          color: "#" + rainbowDark.colorAt(this.options.timeIndex)
+        });
+      } else if (coloring == "color-normal") {
+        this.setStyle({
+          fillColor: "#ef0b25",
+          color: "#770512"
+        });
+      } else { //in case someone puts something weird in params
+        this.setStyle({
+          fillColor: "white",
+          color: "black"
+        });
+      }
     }
   });
 
@@ -54,7 +77,7 @@ function TremorMap(mapOptions) {
   L.control.key = function (opts) {
     return new L.Control.Key(opts);
   };
-  
+
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
@@ -111,7 +134,7 @@ function TremorMap(mapOptions) {
   }
 
 
-  overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
+  overlays["Seismometers"] = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {
         icon: L.icon({
@@ -122,15 +145,18 @@ function TremorMap(mapOptions) {
     }
   });
 
-  overlays.pastTremor = L.geoJSON(pastTremorGeoJSON, {
+  overlays["Past Tremor"] = L.geoJSON(pastTremorGeoJSON, {
     style: pastTremorGeoJSON.properties.style
   });
 
-  overlays.plateContours = L.geoJSON(contoursGeoJSON, {
+  overlays["JDF Plate Contours"] = L.geoJSON(contoursGeoJSON, {
     style: function (feature) {
       return feature.properties.style;
     }
   });
+
+  L.control.layers({}, overlays).addTo(map);
+
 
   // Helper functions // 
 
@@ -167,50 +193,36 @@ function TremorMap(mapOptions) {
     }
   }
 
-  function recolorMarkers(coloring) {
-
+  function recolorMarkers(coloring, alreadyColored) {
     if (mapKey) {
       map.removeControl(mapKey);
     }
+
     clearLayers();
 
-
-    switch (coloring) {
-    case "color-time":
-      eventMarkers.eachLayer(function (marker) {
-        marker.setStyle({
-          fillColor: "#" + rainbow.colorAt(marker.options.timeIndex),
-          color: "#" + rainbowDark.colorAt(marker.options.timeIndex)
-        });
-      });
-
-      if (!mapKey) {
-        mapKey = L.control.key({
-          position: 'topleft',
+    if(coloring == "heat-map") {
+      drawHeatMap();
+    } else {
+      if(!alreadyColored) {
+        eventMarkers.eachLayer(function (marker) {
+          marker.setColoring(coloring);
         });
       }
-
-      mapKey.addTo(map);
-      toggleLayer(true, eventMarkers);
-      break;
-    case "heat-map":
-      drawHeatMap();
-      break;
-
-    default:
-      eventMarkers.eachLayer(function (marker) {
-          marker.setStyle({
-            fillColor: "#ef0b25",
-            color: "#770512"
+      if(coloring == "color-time") {
+        if (!mapKey) {
+          mapKey = L.control.key({
+            position: 'topleft',
           });
-        });
+        }
+        mapKey.addTo(map);
+      }
       toggleLayer(true, eventMarkers);
     }
   }
 
   function updateMarkers(response, coloring) {
-    console.log("update");
     clearLayers();
+
     var firstEventTime = new Date(response.features[0].properties.time);
     var lastEventTime = new Date(response.features[response.features.length - 1].properties.time);
 
@@ -235,6 +247,8 @@ function TremorMap(mapOptions) {
           timeIndex: timeIndex,
           eId: id,
         });
+
+        marker.setColoring(coloring);
 
         marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
         .on('mouseover', function () {
@@ -264,14 +278,10 @@ function TremorMap(mapOptions) {
           });
           $("#event-list").append(listItem);
         }
-
-
-
         return marker;
       }
     });
-
-    recolorMarkers(coloring);
+    recolorMarkers(coloring, true);
   }
 
   return {
@@ -279,10 +289,6 @@ function TremorMap(mapOptions) {
     recolorMarkers: recolorMarkers,
 
     updateMarkers: updateMarkers,
-
-    toggleOverlays: function (show, overlay) {
-      toggleLayer(show, overlays[overlay]);
-    },
 
     addBounds: addBounds,
 
