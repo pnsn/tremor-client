@@ -12,6 +12,7 @@
     <link href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-tour-standalone.min.css" />
     <!-- End External Styles -->
     <link rel="stylesheet" href="css/main.css" />
 
@@ -26,14 +27,16 @@
     <!-- <script src="javascript/external/leaflet.timeline.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="javascript/external/bootstrap-tour-standalone.min.js"></script>
   </head>
   <body>
       <div id="header" class="flex-container flex-column" >
           <div id="info-container" class="flex-container flex-column" >
               <div id="info" class="flex-container flex-row">
-                  <h2>Episodic Tremor & Slip Events <span>(ETS)</span></h2>
+                  <h2 id="header-text">Episodic Tremor & Slip Events <span>(ETS)</span></h2>
                   <div id="updated">Updated <span></span></div>
                   <a href="https://pnsn.org/tremor/overview" target="blank">about tremor</a>
+                  <button class="secondary" id="start-tour">Start Tour</button>
               </div>
           </div>
 

@@ -111,7 +111,7 @@ function TremorMap(mapOptions) {
   }
 
 
-  overlays.seismometers = L.geoJSON(seismometersGeoJSON, {
+  overlays["Seismometers"] = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {
         icon: L.icon({
@@ -122,15 +122,18 @@ function TremorMap(mapOptions) {
     }
   });
 
-  overlays.pastTremor = L.geoJSON(pastTremorGeoJSON, {
+  overlays["Past Tremor"] = L.geoJSON(pastTremorGeoJSON, {
     style: pastTremorGeoJSON.properties.style
   });
 
-  overlays.plateContours = L.geoJSON(contoursGeoJSON, {
+  overlays["JDF Plate Contours"] = L.geoJSON(contoursGeoJSON, {
     style: function (feature) {
       return feature.properties.style;
     }
   });
+
+  L.control.layers({}, overlays).addTo(map);
+
 
   // Helper functions // 
 

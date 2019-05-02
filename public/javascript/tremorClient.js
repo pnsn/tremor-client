@@ -83,6 +83,76 @@ $(function () {
   tremorMap = new TremorMap(mapOptions);
   timeChart = new TimeChart(chartOptions, datePicker);
 
+    // Instance the tour
+  var tour = new Tour({
+    name: '7',
+    backdrop: true,
+    steps: [
+    {
+      element: "#header-text",
+      title: "Welcome to the new Tremor Application!",
+      content: "We rebuilt tremor!",
+      placement: "bottom"
+    },
+    {
+      element: "#chart-container",
+      title: "The Time Chart",
+      content: "This chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
+      placement: "bottom"
+    },
+    {
+      element: "#date-container",
+      title: "This is the date selector!",
+      content: "Want to shift your time range by a day? Press the buttons to the left and right of the time range. Want to select a range? Click on the time range.",
+      placement: "bottom"
+    },
+    {
+      element: "#filter-container",
+      title: "Geographic Filtering",
+      content: "Only want to look at one region? Easy! Click 'Add Geographic Filter' and draw a region on the map.",
+      placement: "left"
+    },
+    {
+      element: "#submit",
+      title: "Searching for Tremor",
+      content: "Before your changes are applied, you must press search! After the data loads, you'll see your results on the map.",
+      placement: "left"
+    },
+    {
+      element: "#map-container",
+      title: "The Map",
+      content: "This is the map!",
+      placement: "right"
+    },
+    {
+      element: "#settings-container",
+      title: "Map Settings",
+      content: "Toggle overlays and change the coloring of the map.",
+      placement: "left"
+    },
+    {
+      element: "#search-results-container",
+      title: "Search Results",
+      content: "Here are your search results",
+      placement: "left"
+    },
+    {
+      element: "#download-container",
+      title: "Download",
+      content: "Want to play with the data on your own? Download your results as either a json or csv.",
+      placement: "left"
+    }
+  ]});
+
+  // Initialize the tour
+  tour.init();
+
+  $("#start-tour").click(function(){
+    // Start the tour
+    tour.start(true);
+  });
+
+
   var bounds;
   //initial boundary stuff
   if(search_params.get("lat_min") && search_params.get("lat_max") && search_params.get("lon_min") && search_params.get("lon_max")) {
