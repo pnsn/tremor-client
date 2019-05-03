@@ -35,12 +35,14 @@ $(function () {
     "lon_max" : search_params.get("lon_max"),
     "lon_min" : search_params.get("lon_min")
   };
+
   if(bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max){
     tremorMap.addBounds(bounds);
     $("#draw-filter").hide();
     $("#remove-filter").show();
   } else {
     bounds = null;
+    $("#draw-filter-text").hide();
     $("#draw-filter").show();
     $("#remove-filter").hide();
   } 
@@ -49,7 +51,6 @@ $(function () {
   if (search_params.get('coloring')) {
     coloringSelector.val(search_params.get('coloring'));
   }
-
 
   //** Set up page elements */
   datePickerContainer.daterangepicker(
@@ -147,11 +148,10 @@ $(function () {
     $(".end").text(dateRange.end);
   });
 
-  $("#play-events").click(function () {
-    $(this).prop("disabled", true);
-
-    tremorMap.playFeatures();
-  });
+  // $("#play-events").click(function () {
+  //   $(this).prop("disabled", true);
+  //   tremorMap.playFeatures();
+  // });
 
   $("#draw-filter").click(function() {
     $(this).hide();

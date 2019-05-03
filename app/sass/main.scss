@@ -10,9 +10,9 @@ $font-family:  "Open Sans", Arial, "sans serif";
 
 // Screen size variables
 $screen-xs-min: 425px;  // Tiny phones
-$screen-sm-min: 576px;  // Small tablets and large smartphones (landscape view)
-$screen-md-min: 768px;  // Small tablets (portrait view)
-$screen-lg-min: 992px;  // Tablets and small desktops
+$screen-sm-min: 600px;  // Small tablets and large smartphones (landscape view)
+$screen-md-min: 800px;  // Small tablets (portrait view)
+$screen-lg-min: 1000px;  // Tablets and small desktops
 $screen-xl-min: 1200px; // Large tablets and desktops
 
 @import 'mixins';

@@ -72,7 +72,7 @@ $.clientConfig = {
         },
         "alwaysShowCalendars": true,
         "linkedCalendars": false,
-        "minDate": "2008/08/05"
+        "minDate": "2009/08/06"
       },
       tourOptions: {
         name: '7',
@@ -81,19 +81,19 @@ $.clientConfig = {
         steps: [{
             element: "#header-text",
             title: "Welcome to the new Tremor Application!",
-            content: "We rebuilt tremor!",
+            content: "The old Tremor App was out of date, so we rebuilt it. This allows us to add tools and make it more usable.",
             placement: "bottom"
           },
           {
             element: "#chart-container",
             title: "The Time Chart",
-            content: "This chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
+            content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
             placement: "bottom"
           },
           {
             element: "#date-container",
             title: "This is the date selector!",
-            content: "Want to shift your time range by a day? Press the buttons to the left and right of the time range. Want to select a range? Click on the time range.",
+            content: "Want to select a range? Click on the time range. Want to shift your time range by a day? Press the buttons to the left and right of the time range.",
             placement: "bottom"
           },
           {
@@ -105,25 +105,19 @@ $.clientConfig = {
           {
             element: "#submit",
             title: "Searching for Tremor",
-            content: "Before your changes are applied, you must press search! After the data loads, you'll see your results on the map.",
+            content: "Before your changes will be in effect, you must press search! After the data loads, your results will be plotted on the map.",
             placement: "left"
           },
           {
             element: "#map-container",
             title: "The Map",
-            content: "This is the map!",
+            content: "Toggle overlays in the top right corner and zoom in or out on the top left.",
             placement: "right"
-          },
-          {
-            element: "#settings-container",
-            title: "Map Settings",
-            content: "Toggle overlays and change the coloring of the map.",
-            placement: "left"
           },
           {
             element: "#search-results-container",
             title: "Search Results",
-            content: "Here are your search results",
+            content: "Here are your results. You can change how the data is displayed on the map with the selector. Note: a maximum of 20,000 events are returned for a search (4x what the old tremor could plot)!",
             placement: "left"
           },
           {

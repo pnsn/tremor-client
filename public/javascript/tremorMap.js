@@ -21,10 +21,6 @@ function TremorMap(config) {
       var div = L.DomUtil.create('div', 'map-key map-control');
       div.innerHTML = "<div class='end'></div><div><img src='./assets/tremor_key.png'/></div><div class='start'></div>";
       return div;
-    },
-
-    onRemove: function (map) {
-      // Nothing to do here
     }
   });
 
@@ -46,7 +42,7 @@ function TremorMap(config) {
       fillOpacity: config.markerOptions.fillOpacity,
       radius: config.markerOptions.radius,
       timeIndex: 0,
-      eId: ""
+      id: ""
     },
     setColoring : function(coloring){
       if(coloring == "color-time") {
@@ -165,7 +161,8 @@ function TremorMap(config) {
       points.push(marker.getLatLng());
     });
     heatmap = L.heatLayer(points, {
-      radius: 10
+      radius: 15,
+      blur: 20
     });
     map.addLayer(heatmap);
   }
@@ -230,7 +227,7 @@ function TremorMap(config) {
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
-          eId: id,
+          id: id,
         });
 
         marker.setColoring(coloring);
