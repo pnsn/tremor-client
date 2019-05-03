@@ -99,20 +99,20 @@
           <div id="search-results-container">
 
               <h3>Search Results</h3>
-              <div class="select" id="display-type-container">
-                  <select id="display-type">
-                      <option value="color-time">View as <span>Color vs. Time</span></option>
-                      <option value="color-normal">View as <span>Normal (red)</span></option>
-                      <option value="heat-map">View as <span>Heat Map</span></option>
-                  </select> 
-                  <div class="select-arrow"></div>   
-              </div>
+
               <div id="date-range">
                 Dates: <span class="start"></span> - <span class="end"></span>
               </div>
               <div id="epicenters">Total: <span></span> epicenters</div>
     
-    
+              <div class="select" id="display-type-container">
+                <select id="display-type">
+                    <option value="color-time">View as <span>Color vs. Time</span></option>
+                    <option value="color-normal">View as <span>Normal (red)</span></option>
+                    <option value="heat-map">View as <span>Heat Map</span></option>
+                </select> 
+                <div class="select-arrow"></div>   
+            </div>
               <div id="event-nav">
                   <div id="event-limit-warning" class="warning">
                       The request exceeded the 20,000 epicenter limit. Only 20,000 epicenters will be plotted.
@@ -155,6 +155,7 @@
 
     </div>
 
+    <script src="javascript/tremorClientConfig.js"></script>
     <script src="assets/plateContours.js"></script>
     <script src="assets/pastTremor.js"></script>
     <script src="assets/seismometers.js"></script>

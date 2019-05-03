@@ -1,80 +1,69 @@
 $(function () {
-  //get everything set up
-  var drawLimit = 20000, //max number of events to show at once
-    dateFormat = "YYYY-MM-DD", //format for dates
-    baseUrl = "https://tremorapi.pnsn.org/api/v1.0", //API url
+  //** get everything set up with all that fun config *//
+  var drawLimit = $.clientConfig.drawLimit, //max number of events to show at once
+    dateFormat = $.clientConfig.dateFormat, //format for dates
+    apiBaseUrl = $.clientConfig.apiBaseUrl, //API url
+    mapOptions =  $.clientConfig.mapOptions, //options for leaflet map
+    chartOptions = $.clientConfig.chartOptions, //options for D3 chart
+    tourOptions = $.clientConfig.tourOptions, //options for Bootstrap Tour
+    datePickerOptions = $.clientConfig.datePickerOptions, //options for DateRangePicker
     search_params = new URLSearchParams(window.location.search), //url params
     datePickerContainer = $('input[name="date-range"]'),
     coloringSelector = $("#display-type"), //how map markers are colored
-    mapOptions = {
-      "mapContainer": 'tremor-map',
-      "center": [45.5122, -122.6587],
-      "zoom": 5.5,
-      "leafletOptions": {
-        "minZoom": 5,
-        "maxZoom": 11,
-        "zoomSnap": 0.5,
-        "preferCanvas": true
-      }
-    },
-    chartOptions = {
-      "container": "#chart",
-      "height": $("#chart").height() - $("#chart-info").height(),
-      "width": $("#chart").width(),
-      "format" : dateFormat
-    },
     dateRange = {
       "start": "",
       "end": ""
     },
     datePicker,
     tremorMap,
-    timeChart;
+    timeChart,
+    tour;
 
-  // set up dates
+  //** Set up page with any existing URL params */
+
+  // Date ranges - get from URL or start from yesterday
   var start = search_params.get('start');
   var end = search_params.get('end');
 
-  dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, "YYYY-MM-DD").format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
-  dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, "YYYY-MM-DD").format(dateFormat) : dateRange.start;
+  dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, dateFormat).format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
+  dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, dateFormat).format(dateFormat) : dateRange.start;
+  
+  // Initial Bounds
+  var bounds = {
+    "lat_max" : search_params.get("lat_max"),
+    "lat_min" : search_params.get("lat_min"),
+    "lon_max" : search_params.get("lon_max"),
+    "lon_min" : search_params.get("lon_min")
+  };
+  if(bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max){
+    tremorMap.addBounds(bounds);
+    $("#draw-filter").hide();
+    $("#remove-filter").show();
+  } else {
+    bounds = null;
+    $("#draw-filter").show();
+    $("#remove-filter").hide();
+  } 
 
-  // Datepicker needs to init before chart made //
-  datePickerContainer.daterangepicker({
-    "showDropdowns": true,
-    "autoApply": true,
-    "opens": "left",
-    // ranges: {
-    //   'Today': [moment.utc(), moment.utc()],
-    //   'Yesterday': [moment.utc().subtract(1, 'days'), moment.utc().subtract(1, 'days')],
-    //   'Last 7 Days': [moment.utc().subtract(6, 'days'), moment.utc()],
-    //   'Last 30 Days': [moment.utc().subtract(29, 'days'), moment.utc()],
-    //   'This Month': [moment.utc().startOf('month'), moment.utc().endOf('month')],
-    //   'Last Month': [moment.utc().subtract(1, 'month').startOf('month'), moment.utc().subtract(1, 'month').endOf('month')]
-    // },
-    "locale": {
-      "format": dateFormat,
-      "separator": " - ",
-      "customRangeLabel": "Custom",
-      "weekLabel": "W",
-      "daysOfWeek": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-      "monthNames": [
-        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-      ],
-      "firstDay": 1
-    },
-    "alwaysShowCalendars": true,
-    "linkedCalendars": false,
+  // Coloring
+  if (search_params.get('coloring')) {
+    coloringSelector.val(search_params.get('coloring'));
+  }
+
+
+  //** Set up page elements */
+  datePickerContainer.daterangepicker(
+    Object.assign(datePickerOptions, {
     "startDate": dateRange.start,
     "endDate": dateRange.end,
-    // "minDate": "2008/08/05",
     "maxDate": moment.utc()
-  }, function (start, end, label) {
+  }), function (start, end, label) {
     dateRange = {
       "start": start.format(dateFormat),
       "end": end.format(dateFormat)
     };
-    timeChart.updateBounds(dateRange.start, dateRange.end);
-    timeChart.getTotal(start.format(dateFormat), end.format(dateFormat));
+    timeChart.updateBounds(dateRange);
+    timeChart.getTotal(dateRange);
     $("#submit").removeClass("inactive");
   });
 
@@ -82,120 +71,19 @@ $(function () {
 
   tremorMap = new TremorMap(mapOptions);
   timeChart = new TimeChart(chartOptions, datePicker);
+  tour = new Tour(tourOptions);
 
-    // Instance the tour
-  var tour = new Tour({
-    name: '7',
-    backdrop: true,
-    steps: [
-    {
-      element: "#header-text",
-      title: "Welcome to the new Tremor Application!",
-      content: "We rebuilt tremor!",
-      placement: "bottom"
-    },
-    {
-      element: "#chart-container",
-      title: "The Time Chart",
-      content: "This chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
-      placement: "bottom"
-    },
-    {
-      element: "#date-container",
-      title: "This is the date selector!",
-      content: "Want to shift your time range by a day? Press the buttons to the left and right of the time range. Want to select a range? Click on the time range.",
-      placement: "bottom"
-    },
-    {
-      element: "#filter-container",
-      title: "Geographic Filtering",
-      content: "Only want to look at one region? Easy! Click 'Add Geographic Filter' and draw a region on the map.",
-      placement: "left"
-    },
-    {
-      element: "#submit",
-      title: "Searching for Tremor",
-      content: "Before your changes are applied, you must press search! After the data loads, you'll see your results on the map.",
-      placement: "left"
-    },
-    {
-      element: "#map-container",
-      title: "The Map",
-      content: "This is the map!",
-      placement: "right"
-    },
-    {
-      element: "#settings-container",
-      title: "Map Settings",
-      content: "Toggle overlays and change the coloring of the map.",
-      placement: "left"
-    },
-    {
-      element: "#search-results-container",
-      title: "Search Results",
-      content: "Here are your search results",
-      placement: "left"
-    },
-    {
-      element: "#download-container",
-      title: "Download",
-      content: "Want to play with the data on your own? Download your results as either a json or csv.",
-      placement: "left"
-    }
-  ]});
-
-  // Initialize the tour
-  tour.init();
-
-  $("#start-tour").click(function(){
-    // Start the tour
-
-    if(tour.ended()){
-      tour.restart();
-    } else {
-      tour.start(true);
-    }
-  });
-
-
-  var bounds;
-  //initial boundary stuff
-  if(search_params.get("lat_min") && search_params.get("lat_max") && search_params.get("lon_min") && search_params.get("lon_max")) {
-
-    bounds = {
-      "lat_max" : search_params.get("lat_max"),
-      "lat_min" : search_params.get("lat_min"),
-      "lon_max" : search_params.get("lon_max"),
-      "lon_min" : search_params.get("lon_min")
-    };
-    tremorMap.addBounds(bounds);
-    $("#draw-filter").hide();
-    $("#remove-filter").show();
-    //add filter to map
-    // $("draw filter should be shown")
-  } else {
-    $("#draw-filter").show();
-    $("#remove-filter").hide();
-    //remove filter should be shown
-  } 
-
-  if (search_params.get('coloring')) {
-    coloringSelector.val(search_params.get('coloring'));
-  }
-
-  $("#heatmap-warning span").text(drawLimit);
-
-  // Get data and do stuff with it //
+  //** Get data and do stuff with it */
   $.ajax({
-    url: baseUrl + "/event/0",
+    url: apiBaseUrl + "/event/0",
     dataType: "json"
   }).done(function (response) {
     $("#updated span").text(moment.utc(response.time).fromNow());
   });
 
-  getCounts(baseUrl).done(function (response) {
+  getCounts(apiBaseUrl).done(function (response) {
     timeChart.addData(response);
-    timeChart.getTotal(dateRange.start, dateRange.end);
+    timeChart.getTotal(dateRange);
 
     $(window).on('resize', function () {
       timeChart.resize($("#control-bar").width() - $("#search").width() - 20);
@@ -203,11 +91,20 @@ $(function () {
 
   });
 
-  getEvents(baseUrl, dateRange.start, dateRange.end, getBoundsString(bounds)).done(function (response) {
+  getEvents(apiBaseUrl, dateRange, getBoundsString(bounds)).done(function (response) {
     updateMarkers(response);
   });
 
-  // UI events //
+  //** UI Events */
+  $("#start-tour").click(function(){
+    if(tour.ended()){
+      tour.restart();
+    } else {
+      tour.start(true);
+    }
+  });
+
+  $("#heatmap-warning span").text(drawLimit);
   $("#chart-buttons a").click(function () {
     var range = [];
     switch ($(this).attr("value")) {
@@ -248,9 +145,7 @@ $(function () {
     tremorMap.recolorMarkers(coloringSelector.val());
     $(".start").text(dateRange.start);
     $(".end").text(dateRange.end);
-    console.log(dateRange.end)
   });
-
 
   $("#play-events").click(function () {
     $(this).prop("disabled", true);
@@ -262,8 +157,6 @@ $(function () {
     $(this).hide();
     $("#remove-filter").show();
     $("#draw-filter-text").show();
-    //map/.startdraw
-    // $(this).text("Remove filter");
     tremorMap.startDrawing();
     $("#submit").removeClass("inactive");
   });
@@ -273,15 +166,13 @@ $(function () {
     $("#draw-filter").show()
     $("#draw-filter-text").hide();
     $("#submit").removeClass("inactive");
-    //map/.startdraw
-    // $(this).text("Remove filter");
     tremorMap.removeBounds();
   });
 
   $("#download-container button").click(function () {
-    format = $("#download-type").val();
-    if (format === "json" || format === "csv") {
-      var url = baseUrl + "/events?starttime=" + dateRange.start + "&endtime=" + dateRange.end + "&format=" + format;
+    var dataFormat = $("#download-type").val();
+    if (dataFormat === "json" || dataFormat === "csv") {
+      var url = apiBaseUrl + "/events?starttime=" + dateRange.start + "&endtime=" + dateRange.end + "&format=" + dataFormat;
       window.open(url, "_blank");
     }
   });
@@ -291,7 +182,9 @@ $(function () {
     $("#loading-gif").show();
     $("#loading-warning").hide();
     $("#play-events").prop('disabled', true);
-    tremorMap.clear();
+
+    tremorMap.clearLayers();
+
     dateRange = {
       "start": datePicker.startDate.format(dateFormat),
       "end": datePicker.endDate.format(dateFormat)
@@ -299,33 +192,25 @@ $(function () {
 
     var coloring = coloringSelector.val();
 
-    var url = "?start=" + dateRange.start + "&end=" + dateRange.end + "&coloring=" + coloring;
+    var urlStr = "?start=" + dateRange.start + "&end=" + dateRange.end + "&coloring=" + coloring;
 
     var boundsStr = getBoundsString(tremorMap.getBounds());
 
-    url += boundsStr;
+    urlStr += boundsStr;
 
     if (window.history.replaceState) {
-      window.history.replaceState({}, "Tremor Map", url);
+      window.history.replaceState({}, "Tremor Map", urlStr);
     }
 
     $("#event-nav ul").empty();
-    getEvents(baseUrl, dateRange.start, dateRange.end, boundsStr).done(function (response) {
-      updateMarkers(response, coloringSelector.val());
+    getEvents(apiBaseUrl, dateRange, boundsStr).done(function (response) {
+      updateMarkers(response);
     });
 
   });
 
-  //End UI events//
-
-
-  // Helper functions //
+  //** Helper functions */
   function updateMarkers(response) {
-    // console.log("sort")
-    // response.features.sort(function(a, b){
-    //   return new Date(a.properties.time) - new Date(b.properties.time);
-    // });
-
     tremorMap.updateMarkers(response, coloringSelector.val());
 
     $(".start").text(dateRange.start);
@@ -351,11 +236,26 @@ $(function () {
     $("#loading-overlay").hide();
   }
 
-  //Fetches events for given start and endtime
-  //Returns json object
-  function getCounts(baseUrl) {
+  function updateDateRange(range){
+    dateRange = {
+      "start": range[0].format(dateFormat),
+      "end": range[1].format(dateFormat)
+    };
+
+    datePicker.setStartDate(dateRange.start);
+    datePicker.setEndDate(dateRange.end);
+
+    timeChart.updateBounds(dateRange);
+    timeChart.getTotal(dateRange);
+
+    $("#submit").removeClass("inactive");
+  }
+}); 
+
+  //** Gets the day counts of tremor */
+  function getCounts(apiBaseUrl) {
     var request = $.ajax({
-      url: baseUrl + "/day_counts",
+      url: apiBaseUrl + "/day_counts",
       dataType: "json"
     });
 
@@ -367,24 +267,7 @@ $(function () {
     }).promise();
   }
 
-  function updateDateRange(range){
-    dateRange = {
-      "start": range[0].format(dateFormat),
-      "end": range[1].format(dateFormat)
-    };
-
-    datePicker.setStartDate(dateRange.start);
-    datePicker.setEndDate(dateRange.end);
-
-    timeChart.updateBounds(dateRange.start, dateRange.end);
-    timeChart.getTotal(dateRange.start, dateRange.end);
-
-    $("#submit").removeClass("inactive");
-  }
-
-}); 
-
-
+//** Returns a string form of the bounds */
 function getBoundsString(bounds) {
   boundsStr = "";
   if( bounds ){
@@ -395,22 +278,21 @@ function getBoundsString(bounds) {
   return boundsStr;
 }
 
-//Fetches events for given start and endtime
-//Returns json object
-function getEvents(baseUrl, start, end, boundsStr) {
-
+//** Gets the events for a given start and end time */
+function getEvents(apiBaseUrl, range, boundsStr) {
+  var start = range.start,
+      end = range.end;
   if (start && end) {
     //make it "end of day" since that is how old tremor is 
     start += "T00:00:00";
     end += "T23:59:59";
     var request = $.ajax({
-      url: baseUrl + "/events?starttime=" + start + "&endtime=" + end + boundsStr,
+      url: apiBaseUrl + "/events?starttime=" + start + "&endtime=" + end + boundsStr,
       dataType: "json"
     });
 
     return request.done(function (response) {
       $("#loading-warning").hide();
-
       return response;
     }).fail(function (jqXHR, textStatus) {
       $("#loading-gif").hide();
@@ -419,5 +301,4 @@ function getEvents(baseUrl, start, end, boundsStr) {
       console.log("Request failed: " + textStatus + " ");
     }).promise();
   }
-
 }

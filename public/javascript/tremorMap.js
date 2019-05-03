@@ -5,19 +5,13 @@ function TremorMap(mapOptions) {
     eventMarkers,
     heatmap,
     overlays = {},
-    mapKey,
-    markerLayers = {
-      "All Red" : null, 
-      "Color vs Time" : null,
-      "Heatmap": null
-    };
+    mapKey;
 
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
     options: {
       timeIndex: 0,
       eId: ""
-      //
     },
     setColoring : function(coloring){
       if(coloring == "color-time") {
@@ -298,9 +292,7 @@ function TremorMap(mapOptions) {
 
     getBounds: getBounds,
 
-    clear: function () {
-      clearLayers();
-    },
+    clearLayers: clearLayers,
 
   };
 

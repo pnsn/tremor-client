@@ -51,7 +51,7 @@ function TimeChart(chartOptions, datePickerElem) {
       var end = moment.utc(x.domain()[1]);
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
-      getTotal(start, end);
+      getTotal({"start": start, "end":end});
 
     } else {
       if (!idleTimeout) {
@@ -75,7 +75,9 @@ function TimeChart(chartOptions, datePickerElem) {
     idleTimeout = null;
   }
 
-  function getTotal(start, end) {
+  function getTotal(range) {
+    var start = range.start,
+        end = range.end;
     var total = 0;
     var firstMeas = moment.utc(start);
     if (start && end) {
@@ -170,8 +172,11 @@ function TimeChart(chartOptions, datePickerElem) {
     //do stuff with data
   }
 
-  function updateBounds(start, end) {
-    getTotal(start, end);
+  function updateBounds(range) {
+    var start = range.start,
+        end = range.end;
+    
+    getTotal(range);
     svg.select(".brush").call(brush.move, null);
     if (start == end) {
       end = moment.utc(start).add(1, "day").format(dateFormat);
