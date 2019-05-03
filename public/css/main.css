@@ -283,7 +283,7 @@ button:disabled {
   float: right;
   width: 70px;
 }
-@media (min-width: 600px) {
+@media (min-width: 576px) {
   #control-bar #search {
     min-height: 150px;
   }
@@ -309,7 +309,7 @@ button:disabled {
   height: 135px;
   display: none;
 }
-@media (min-width: 600px) {
+@media (min-width: 576px) {
   #control-bar #chart-container {
     display: inline-block;
   }
@@ -338,19 +338,19 @@ button:disabled {
   justify-content: space-between;
   margin: auto;
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   #content {
     flex-direction: row;
   }
 }
 #content #map-container {
-  min-height: 500px;
+  height: 500px;
   width: 100%;
   padding-bottom: 10px;
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   #content #map-container {
-    min-height: 750px;
+    height: 850px;
     width: 77%;
   }
 }
@@ -408,7 +408,7 @@ button:disabled {
   margin: 20% auto;
   color: #083f08;
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   #content #loading-overlay #loading-gif, #content #loading-overlay #loading-warning {
     margin: auto;
     font-size: 3em;
@@ -483,7 +483,7 @@ h2 {
 h2 span {
   display: none;
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   h2 {
     font-size: 2em;
     font-weight: 700;
@@ -498,7 +498,7 @@ h3 {
   font-weight: 400;
   margin: 2px 0px;
 }
-@media (min-width: 800px) {
+@media (min-width: 768px) {
   h3 {
     margin: 5px 0px;
   }
