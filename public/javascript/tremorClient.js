@@ -210,6 +210,7 @@ $(function () {
   });
 
   //** Helper functions */
+  //** Updates UI and markers when new data requested */
   function updateMarkers(response) {
     tremorMap.updateMarkers(response, coloringSelector.val());
 
@@ -236,6 +237,7 @@ $(function () {
     $("#loading-overlay").hide();
   }
 
+  //** Updates the chart and datepicker with given range */
   function updateDateRange(range){
     dateRange = {
       "start": range[0].format(dateFormat),
@@ -297,6 +299,14 @@ function getEvents(apiBaseUrl, range, boundsStr) {
     }).fail(function (jqXHR, textStatus) {
       $("#loading-gif").hide();
       $("#loading-warning").show();
+      if(jqXHR.status === 404) {
+        $("#err404").show();
+      } else if (jqXHR.status === 500) {
+        $("#err500").show();
+      } else {
+        $("#err").show();
+      }
+
       console.log(jqXHR.status);
       console.log("Request failed: " + textStatus + " ");
     }).promise();

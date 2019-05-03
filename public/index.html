@@ -148,8 +148,19 @@
             Loading...
           </div>
           <div id="loading-warning">
-            <div>No tremor for selected time range.</div>
-            <div>Please try new dates.</div>
+
+            <div id="err404" class="error">
+                <div>404: No tremor returned for selected time range.</div>
+                <div>Please try a new search.</div>
+            </div>
+            <div id="err500" class="error">
+                <div>Error: Could not reach server.</div>
+                <div>Please try again later.</div>
+            </div>
+            <div id="err" class="error">
+                <div>Something went wrong!</div>
+                <div>Please try again or send us an email at pnsn@uw.edu.</div> 
+            </div>
           </div>
         </div>
 

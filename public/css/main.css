@@ -420,6 +420,9 @@ button:disabled {
 #content #loading-overlay #loading-warning div {
   text-align: center;
 }
+#content #loading-overlay #loading-warning .error {
+  display: none;
+}
 #content #sidebar {
   height: 100%;
   background-color: white;
