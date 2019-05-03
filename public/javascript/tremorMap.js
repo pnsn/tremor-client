@@ -1,53 +1,13 @@
 // Makes a map 
-function TremorMap(mapOptions) {
-
+function TremorMap(config) {
   var map,
     eventMarkers,
     heatmap,
     overlays = {},
-    mapKey;
+    mapKey,
+    shapeOptions = config.boundsOptions;  
 
-  // Allows storing of additional data in marker
-  var customMarker = L.CircleMarker.extend({
-    options: {
-      timeIndex: 0,
-      eId: ""
-    },
-    setColoring : function(coloring){
-      if(coloring == "color-time") {
-        this.setStyle({
-          fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
-          color: "#" + rainbowDark.colorAt(this.options.timeIndex)
-        });
-      } else if (coloring == "color-normal") {
-        this.setStyle({
-          fillColor: "#ef0b25",
-          color: "#770512"
-        });
-      } else { //in case someone puts something weird in params
-        this.setStyle({
-          fillColor: "white",
-          color: "black"
-        });
-      }
-    }
-  });
-
-  var drawOptions =  {
-    shapeOptions: {
-      color: '#083f08',
-      weight: 2,
-      fillOpacity: 0,
-      opacity: 1
-    }
-  };   
-
-  var rainbow = new Rainbow();
-  var rainbowDark = new Rainbow();
-  rainbow.setSpectrum("#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25");
-  rainbowDark.setSpectrum("#0B1B72", "#0A7364", "#177508", "#766807", "#770512");
-
-  map = new L.Map(mapOptions.mapContainer, mapOptions.leafletOptions).setView(mapOptions.center, mapOptions.zoom);
+  map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
   var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
@@ -72,6 +32,43 @@ function TremorMap(mapOptions) {
     return new L.Control.Key(opts);
   };
 
+  var rainbow = new Rainbow();
+  var rainbowDark = new Rainbow();
+
+  rainbow.setSpectrumByArray(config.coloringOptions.spectrum.fill);
+  rainbowDark.setSpectrumByArray(config.coloringOptions.spectrum.outline);
+  
+  // Allows storing of additional data in marker
+  var customMarker = L.CircleMarker.extend({
+    options: {
+      weight: config.markerOptions.weight,
+      opacity: config.markerOptions.opacity,
+      fillOpacity: config.markerOptions.fillOpacity,
+      radius: config.markerOptions.radius,
+      timeIndex: 0,
+      eId: ""
+    },
+    setColoring : function(coloring){
+      if(coloring == "color-time") {
+        this.setStyle({
+          fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
+          color: "#" + rainbowDark.colorAt(this.options.timeIndex)
+        });
+      } else if (coloring == "color-normal") {
+        this.setStyle({
+          fillColor: config.coloringOptions.solid.fill,
+          color: config.coloringOptions.solid.outline
+        });
+      } else { //in case someone puts something weird in params
+        this.setStyle({
+          fillColor: config.coloringOptions.default.fill,
+          color: config.coloringOptions.default.outline
+        });
+      }
+    }
+  });
+
+
 
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
@@ -87,7 +84,7 @@ function TremorMap(mapOptions) {
 
   function startDrawing(){
     editableLayers.clearLayers();
-    rectangle = new L.Draw.Rectangle(map, drawOptions);
+    rectangle = new L.Draw.Rectangle(map, {"shapeOptions": shapeOptions});
     rectangle.enable();
   }
 
@@ -105,7 +102,7 @@ function TremorMap(mapOptions) {
 
   function addBounds(bounds){
     editableLayers.clearLayers();
-    drawnRectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], drawOptions.shapeOptions);
+    drawnRectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], shapeOptions);
     editableLayers.addLayer(drawnRectangle);
   }
 
@@ -119,7 +116,7 @@ function TremorMap(mapOptions) {
         "lat_min" : bounds.getSouth(),
         "lon_max" : bounds.getEast(),
         "lon_min" : bounds.getWest()
-      }
+      };
     } else {
       return;
     }
@@ -127,7 +124,7 @@ function TremorMap(mapOptions) {
 
   }
 
-
+  // THis should be done better
   overlays["Seismometers"] = L.geoJSON(seismometersGeoJSON, {
     pointToLayer: function (feature, latlng) {
       return L.marker(latlng, {
@@ -151,7 +148,6 @@ function TremorMap(mapOptions) {
 
   L.control.layers({}, overlays).addTo(map);
 
-
   // Helper functions // 
 
   //removes event based layers
@@ -169,7 +165,7 @@ function TremorMap(mapOptions) {
       points.push(marker.getLatLng());
     });
     heatmap = L.heatLayer(points, {
-      radius: 25
+      radius: 10
     });
     map.addLayer(heatmap);
   }
@@ -233,11 +229,6 @@ function TremorMap(mapOptions) {
         
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
-          weight: 1,
-          opacity: 1,
-          fillOpacity: 0.9,
-          radius: 2.75,
-          // riseOnHover: true,
           timeIndex: timeIndex,
           eId: id,
         });

@@ -7,6 +7,33 @@ $.clientConfig = {
       "mapContainer": 'tremor-map',
       "center": [45.5122, -122.6587],
       "zoom": 5.5,
+      "boundsOptions" :  {
+        color: '#083f08',
+        weight: 2,
+        fillOpacity: 0,
+        opacity: 1
+      },
+      "markerOptions" : {
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.9,
+        radius: 2.75,
+      },
+      "coloringOptions" : {
+          "numBreaks" : 100,
+          "solid": {
+            fill: "#ef0b25",
+            outline: "#770512"
+          },
+          "spectrum" : {
+            fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
+            outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
+          },
+          "default" : {
+            fill: "white",
+            outline: "black"
+          }
+      },
       "leafletOptions": {
         "minZoom": 5,
         "maxZoom": 11,
