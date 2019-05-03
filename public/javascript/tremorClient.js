@@ -149,7 +149,12 @@ $(function () {
 
   $("#start-tour").click(function(){
     // Start the tour
-    tour.start(true);
+
+    if(tour.ended()){
+      tour.restart();
+    } else {
+      tour.start(true);
+    }
   });
 
 
