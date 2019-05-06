@@ -55,7 +55,6 @@ button:disabled {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  text-align: center;
 }
 .select select::-ms-expand {
   display: none;
@@ -195,11 +194,15 @@ button:disabled {
 }
 
 .map-key {
-  height: 250px;
+  height: 230px;
 }
 .map-key div {
   font-size: 0.8em;
   width: 100%;
+}
+.map-key #key-colored {
+  border: solid 1px black;
+  height: 200px;
 }
 .map-key img {
   margin: auto;

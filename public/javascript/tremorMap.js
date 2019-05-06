@@ -5,8 +5,8 @@ function TremorMap(config) {
     heatmap,
     overlays = {},
     mapKey,
-    shapeOptions = config.boundsOptions;  
-
+    shapeOptions = config.boundsOptions,
+    colors = config.coloringOptions.colors;
   map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
   var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -19,8 +19,16 @@ function TremorMap(config) {
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
-      div.innerHTML = "<div class='end'></div><div><img src='./assets/tremor_key.png'/></div><div class='start'></div>";
+      div.innerHTML = "<div class='end'></div><div id='key-colored'></div><div class='start'></div>";
       return div;
+    },
+    recolor: function(coloring) {
+      var str = "";
+      $.each(coloring.fill, function(i, color){
+        str += "," + color;
+      });
+      $("#key-colored").css("background-image", "linear-gradient(to top" + str + ")");
+      // background: linear-gradient(to right, purple, blue, cyan, green, yellow, orange, red);
     }
   });
 
@@ -30,9 +38,6 @@ function TremorMap(config) {
 
   var rainbow = new Rainbow();
   var rainbowDark = new Rainbow();
-
-  rainbow.setSpectrumByArray(config.coloringOptions.spectrum.fill);
-  rainbowDark.setSpectrumByArray(config.coloringOptions.spectrum.outline);
   
   // Allows storing of additional data in marker
   var customMarker = L.CircleMarker.extend({
@@ -42,25 +47,22 @@ function TremorMap(config) {
       fillOpacity: config.markerOptions.fillOpacity,
       radius: config.markerOptions.radius,
       timeIndex: 0,
-      id: ""
+      id: "",
+      fill: "white",
+      outline: "black"
     },
     setColoring : function(coloring){
-      if(coloring == "color-time") {
+      if(colors[coloring].type ==  "spectrum") {
         this.setStyle({
           fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
           color: "#" + rainbowDark.colorAt(this.options.timeIndex)
         });
-      } else if (coloring == "color-normal") {
+      } else {
         this.setStyle({
-          fillColor: config.coloringOptions.solid.fill,
-          color: config.coloringOptions.solid.outline
+          fillColor: colors[coloring].fill,
+          color: colors[coloring].outline
         });
-      } else { //in case someone puts something weird in params
-        this.setStyle({
-          fillColor: config.coloringOptions.default.fill,
-          color: config.coloringOptions.default.outline
-        });
-      }
+      } 
     }
   });
 
@@ -184,24 +186,30 @@ function TremorMap(config) {
     if (mapKey) {
       map.removeControl(mapKey);
     }
-
     clearLayers();
 
     if(coloring == "heat-map") {
       drawHeatMap();
     } else {
       if(!alreadyColored) {
+
+        if(colors[coloring].type == "spectrum") {
+
+          rainbow.setSpectrumByArray(colors[coloring].fill);
+          rainbowDark.setSpectrumByArray(colors[coloring].outline);
+
+          if (!mapKey) {
+            mapKey = L.control.key({
+              position: 'topleft',
+            });
+          }
+          mapKey.addTo(map);
+          mapKey.recolor(colors[coloring]);
+
+        }
         eventMarkers.eachLayer(function (marker) {
           marker.setColoring(coloring);
         });
-      }
-      if(coloring == "color-time") {
-        if (!mapKey) {
-          mapKey = L.control.key({
-            position: 'topleft',
-          });
-        }
-        mapKey.addTo(map);
       }
       toggleLayer(true, eventMarkers);
     }
@@ -229,8 +237,6 @@ function TremorMap(config) {
           timeIndex: timeIndex,
           id: id,
         });
-
-        marker.setColoring(coloring);
 
         marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
         .on('mouseover', function () {
@@ -263,7 +269,7 @@ function TremorMap(config) {
         return marker;
       }
     });
-    recolorMarkers(coloring, true);
+    recolorMarkers(coloring);
   }
 
   return {

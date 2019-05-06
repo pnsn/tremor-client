@@ -48,9 +48,24 @@ $(function () {
     $("#remove-filter").hide();
   } 
 
+  var defaultColor;
+  $.each($.clientConfig.mapOptions.coloringOptions.colors, function(id, color) {
+    if(color.default){
+      defaultColor = id;
+    }
+    coloringSelector.prepend(
+      "<option value='" + id + "'>View as <span>" + color.name + "</span></option>"
+    );
+  });
   // Coloring
   if (search_params.get('coloring')) {
     coloringSelector.val(search_params.get('coloring'));
+  } else {
+    if(defaultColor) {
+      coloringSelector.val(defaultColor);
+    } else {
+      coloringSelector.val("red");
+    }
   }
 
   //** Set up page elements */

@@ -21,17 +21,32 @@ $.clientConfig = {
       },
       "coloringOptions" : {
           "numBreaks" : 100,
-          "solid": {
-            fill: "#ef0b25",
-            outline: "#770512"
-          },
-          "spectrum" : {
-            fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
-            outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
-          },
-          "default" : {
-            fill: "white",
-            outline: "black"
+          colors : {
+            "red": {
+              name: "Normal (red)",
+              type: "single",
+              fill: "#ef0b25",
+              outline: "#770512",
+              default: true
+            },
+            "jet" : {
+              name: "Color vs Time (Jet)",
+              type: "spectrum",
+              fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
+              outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
+            },
+            "monochrome" : {
+              name: "Color vs Time (B&W)",
+              type: "spectrum",
+              fill: ["black", "white"],
+              outline: ["black", "black"]
+            },
+            "hot" : {
+              name: "Color vs Time (Hot)",
+              type: "spectrum",
+              fill: ["black", "red", "orange", "yellow", "white"],
+              outline: ["black", "black"]
+            },
           }
       },
       "leafletOptions": {
