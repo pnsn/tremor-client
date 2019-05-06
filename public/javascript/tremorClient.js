@@ -179,7 +179,7 @@ $(function () {
 
   $("#remove-filter").click(function() {
     $(this).hide();
-    $("#draw-filter").show()
+    $("#draw-filter").show();
     $("#draw-filter-text").hide();
     $("#submit").removeClass("inactive");
     tremorMap.removeBounds();

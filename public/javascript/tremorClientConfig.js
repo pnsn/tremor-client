@@ -96,18 +96,18 @@ $.clientConfig = {
         steps: [{
             element: "#header-text",
             title: "Welcome to the new Tremor Application!",
-            content: "The old Tremor App was out of date, so we rebuilt it. This allows us to add tools and make it more usable.",
+            content: "The old Tremor App was outdated and didn't work on newer devices, so we rebuilt it. This rebuild allows us to add new tools and make it more usable.",
             placement: "bottom"
           },
           {
             element: "#chart-container",
-            title: "The Time Chart",
+            title: "Time Chart",
             content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
             placement: "bottom"
           },
           {
             element: "#date-container",
-            title: "This is the date selector!",
+            title: "Date Selector",
             content: "Want to select a range? Click on the time range. Want to shift your time range by a day? Press the buttons to the left and right of the time range.",
             placement: "bottom"
           },
@@ -119,26 +119,32 @@ $.clientConfig = {
           },
           {
             element: "#submit",
-            title: "Searching for Tremor",
-            content: "Before your changes will be in effect, you must press search! After the data loads, your results will be plotted on the map.",
+            title: "Submitting Your Search",
+            content: "Before your changes will be in effect, you must press search! After the data loads, your results will be plotted on the map and the list.",
             placement: "left"
           },
           {
             element: "#map-container",
-            title: "The Map",
+            title: "Map",
             content: "Toggle overlays in the top right corner and zoom in or out on the top left.",
             placement: "right"
           },
           {
             element: "#search-results-container",
             title: "Search Results",
-            content: "Here are your results. You can change how the data is displayed on the map with the selector. Note: a maximum of 20,000 events are returned for a search (4x what the old tremor could plot)!",
+            content: "Results are rendered on the map and added to this list. Note: a maximum of 20,000 events are returned for a search but the list will not render for queries greater than 5000.",
+            placement: "left"
+          },
+          {
+            element: "#display-type-container",
+            title: "Visualize",
+            content: "Plot tremor by time, density, or single color.",
             placement: "left"
           },
           {
             element: "#download-container",
             title: "Download",
-            content: "Want to play with the data on your own? Download your results as either a json or csv.",
+            content: "Want to play with the data on your own? Download your results as either GeoJSON or Comma Separated Values (CSV).",
             placement: "left",
             onShown: function () {
               $("button[data-role='next']").hide();
