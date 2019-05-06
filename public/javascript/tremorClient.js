@@ -19,6 +19,7 @@ $(function () {
     timeChart,
     tour;
 
+    console.log(coloringSelector.val())
   //** Set up page with any existing URL params */
 
   // Date ranges - get from URL or start from yesterday
@@ -79,7 +80,7 @@ $(function () {
     url: apiBaseUrl + "/event/0",
     dataType: "json"
   }).done(function (response) {
-    $("#updated span").text(moment.utc(response.time).fromNow());
+    $("#updated span").text(moment.utc(response.properties.time).fromNow());
   });
 
   getCounts(apiBaseUrl).done(function (response) {
@@ -172,7 +173,9 @@ $(function () {
   $("#download-container button").click(function () {
     var dataFormat = $("#download-type").val();
     if (dataFormat === "json" || dataFormat === "csv") {
-      var url = apiBaseUrl + "/events?starttime=" + dateRange.start + "&endtime=" + dateRange.end + "&format=" + dataFormat;
+      var start = dateRange.start + "T00:00:00";
+      var end = dateRange.end + "T23:59:59";
+      var url = apiBaseUrl + "/events?starttime=" + start + "&endtime=" + end + "&format=" + dataFormat;
       window.open(url, "_blank");
     }
   });

@@ -192,8 +192,9 @@ function TimeChart(chartOptions, datePickerElem) {
   }
 
   function resize(innerWidth) {
-    width = innerWidth - margin.right - margin.left;
 
+    width = innerWidth - margin.right - margin.left;
+    console.log(innerWidth, width)
     //update x and y scales to new dimensions
     x.range([0, width]);
     y.range([height, 0]);
