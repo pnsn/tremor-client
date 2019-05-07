@@ -119,7 +119,9 @@ function TremorMap(config) {
 
   function addBounds(bounds){
     editableLayers.clearLayers();
+
     drawnRectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], shapeOptions);
+
     editableLayers.addLayer(drawnRectangle);
   }
 

@@ -77,10 +77,10 @@ $(function () {
 
     // Initial Bounds
     var bounds = {
-      "lat_max" : search_params.get("lat_max"),
-      "lat_min" : search_params.get("lat_min"),
-      "lon_max" : search_params.get("lon_max"),
-      "lon_min" : search_params.get("lon_min")
+      "lat_max" : parseFloat(search_params.get("lat_max")),
+      "lat_min" : parseFloat(search_params.get("lat_min")),
+      "lon_max" : parseFloat(search_params.get("lon_max")),
+      "lon_min" : parseFloat(search_params.get("lon_min"))
     };
   
     if(bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max){
