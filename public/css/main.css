@@ -563,7 +563,7 @@ h4 {
 
 .right-column {
   margin-left: 20px;
-  width: 100%;
+  width: 99%;
   display: inline-block;
 }
 @media (min-width: 576px) {
