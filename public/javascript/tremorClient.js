@@ -110,6 +110,7 @@ $(function () {
     if(bounds) {
       getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
         timeChart.addData(response);
+        $("path.line").addClass("modified");
       });
     } else {
       timeChart.addData(response);
@@ -190,6 +191,7 @@ $(function () {
       function( bounds ) {
         getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
           timeChart.updateData(response);
+          $("path.line").addClass("modified");
         });
         //get new line
         console.log( status + ", things are going well" );
@@ -208,6 +210,7 @@ $(function () {
   });
 
   $("#remove-filter").click(function() {
+    $("path.line").removeClass("modified");
     $(this).hide();
     $("#draw-filter").show();
     $("#draw-filter-text").hide();

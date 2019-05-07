@@ -101,8 +101,12 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
 
   //zoom the chart in
   function zoom() {
+
+    console.log("zoom")
     xAxis.transition().call(d3.axisBottom(x));
     yAxis.transition().call(d3.axisLeft(y));
+
+
     line.transition().attr("d", valueline);
   }
 
@@ -191,18 +195,16 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
     chartData = processData(data);
 
     console.log("do I look different")
-      // Scale the range of the data again 
-
-    // x.domain(d3.extent(chartData, function(d) { return d.date; }));
-    // y.domain([0, d3.max(chartData, function(d) { return d.count; })]);
 
     // Select the section we want to apply our changes to
     var svg = d3.select("body").transition();
 
+
+    line.data([chartData]);
     // Make the changes
     svg.select(".line")   // change the line
-        .duration(750)
-        .attr("d", valueline(chartData));
+        .attr("d", valueline)
+        .duration(750);
 
   }
   

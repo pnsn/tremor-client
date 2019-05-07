@@ -4,11 +4,14 @@
 
 	.line {
 		fill: none;
-		stroke: #ababab;
+		stroke: $gray;
 		stroke-width: 2px;
 	}
 
 	path.line {
+		&.modified {
+			stroke: $gray-darker;
+		}
 		stroke-width: 1.5px;
 		clip-path: url(#clip);
 	}
