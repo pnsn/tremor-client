@@ -193,40 +193,42 @@ function TremorMap(config) {
     }
   }
 
-  function recolorMarkers(coloring, alreadyColored) {
+  function recolorMarkers(coloringName, alreadyColored) {
     if (mapKey) {
       map.removeControl(mapKey);
     }
     clearLayers();
 
-    if(coloring == "heat-map") {
+    if(coloringName == "heat-map") {
       drawHeatMap();
     } else {
       if(!alreadyColored) {
+        prepareSpectrum(colors[coloringName]);
 
-        if(colors[coloring].type == "spectrum") {
-
-          rainbow.setSpectrumByArray(colors[coloring].fill);
-          rainbowDark.setSpectrumByArray(colors[coloring].outline);
-
-          if (!mapKey) {
-            mapKey = L.control.key({
-              position: 'topleft',
-            });
-          }
-          mapKey.addTo(map);
-          mapKey.recolor(colors[coloring]);
-
-        }
         eventMarkers.eachLayer(function (marker) {
-          marker.setColoring(coloring);
+          marker.setColoring(coloringName);
         });
       }
       toggleLayer(true, eventMarkers);
     }
   }
 
-  function updateMarkers(response, coloring) {
+  function prepareSpectrum(coloring){    
+    if(coloring.type == "spectrum") {
+      rainbow.setSpectrumByArray(coloring.fill);
+      rainbowDark.setSpectrumByArray(coloring.outline);
+  
+      if (!mapKey) {
+        mapKey = L.control.key({
+          position: 'topleft',
+        });
+      }
+      mapKey.addTo(map);
+      mapKey.recolor(coloring);
+    }
+  }
+
+  function updateMarkers(response, coloringName) {
     clearLayers();
 
     var firstEventTime = new Date(response.features[0].properties.time);
@@ -234,6 +236,7 @@ function TremorMap(config) {
 
     var timeIndex, time, id, lat, lng;
 
+    prepareSpectrum(colors[coloringName]);
     eventMarkers = L.geoJSON(response.features, {
       pointToLayer: function (feature, latlng) {
         time = new Date(feature.properties.time);
@@ -248,6 +251,8 @@ function TremorMap(config) {
           timeIndex: timeIndex,
           id: id,
         });
+
+        marker.setColoring(coloringName);
 
         marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
         .on('mouseover', function () {
@@ -270,17 +275,13 @@ function TremorMap(config) {
           marker.on('click', function () {
             $(".active-event").removeClass("active-event");
             listItem.addClass("active-event");
-            console.log(listItem.position().top, $('#event-list').scrollTop());
-
-            $('#event-list').scrollTop(listItem.position().top - $('#event-list').scrollTop());
-            console.log(listItem.position().top, $('#event-list').scrollTop());
           });
           $("#event-list").append(listItem);
         }
         return marker;
       }
     });
-    recolorMarkers(coloring);
+    recolorMarkers(coloringName, true);
   }
 
   return {

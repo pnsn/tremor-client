@@ -20,7 +20,6 @@ $(function () {
     timeChart,
     tour;
 
-    console.log(coloringSelector.val())
   //** Set up page with any existing URL params */
 
   // Date ranges - get from URL or start from yesterday
@@ -30,6 +29,8 @@ $(function () {
   dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, dateFormat).format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
   dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, dateFormat).format(dateFormat) : dateRange.start;
   
+
+  // Coloring
   var defaultColor;
   $.each($.clientConfig.mapOptions.coloringOptions.colors, function(id, color) {
     if(color.default){
@@ -39,9 +40,10 @@ $(function () {
       "<option value='" + id + "'>" + color.name + "</option>"
     );
   });
-  // Coloring
-  if (search_params.get('coloring')) {
-    coloringSelector.val(search_params.get('coloring'));
+  
+  var paramColor = search_params.get('coloring');
+  if (paramColor && $("#display-type option[value='"+paramColor+"']").length > 0) {
+    coloringSelector.val(paramColor);
   } else {
     if(defaultColor) {
       coloringSelector.val(defaultColor);

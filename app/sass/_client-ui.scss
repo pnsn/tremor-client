@@ -237,11 +237,11 @@
       overflow:scroll;
       font-size: .9em;
 
-      height: 300px;
+      max-height: 300px;
       width:100%;
       padding-bottom:10px;
       @include md {
-        height: 640px;
+        max-height: 640px;
         width:77%;
       }
       .event-nav.active-event{
