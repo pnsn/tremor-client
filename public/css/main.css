@@ -430,11 +430,14 @@ button:disabled {
   height: 100%;
   background-color: white;
 }
-#content #sidebar #search-results-container #display-type-container {
+#content #sidebar #search-results-container #display-type-container div {
+  display: inline-block;
+}
+#content #sidebar #search-results-container #display-type-container .select {
   margin: 5px 0px;
   width: 210px;
 }
-#content #sidebar #search-results-container #date-range, #content #sidebar #search-results-container #epicenters {
+#content #sidebar #search-results-container .results-text {
   color: #666666;
   font-weight: 300;
 }

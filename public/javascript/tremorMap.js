@@ -71,19 +71,31 @@ function TremorMap(config) {
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
 
-  map.on(L.Draw.Event.CREATED, function (e) {
-    var type = e.layerType,
-        layer = e.layer;
+  
 
-    editableLayers.addLayer(layer);
-  });
 
   var rectangle, drawnRectangle;
 
   function startDrawing(){
+    var dfd = $.Deferred();
     editableLayers.clearLayers();
     rectangle = new L.Draw.Rectangle(map, {"shapeOptions": shapeOptions});
     rectangle.enable();
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+      var type = e.layerType,
+          layer = e.layer;
+  
+      editableLayers.addLayer(layer);
+      dfd.resolve(getBounds());
+    });
+
+    map.on('draw:drawstop', function (e) {
+      dfd.reject("cancel");
+    });
+    
+
+    return dfd.promise();
   }
 
   function removeBounds(){
@@ -95,7 +107,6 @@ function TremorMap(config) {
     if(drawnRectangle) {
       drawnRectangle = null;
     }
-
   }
 
   function addBounds(bounds){

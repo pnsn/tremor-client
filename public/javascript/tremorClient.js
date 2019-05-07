@@ -10,6 +10,7 @@ $(function () {
     search_params = new URLSearchParams(window.location.search), //url params
     datePickerContainer = $('input[name="date-range"]'),
     coloringSelector = $("#display-type"), //how map markers are colored
+    minDate = $.clientConfig.minDate,
     dateRange = {
       "start": "",
       "end": ""
@@ -29,32 +30,13 @@ $(function () {
   dateRange.start = start && moment.utc(start, dateFormat).isValid() ? moment.utc(start, dateFormat).format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
   dateRange.end = end && moment.utc(end, dateFormat).isValid() ? moment.utc(end, dateFormat).format(dateFormat) : dateRange.start;
   
-  // Initial Bounds
-  var bounds = {
-    "lat_max" : search_params.get("lat_max"),
-    "lat_min" : search_params.get("lat_min"),
-    "lon_max" : search_params.get("lon_max"),
-    "lon_min" : search_params.get("lon_min")
-  };
-
-  if(bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max){
-    tremorMap.addBounds(bounds);
-    $("#draw-filter").hide();
-    $("#remove-filter").show();
-  } else {
-    bounds = null;
-    $("#draw-filter-text").hide();
-    $("#draw-filter").show();
-    $("#remove-filter").hide();
-  } 
-
   var defaultColor;
   $.each($.clientConfig.mapOptions.coloringOptions.colors, function(id, color) {
     if(color.default){
       defaultColor = id;
     }
     coloringSelector.prepend(
-      "<option value='" + id + "'>View as <span>" + color.name + "</span></option>"
+      "<option value='" + id + "'>" + color.name + "</option>"
     );
   });
   // Coloring
@@ -73,7 +55,8 @@ $(function () {
     Object.assign(datePickerOptions, {
     "startDate": dateRange.start,
     "endDate": dateRange.end,
-    "maxDate": moment.utc()
+    "maxDate": moment.utc(),
+    "minDate": minDate
   }), function (start, end, label) {
     dateRange = {
       "start": start.format(dateFormat),
@@ -87,8 +70,27 @@ $(function () {
   datePicker = datePickerContainer.data('daterangepicker'); //actual datePicker
 
   tremorMap = new TremorMap(mapOptions);
-  timeChart = new TimeChart(chartOptions, datePicker);
+  timeChart = new TimeChart(chartOptions, datePicker, minDate);
   tour = new Tour(tourOptions);
+
+    // Initial Bounds
+    var bounds = {
+      "lat_max" : search_params.get("lat_max"),
+      "lat_min" : search_params.get("lat_min"),
+      "lon_max" : search_params.get("lon_max"),
+      "lon_min" : search_params.get("lon_min")
+    };
+  
+    if(bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max){
+      tremorMap.addBounds(bounds);
+      $("#draw-filter").hide();
+      $("#remove-filter").show();
+    } else {
+      bounds = null;
+      $("#draw-filter-text").hide();
+      $("#draw-filter").show();
+      $("#remove-filter").hide();
+    } 
 
   //** Get data and do stuff with it */
   $.ajax({
@@ -98,14 +100,22 @@ $(function () {
     $("#updated span").text(moment.utc(response.properties.time).fromNow());
   });
 
+  var allTremorCounts;
   getCounts(apiBaseUrl).done(function (response) {
-    timeChart.addData(response);
-    timeChart.getTotal(dateRange);
+    allTremorCounts = response;
+
+    
+    if(bounds) {
+      getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
+        timeChart.addData(response);
+      });
+    } else {
+      timeChart.addData(response);
+    }
 
     $(window).on('resize', function () {
       timeChart.resize($("#control-bar").width() - $("#search").width() - 20);
     });
-
   });
 
   getEvents(apiBaseUrl, dateRange, getBoundsString(bounds)).done(function (response) {
@@ -173,7 +183,23 @@ $(function () {
     $(this).hide();
     $("#remove-filter").show();
     $("#draw-filter-text").show();
-    tremorMap.startDrawing();
+    $.when(tremorMap.startDrawing()).then(
+      function( bounds ) {
+        getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
+          timeChart.updateData(response);
+        });
+        //get new line
+        console.log( status + ", things are going well" );
+      },
+      function( status ) {
+        //do nothing
+        console.log( status + ", you fail this time" );
+      },
+      function( status ) {
+        console.log("pending")
+      }
+    );
+    
     $("#submit").removeClass("inactive");
   });
 
@@ -183,6 +209,9 @@ $(function () {
     $("#draw-filter-text").hide();
     $("#submit").removeClass("inactive");
     tremorMap.removeBounds();
+
+    timeChart.updateData(allTremorCounts);
+    //put back normal line
   });
 
   $("#download-container button").click(function () {
@@ -235,21 +264,23 @@ $(function () {
     $(".start").text(dateRange.start);
     $(".end").text(dateRange.end);
 
+    // response.count
+
     $("#submit").addClass("inactive");
-    if (response.features.length >= drawLimit) {
+    if (response.count >= drawLimit) {
       $("#event-limit-warning").show();
     } else {
       $("#event-limit-warning").hide();
     }
-    if (response.features.length > 5000) {
+    if (response.count > 5000) {
       $("#event-list").hide();
       $("#event-list-warning").show();
     } else {
       $("#event-list").show();
       $("#event-list-warning").hide();
     }
-    console.log(response.features.length)
-    $("#epicenters span").text(response.features.length);
+ 
+    $("#epicenters span").text(response.count);
     $("#play-events").prop("disabled", false);
 
     $("#loading-overlay").hide();
@@ -273,9 +304,13 @@ $(function () {
 }); 
 
   //** Gets the day counts of tremor */
-  function getCounts(apiBaseUrl) {
+  function getCounts(apiBaseUrl, boundsStr) {
+    var str = "";
+    if(boundsStr && boundsStr.length > 0){
+      str= "?" + boundsStr;
+    }
     var request = $.ajax({
-      url: apiBaseUrl + "/day_counts",
+      url: apiBaseUrl + "/day_counts" + str,
       dataType: "json"
     });
 

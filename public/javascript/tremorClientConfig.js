@@ -3,6 +3,7 @@ $.clientConfig = {
     drawLimit: 20000, //max number of events to draw
     dateFormat: "YYYY-MM-DD", //Date format to use MUST BE SET FOR CHART AND DATEPICKER BELOW
     apiBaseUrl: "https://tremorapi.pnsn.org/api/v1.0", //Where to get the data from
+    minDate: "2009-08-06",
     mapOptions: {
       "mapContainer": 'tremor-map',
       "center": [45.5122, -122.6587],
@@ -36,7 +37,7 @@ $.clientConfig = {
               outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
             },
             "monochrome" : {
-              name: "Color vs Time (B&W)",
+              name: "Color vs Time (Black & White)",
               type: "spectrum",
               fill: ["black", "white"],
               outline: ["black", "black"]
@@ -86,8 +87,7 @@ $.clientConfig = {
           "firstDay": 1
         },
         "alwaysShowCalendars": true,
-        "linkedCalendars": false,
-        "minDate": "2009/08/06"
+        "linkedCalendars": false
       },
       tourOptions: {
         name: '7',

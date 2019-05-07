@@ -1,5 +1,5 @@
 //This makes a D3 chart that can zoom in and select a period of time
-function TimeChart(chartOptions, datePickerElem) {
+function TimeChart(chartOptions, datePickerElem, minDate) {
   var margin = {
       top: 8,
       right: 0,
@@ -8,6 +8,7 @@ function TimeChart(chartOptions, datePickerElem) {
     },
     height = chartOptions.height - margin.top - margin.bottom,
     width = chartOptions.width - margin.right - margin.left,
+    minimumDate = minDate;
     datePicker = datePickerElem;
     dateFormat = chartOptions.format;
 
@@ -36,6 +37,39 @@ function TimeChart(chartOptions, datePickerElem) {
     .attr("width", width)
     .attr("height", height)
     .attr("transform", "translate(" + margin.left  + ")");
+
+    brush = d3.brushX()
+    .extent([
+      [0, 0],
+      [width, height]
+    ])
+    .on("end", brushended)
+    .handleSize(height);
+
+    svg.append("g")
+    .attr("class", "brush")
+    .call(brush)
+    .attr("transform", "translate(" + margin.left  + ")");
+
+    
+  svg.append("text")
+    .attr("class", "y-axis-text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0)
+    .attr("x",0 - (height / 2))
+    .attr("dy", "1em")
+    .style("text-anchor", "middle")
+    .text("Counts");   
+
+
+    // define the line
+    valueline = d3.line()
+      .x(function (d) {
+        return x(d.date);
+      })
+      .y(function (d) {
+        return y(d.count);
+      });
 
   // Helper functions //
 
@@ -97,18 +131,7 @@ function TimeChart(chartOptions, datePickerElem) {
   }
 
   function addData(data) {
-    rawData = data;
-    var chartData = [],
-      today = moment.utc(),
-      firstMeas = moment.utc(Object.keys(rawData)[0]);
-    for (var d = firstMeas; d <= today; d.add(1, "days")) {
-      dString = d.format(dateFormat);
-      hours = rawData[dString] ? rawData[dString] : 0;
-      chartData.push({
-        "date": moment.utc(d),
-        "count": hours
-      });
-    }
+    var chartData = processData(data);
 
     // Scale the range of the data    
     x0 = d3.extent(chartData, function (d) {
@@ -123,34 +146,16 @@ function TimeChart(chartOptions, datePickerElem) {
 
     y = d3.scaleLinear().domain(y0).range([height, 0]);
 
-    // define the line
-    valueline = d3.line()
-      .x(function (d) {
-        return x(d.date);
-      })
-      .y(function (d) {
-        return y(d.count);
-      });
-    brush = d3.brushX()
-      .extent([
-        [0, 0],
-        [width, height]
-      ])
-      .on("end", brushended)
-      .handleSize(height);
-
     idleDelay = 350;
+
     line = svg.append("path")
       .data([chartData])
       .attr("class", "line")
       .attr("d", valueline)
       .attr("transform", "translate(" + margin.left  + ")");
-    svg.append("g")
-      .attr("class", "brush")
-      .call(brush)
-      .attr("transform", "translate(" + margin.left  + ")");
-    // Add the X Axis
-    xAxis = svg.append("g")
+
+            // Add the X Axis
+      xAxis = svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(" + margin.left  + "," + height + ")")
       .call(d3.axisBottom(x));
@@ -159,19 +164,46 @@ function TimeChart(chartOptions, datePickerElem) {
       .attr("class", "y-axis")
       .call(d3.axisLeft(y))
       .attr("transform", "translate(" + margin.left +")");
-      
-    svg.append("text")
-      .attr("class", "y-axis-text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0)
-      .attr("x",0 - (height / 2))
-      .attr("dy", "1em")
-      .style("text-anchor", "middle")
-      .text("Counts");      
 
     //do stuff with data
   }
 
+
+  function processData(data) {
+    rawData = data;
+
+    var chartData = [],
+    today = moment.utc(),
+    firstMeas = moment.utc(minimumDate);
+    for (var d = firstMeas; d <= today; d.add(1, "days")) {
+      dString = d.format(dateFormat);
+      hours = rawData[dString] ? rawData[dString] : 0;
+      chartData.push({
+        "date": moment.utc(d),
+        "count": hours
+      });
+    }
+    return chartData;
+  }
+
+  function updateData(data) {
+    chartData = processData(data);
+
+    console.log("do I look different")
+      // Scale the range of the data again 
+
+    // x.domain(d3.extent(chartData, function(d) { return d.date; }));
+    // y.domain([0, d3.max(chartData, function(d) { return d.count; })]);
+
+    // Select the section we want to apply our changes to
+    var svg = d3.select("body").transition();
+
+    // Make the changes
+    svg.select(".line")   // change the line
+        .duration(750)
+        .attr("d", valueline(chartData));
+  }
+  
   function updateBounds(range) {
     var start = range.start,
         end = range.end;
@@ -192,9 +224,8 @@ function TimeChart(chartOptions, datePickerElem) {
   }
 
   function resize(innerWidth) {
-
     width = innerWidth - margin.right - margin.left;
-    console.log(innerWidth, width)
+
     //update x and y scales to new dimensions
     x.range([0, width]);
     y.range([height, 0]);
@@ -221,6 +252,7 @@ function TimeChart(chartOptions, datePickerElem) {
 
   return {
     addData: addData,
+    updateData: updateData,
     //change start and end of chart
     updateBounds: updateBounds,
     //zoom chart out to full view

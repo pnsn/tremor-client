@@ -202,11 +202,15 @@
     background-color:white;
 
     #search-results-container {
-      #display-type-container {
+      
+      #display-type-container div {
+        display: inline-block;
+      }
+      #display-type-container .select{
         margin: 5px 0px;
         width: 210px;
       }
-      #date-range, #epicenters {
+      .results-text {
         color:#666666;
         font-weight: 300;
       }
