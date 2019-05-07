@@ -141,27 +141,26 @@ function TremorMap(config) {
     }
   }
 
-  // THis should be done better
-  overlays["Seismometers"] = L.geoJSON(seismometersGeoJSON, {
-    pointToLayer: function (feature, latlng) {
-      return L.marker(latlng, {
-        icon: L.icon({
-          iconUrl: 'assets/Station.png',
-          iconSize: [10, 8]
-        })
-      }).bindPopup("<div>" + feature.properties.station + "</div>");
-    }
-  });
-
-  overlays["Past Tremor"] = L.geoJSON(pastTremorGeoJSON, {
-    style: pastTremorGeoJSON.properties.style
-  });
-
-  overlays["JDF Plate Contours"] = L.geoJSON(contoursGeoJSON, {
-    style: function (feature) {
-      return feature.properties.style;
-    }
-  });
+  overlays = {
+    "Seismometers" : L.geoJSON(seismometersGeoJSON, {
+      pointToLayer: function (feature, latlng) {
+        return L.marker(latlng, {
+          icon: L.icon({
+            iconUrl: 'assets/Station.png',
+            iconSize: [10, 8]
+          })
+        }).bindPopup("<div>" + feature.properties.station + "</div>");
+      }
+    }),
+    "Past Tremor" : L.geoJSON(pastTremorGeoJSON, {
+      style: pastTremorGeoJSON.properties.style
+    }),
+    "JDF Plate Contours" : L.geoJSON(contoursGeoJSON, {
+      style: function (feature) {
+        return feature.properties.style;
+      }
+    })
+  };
 
   L.control.layers({}, overlays).addTo(map);
 

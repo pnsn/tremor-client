@@ -1,5 +1,5 @@
 //This makes a D3 chart that can zoom in and select a period of time
-function TimeChart(chartOptions, datePickerElem, minDate) {
+function TimeChart(chartOptions, minDate) {
   var margin = {
       top: 8,
       right: 0,
@@ -8,8 +8,10 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
     },
     height = chartOptions.height - margin.top - margin.bottom,
     width = chartOptions.width - margin.right - margin.left,
+    datePicker;
+    
+    
     minimumDate = minDate;
-    datePicker = datePickerElem;
     dateFormat = chartOptions.format;
 
   var chartData;
@@ -102,7 +104,6 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
   //zoom the chart in
   function zoom() {
 
-    console.log("zoom")
     xAxis.transition().call(d3.axisBottom(x));
     yAxis.transition().call(d3.axisLeft(y));
 
@@ -114,9 +115,8 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
     idleTimeout = null;
   }
 
-  function getTotal(range) {
-    var start = range.start,
-        end = range.end;
+  function getTotal(start, end) {
+
     var total = 0;
     var firstMeas = moment.utc(start);
     if (start && end) {
@@ -173,7 +173,6 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
     //do stuff with data
   }
 
-
   function processData(data) {
     rawData = data;
 
@@ -194,8 +193,6 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
   function updateData(data) {
     chartData = processData(data);
 
-    console.log("do I look different")
-
     // Select the section we want to apply our changes to
     var svg = d3.select("body").transition();
 
@@ -208,11 +205,9 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
 
   }
   
-  function updateBounds(range) {
-    var start = range.start,
-        end = range.end;
+  function updateBounds(start, end) {
     
-    getTotal(range);
+    getTotal(start, end);
     svg.select(".brush").call(brush.move, null);
     if (start == end) {
       end = moment.utc(start).add(1, "day").format(dateFormat);
@@ -268,6 +263,9 @@ function TimeChart(chartOptions, datePickerElem, minDate) {
     //zoom chart out to full view
     reset: reset,
     getTotal: getTotal,
-    resize: resize
+    resize: resize,
+    setDatepicker: function(dElem){
+      datePicker = dElem;
+    }
   };
 }
