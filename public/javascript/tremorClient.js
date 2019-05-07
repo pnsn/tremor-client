@@ -40,7 +40,7 @@ $(function () {
       "<option value='" + id + "'>" + color.name + "</option>"
     );
   });
-  
+
   var paramColor = search_params.get('coloring');
   if (paramColor && $("#display-type option[value='"+paramColor+"']").length > 0) {
     coloringSelector.val(paramColor);
@@ -150,7 +150,7 @@ $(function () {
       break;
 
     default:
-      timeChart.reset();
+      range = [moment.utc(minDate), moment.utc()];
     }
 
     if (range.length > 0) {
@@ -181,7 +181,8 @@ $(function () {
   //   tremorMap.playFeatures();
   // });
 
-  $("#draw-filter").click(function() {
+  $("#draw-filter").click(function(e) {
+    e.preventDefault();
     $(this).hide();
     $("#remove-filter").show();
     $("#draw-filter-text").show();
@@ -194,8 +195,9 @@ $(function () {
         console.log( status + ", things are going well" );
       },
       function( status ) {
-        //do nothing
-        console.log( status + ", you fail this time" );
+        $("#remove-filter").hide();
+        $("#draw-filter").show();
+        $("#draw-filter-text").hide();
       },
       function( status ) {
         console.log("pending")
@@ -211,7 +213,6 @@ $(function () {
     $("#draw-filter-text").hide();
     $("#submit").removeClass("inactive");
     tremorMap.removeBounds();
-
     timeChart.updateData(allTremorCounts);
     //put back normal line
   });

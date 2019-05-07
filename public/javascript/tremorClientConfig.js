@@ -102,7 +102,7 @@ $.clientConfig = {
           {
             element: "#chart-container",
             title: "Time Chart",
-            content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range.",
+            content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range. If you add a geographic filter, it will update this chart to show tremor in that region.",
             placement: "bottom"
           },
           {

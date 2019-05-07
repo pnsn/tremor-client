@@ -7,11 +7,17 @@ function TremorMap(config) {
     mapKey,
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors;
+
+    L.Control.include({
+      _refocusOnMap: L.Util.falseFn // Do nothing.
+    });
+  
   map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
   var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   });
+
 
   map.addLayer(osm);
   L.control.scale().addTo(map);
@@ -31,6 +37,9 @@ function TremorMap(config) {
       // background: linear-gradient(to right, purple, blue, cyan, green, yellow, orange, red);
     }
   });
+
+
+  
 
   L.control.key = function (opts) {
     return new L.Control.Key(opts);
@@ -71,7 +80,6 @@ function TremorMap(config) {
   var editableLayers = new L.FeatureGroup();
   map.addLayer(editableLayers);
 
-  
 
 
   var rectangle, drawnRectangle;
@@ -129,8 +137,6 @@ function TremorMap(config) {
     } else {
       return;
     }
-
-
   }
 
   // THis should be done better
