@@ -61,17 +61,20 @@ function TremorMap(config) {
       outline: "black"
     },
     setColoring : function(coloring){
-      if(colors[coloring].type ==  "spectrum") {
-        this.setStyle({
-          fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
-          color: "#" + rainbowDark.colorAt(this.options.timeIndex)
-        });
-      } else {
-        this.setStyle({
-          fillColor: colors[coloring].fill,
-          color: colors[coloring].outline
-        });
-      } 
+      if(colors[coloring]){
+        if(colors[coloring].type ==  "spectrum") {
+          this.setStyle({
+            fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
+            color: "#" + rainbowDark.colorAt(this.options.timeIndex)
+          });
+        } else {
+          this.setStyle({
+            fillColor: colors[coloring].fill,
+            color: colors[coloring].outline
+          });
+        } 
+      }
+
     }
   });
 
@@ -220,7 +223,7 @@ function TremorMap(config) {
     }
   }
 
-  function prepareSpectrum(coloring){    
+  function prepareSpectrum(coloring){ 
     if(coloring.type == "spectrum") {
       rainbow.setSpectrumByArray(coloring.fill);
       rainbowDark.setSpectrumByArray(coloring.outline);
@@ -243,7 +246,10 @@ function TremorMap(config) {
 
     var timeIndex, time, id, lat, lng;
 
-    prepareSpectrum(colors[coloringName]);
+    if(coloringName != "heat-map") {
+      prepareSpectrum(colors[coloringName]);
+    }
+
     eventMarkers = L.geoJSON(response.features, {
       pointToLayer: function (feature, latlng) {
         time = new Date(feature.properties.time);
