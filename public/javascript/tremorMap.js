@@ -45,6 +45,10 @@ function TremorMap(config) {
     return new L.Control.Key(opts);
   };
 
+  mapKey = L.control.key({
+    position: 'topleft',
+  });
+
   var rainbow = new Rainbow();
   var rainbowDark = new Rainbow();
   
@@ -204,13 +208,13 @@ function TremorMap(config) {
   }
 
   function recolorMarkers(coloringName, alreadyColored) {
-    if (mapKey) {
-      map.removeControl(mapKey);
-    }
     clearLayers();
 
     if(coloringName == "heat-map") {
       drawHeatMap();
+      if (mapKey._map != null) {
+        map.removeControl(mapKey);
+      }
     } else {
       if(!alreadyColored) {
         prepareSpectrum(colors[coloringName]);
@@ -224,17 +228,17 @@ function TremorMap(config) {
   }
 
   function prepareSpectrum(coloring){ 
-    if(coloring.type == "spectrum") {
+    if(coloring && coloring.type == "spectrum") {
       rainbow.setSpectrumByArray(coloring.fill);
       rainbowDark.setSpectrumByArray(coloring.outline);
-  
-      if (!mapKey) {
-        mapKey = L.control.key({
-          position: 'topleft',
-        });
+      if (mapKey._map == null) {
+       map.addControl(mapKey);
       }
-      mapKey.addTo(map);
       mapKey.recolor(coloring);
+    } else {
+      if (mapKey._map != null) {
+        map.removeControl(mapKey);
+      }
     }
   }
 
@@ -245,10 +249,8 @@ function TremorMap(config) {
     var lastEventTime = new Date(response.features[response.features.length - 1].properties.time);
 
     var timeIndex, time, id, lat, lng;
-
-    if(coloringName != "heat-map") {
-      prepareSpectrum(colors[coloringName]);
-    }
+    
+    prepareSpectrum(colors[coloringName]);
 
     eventMarkers = L.geoJSON(response.features, {
       pointToLayer: function (feature, latlng) {
