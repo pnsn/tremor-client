@@ -28,5 +28,4 @@ node_modules
 .DS_STORE
 .secret.sh
 .vscode
-*.map
 npm-debug.log
