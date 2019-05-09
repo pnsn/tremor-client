@@ -54,7 +54,7 @@ function TimeChart(chartOptions, minDate) {
     .call(brush)
     .attr("transform", "translate(" + margin.left  + ")");
 
-    
+  
   svg.append("text")
     .attr("class", "y-axis-text")
     .attr("transform", "rotate(-90)")
@@ -66,13 +66,13 @@ function TimeChart(chartOptions, minDate) {
 
 
     // define the line
-    valueline = d3.line()
-      .x(function (d) {
-        return x(d.date);
-      })
-      .y(function (d) {
-        return y(d.count);
-      });
+  valueline = d3.line()
+    .x(function (d) {
+      return x(d.date);
+    })
+    .y(function (d) {
+      return y(d.count);
+    });
 
   // Helper functions //
 
@@ -103,7 +103,6 @@ function TimeChart(chartOptions, minDate) {
 
   //zoom the chart in
   function zoom() {
-    console.log(ticks)
     xAxis.transition().call(d3.axisBottom(x).ticks(ticks));
     yAxis.transition().call(d3.axisLeft(y));
 
