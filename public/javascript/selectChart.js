@@ -10,7 +10,7 @@ function TimeChart(chartOptions, minDate) {
     width = chartOptions.width - margin.right - margin.left,
     datePicker;
     
-    
+    var ticks = 6;
     minimumDate = minDate;
     dateFormat = chartOptions.format;
 
@@ -103,10 +103,9 @@ function TimeChart(chartOptions, minDate) {
 
   //zoom the chart in
   function zoom() {
-
-    xAxis.transition().call(d3.axisBottom(x));
+    console.log(ticks)
+    xAxis.transition().call(d3.axisBottom(x).ticks(ticks));
     yAxis.transition().call(d3.axisLeft(y));
-
 
     line.transition().attr("d", valueline);
   }
@@ -146,12 +145,13 @@ function TimeChart(chartOptions, minDate) {
     y0 = [0, d3.max(chartData, function (d) {
       return d.count;
     })];
-
     x = d3.scaleUtc().domain(x0).range([0, width]);
 
     y = d3.scaleLinear().domain(y0).range([height, 0]);
 
     idleDelay = 350;
+    
+    ticks = width/65 < 10 ? 5 : 10;
 
     line = svg.append("path")
       .data([chartData])
@@ -159,13 +159,11 @@ function TimeChart(chartOptions, minDate) {
       .attr("d", valueline)
       .attr("transform", "translate(" + margin.left  + ")");
 
-
-    actualXAxis = d3.axisBottom(x).ticks(5);
-            // Add the X Axis
+    // Add the X Axis
     xAxis = svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(" + margin.left  + "," + height + ")")
-      .call(actualXAxis);
+      .call(d3.axisBottom(x).ticks(ticks));
 
     // // Add the Y Axis
     yAxis = svg.append("g")
@@ -227,11 +225,11 @@ function TimeChart(chartOptions, minDate) {
 
   function resize(innerWidth) {
     width = innerWidth - margin.right - margin.left;
-
     //update x and y scales to new dimensions
     x.range([0, width]);
     y.range([height, 0]);
 
+    ticks = width/65 < 10 ? 5 : 10;
     //update svg elements to new dimensions
     svg
       .attr('width', width + margin.right + margin.left)
