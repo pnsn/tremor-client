@@ -15,7 +15,6 @@ $(function () {
     timeChart,
     tour,
     allTremorCounts;
-  //TODO: clean this shit up
 
   //** Set up page with any existing URL params */
 

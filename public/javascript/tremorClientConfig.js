@@ -30,6 +30,12 @@ $.clientConfig = {
               outline: "#770512",
               default: true
             },
+            "parula" : {
+              name: "Color vs Time (Parula)",
+              type: "spectrum",
+              fill: ["#352B8A","#0760Df", "#1483D4" ,"#05A5C8", "#31B7A1", "#8ABE75", "#D2Ba58", "#FDC931", "#F8F80F"],
+              outline: ["black", "black"]
+            },
             "jet" : {
               name: "Color vs Time (Jet)",
               type: "spectrum",

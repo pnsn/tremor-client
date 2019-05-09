@@ -159,11 +159,14 @@ function TimeChart(chartOptions, minDate) {
       .attr("d", valueline)
       .attr("transform", "translate(" + margin.left  + ")");
 
+
+    actualXAxis = d3.axisBottom(x).ticks(5);
             // Add the X Axis
-      xAxis = svg.append("g")
+    xAxis = svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(" + margin.left  + "," + height + ")")
-      .call(d3.axisBottom(x));
+      .call(actualXAxis);
+
     // // Add the Y Axis
     yAxis = svg.append("g")
       .attr("class", "y-axis")

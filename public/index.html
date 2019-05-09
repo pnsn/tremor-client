@@ -35,7 +35,7 @@
               <div id="info" class="flex-container flex-row">
                   <h2 id="header-text">Episodic Tremor & Slip Events <span>(ETS)</span></h2>
                   <div id="updated">Updated <span></span></div>
-                  <a href="https://pnsn.org/tremor/overview" target="blank">about tremor</a>
+                  <a href="https://pnsn.org/tremor/overview" target="blank" title="Go to PNSN Tremor Overview">about tremor</a>
                   <button id="start-tour" class="primary">Start Tour</button>
               </div>
           </div>
@@ -48,10 +48,10 @@
 
                   <div id="chart-buttons" class="info-text">
                     zoom to last:
-                    <a value="day">day</a>
-                    <a value="week">week</a>
-                    <a value="month">month</a>
-                    <a value="all" id="zoom-all">all data</a>
+                    <a value="day" title="zoom to last day">day</a>
+                    <a value="week" title="zoom to last week">week</a>
+                    <a value="month" title="zoom to last month">month</a>
+                    <a value="all" id="zoom-all" title="zoom to all data">all data</a>
                   </div>
                 </div>
                 <div id="chart"></div>
@@ -135,7 +135,7 @@
                 <select id="download-type">
                     <option value="" selected disabled>Select Type</option>
                     <option value="csv">CSV</option>
-                    <option value="json">JSON</option>
+                    <option value="json">GeoJSON</option>
                   </select>
                   <div class="select-arrow"></div>
             </div>

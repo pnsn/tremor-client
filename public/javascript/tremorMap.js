@@ -279,12 +279,14 @@ function TremorMap(config) {
         if (response.features.length < 5000) {
           var listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
           listItem.click(function () {
-            $(".active-event").removeClass("active-event");
             $(this).addClass("active-event");
             marker.openPopup();
-          }).on('mouseover', function () {
-            $(".active-event").removeClass("active-event");
+          }).on('mouseenter', function () {
             $(this).addClass("active-event");
+            marker.setRadius(5);
+          }).on('mouseout', function () {
+            $(this).removeClass("active-event");
+            marker.setRadius(config.markerOptions.radius);
           });
 
           marker.on('click', function () {
