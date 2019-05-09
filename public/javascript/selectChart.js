@@ -163,7 +163,7 @@ function TimeChart(chartOptions, minDate) {
     xAxis = svg.append("g")
       .attr("class", "x-axis")
       .attr("transform", "translate(" + margin.left  + "," + height + ")")
-      .call(d3.axisBottom(x).ticks(ticks));
+      .call(d3.axisBottom(x).ticks(ticks).tickFormat(d3.timeFormat("%Y-%m-%d")));
 
     // // Add the Y Axis
     yAxis = svg.append("g")
@@ -230,6 +230,7 @@ function TimeChart(chartOptions, minDate) {
     y.range([height, 0]);
 
     ticks = width/65 < 10 ? 5 : 10;
+
     //update svg elements to new dimensions
     svg
       .attr('width', width + margin.right + margin.left)
