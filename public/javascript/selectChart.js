@@ -13,6 +13,7 @@ function TimeChart(chartOptions, minDate) {
     var ticks = 6;
     minimumDate = minDate;
     dateFormat = chartOptions.format;
+    d3Format = d3.timeFormat("%Y-%m-%d");
 
   var chartData;
   // all the d3 components
@@ -35,13 +36,14 @@ function TimeChart(chartOptions, minDate) {
   svg.append("g")
     .attr('clip-path', 'url(#clip)')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+ 
   var bg = svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
     .attr("transform", "translate(" + margin.left  + ")");
 
-    brush = d3.brushX()
+  brush = d3.brushX()
     .extent([
       [0, 0],
       [width, height]
@@ -49,12 +51,58 @@ function TimeChart(chartOptions, minDate) {
     .on("end", brushended)
     .handleSize(height);
 
-    svg.append("g")
+  var brushG = svg.append("g")
     .attr("class", "brush")
     .call(brush)
     .attr("transform", "translate(" + margin.left  + ")");
 
+    var mouseG = svg.append("g")
+    .attr("class", "mouse-over-effects");
+
+      //line
+    var vertLine = mouseG.append("path")
+      .attr("class", "mouse-line")
+      .attr("pointer-events", "none")
+      .style("stroke", "black")
+      .style("stroke-width", "1px")
+      .style("opacity", "0");
+
+    var text = mouseG.append("text")
+      .attr("transform", "translate(20,15)");
+
+    brushG.select("rect")
+      .on('mouseout', function() { // on mouse out hide line, circles and text
+        // d3.select(".mouse-line")
+        //   .style("opacity", "0");
+        // d3.selectAll(".mouse-per-line text")
+        //   .style("opacity", "0");
+      })
+      .on('mouseover', function() { // on mouse in show line, circles and text
+        console.log("move!")
+        d3.select(".mouse-line")
+          .style("opacity", "1");
+        d3.selectAll(".mouse-per-line text")
+          .style("opacity", "1");
+      })
+      .on('mousemove', function() { // mouse moving over canvas
+        var mouse = d3.mouse(this);
+        var offset = mouse[0]+margin.left;
+
+        vertLine.attr("d", function() {
+            var d = "M" + offset + "," + height;
+            d += " " + offset + "," + 0;
+            return d;
+          });
+
+        var xDate = d3Format(x.invert(mouse[0]));
+        var str = xDate + " : " + (rawData[xDate] ? rawData[xDate] : 0);
+        text.text(str);  
+      });
   
+
+
+
+  // Y-axis label
   svg.append("text")
     .attr("class", "y-axis-text")
     .attr("transform", "rotate(-90)")
@@ -169,8 +217,6 @@ function TimeChart(chartOptions, minDate) {
       .attr("class", "y-axis")
       .call(d3.axisLeft(y))
       .attr("transform", "translate(" + margin.left +")");
-
-    //do stuff with data
   }
 
   function processData(data) {

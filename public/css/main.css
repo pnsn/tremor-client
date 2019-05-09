@@ -228,7 +228,7 @@ button:disabled {
 }
 #chart text {
   fill: black;
-  font-size: 12px;
+  font-size: 0.7rem;
   font-family: "Open Sans", Arial, "sans serif";
 }
 #chart .background {
