@@ -214,17 +214,20 @@ button:disabled {
   height: 100%;
   width: 100%;
 }
-#chart .line {
+#chart .line, #chart .mouse-line {
   fill: none;
   stroke: #ababab;
   stroke-width: 2px;
 }
-#chart path.line {
+#chart path.line, #chart path.mouse-line {
   stroke-width: 1.5px;
   clip-path: url(#clip);
 }
-#chart path.line.modified {
+#chart path.line.modified, #chart path.modified.mouse-line {
   stroke: #5f5f5f;
+}
+#chart .mouse-line {
+  stroke-width: 0.5px;
 }
 #chart text {
   fill: black;

@@ -16,6 +16,11 @@
 		clip-path: url(#clip);
 	}
 
+	.mouse-line {
+		@extend .line;
+		stroke-width: 0.5px;
+	}
+
 	text {
 		fill: black;
 		font-size: 0.7rem;
