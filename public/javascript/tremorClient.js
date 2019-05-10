@@ -99,15 +99,13 @@ $(function () {
   // Total counts for time chart
   getCounts(apiBaseUrl).done(function (response) {
     allTremorCounts = response;
-
+    timeChart.addData(response);
     // Grab new counts if there are bounds
     if (bounds) {
       getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
-        timeChart.addData(response);
+        timeChart.updateData(response);
         $("path.line").addClass("modified");
       });
-    } else {
-      timeChart.addData(response);
     }
 
     $(window).on('resize', function () {

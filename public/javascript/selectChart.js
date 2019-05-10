@@ -9,11 +9,12 @@ function TimeChart(chartOptions, minDate) {
     height = chartOptions.height - margin.top - margin.bottom,
     width = chartOptions.width - margin.right - margin.left,
     datePicker;
-    
-    var ticks = 6;
-    minimumDate = minDate;
-    dateFormat = chartOptions.format;
-    d3Format = d3.utcFormat("%Y-%m-%d");
+
+  var ticks = 6;
+  minimumDate = minDate;
+  dateFormat = chartOptions.format;
+  var d3Format = d3.utcFormat("%Y-%m-%d");
+  var d3Parse = d3.utcParse("%Y-%m-%d");
 
   var chartData;
   // all the d3 components
@@ -29,88 +30,98 @@ function TimeChart(chartOptions, minDate) {
     .append('clipPath')
     .attr('id', 'clip')
     .append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('width', width)
-      .attr('height', height);
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('width', width)
+    .attr('height', height);
   svg.append("g")
     .attr('clip-path', 'url(#clip)')
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
- 
+
   var bg = svg.append("rect")
     .attr("class", "background")
     .attr("width", width)
     .attr("height", height)
-    .attr("transform", "translate(" + margin.left  + ")");
+    .attr("transform", "translate(" + margin.left + ")");
 
   brush = d3.brushX()
     .extent([
       [0, 0],
       [width, height]
     ])
+    .on("brush", brushing)
     .on("end", brushended)
     .handleSize(height);
 
   var brushG = svg.append("g")
     .attr("class", "brush")
     .call(brush)
-    .attr("transform", "translate(" + margin.left  + ")");
+    .attr("transform", "translate(" + margin.left + ")");
 
-    var mouseG = svg.append("g")
+  var mouseG = svg.append("g")
     .attr("class", "mouse-over-effects");
 
-      //line
-    var vertLine = mouseG.append("path")
-      .attr("class", "mouse-line")
-      .attr("pointer-events", "none");
+  //line
+  var vertLine = mouseG.append("path")
+    .attr("class", "mouse-line")
+    .attr("pointer-events", "none");
 
-    var text = mouseG.append("text")
-      .attr("transform", "translate(20,15)");
+  var text = mouseG.append("text")
+    .attr("transform", "translate(20,15)");
 
-    brushG.select("rect")
-      .on('mouseout', function() { // on mouse out hide line, circles and text
-        vertLine.style("opacity", "0");
-        text.style("opacity", "0");
-      })
-      .on('mouseover', function() { // on mouse in show line, circles and text
-        vertLine
-          .style("opacity", "1");
-        text
-          .style("opacity", "1");
-      })
-      .on('click', function(){
-        var mouse = d3.mouse(this);
-        var xDate = d3Format(x.invert(mouse[0]));
-        datePicker.setStartDate(xDate);
-        datePicker.setEndDate(xDate);
-      })
-      .on('mousemove', function() { // mouse moving over canvas
-        var mouse = d3.mouse(this);
-        var offset = mouse[0]+margin.left;
 
-        vertLine.attr("d", function() {
-            var d = "M" + offset + "," + height;
-            d += " " + offset + "," + 0;
-            return d;
-          });
 
-        var xDate = d3Format(x.invert(mouse[0]));
-        var str = xDate + " : " + (rawData[xDate] ? rawData[xDate] : 0);
-        text.text(str);  
+  function brushing() {
+    var s = d3.event.selection;
+    if (s) {
+      var values = s.map(x.invert, x);
+      var start = d3Format(values[0]);
+      var end = d3Format(values[1]);
+      var str = start + " - " + end + " : " + getTotal(start, end);
+
+      text.text(str);
+    }
+  }
+
+  var mouse;
+
+  brushG.select("rect")
+    .on('mouseout', function () { // on mouse out hide line, circles and text
+      vertLine.style("opacity", "0");
+      text.style("opacity", "0");
+    })
+    .on('mouseover', function () { // on mouse in show line, circles and text
+      vertLine
+        .style("opacity", "1");
+      text
+        .style("opacity", "1");
+    })
+    .on('mousemove', function () { // mouse moving over canvas
+      mouse = d3.mouse(this);
+      var offset = mouse[0] + margin.left;
+
+      vertLine.attr("d", function () {
+        var d = "M" + offset + "," + height;
+        d += " " + offset + "," + 0;
+        return d;
       });
+
+      var xDate = d3Format(x.invert(mouse[0]));
+      var str = xDate + " : " + (rawData[xDate] ? rawData[xDate] : 0);
+      text.text(str);
+    });
 
   // Y-axis label
   svg.append("text")
     .attr("class", "y-axis-text")
     .attr("transform", "rotate(-90)")
     .attr("y", 0)
-    .attr("x",0 - (height / 2))
+    .attr("x", 0 - (height / 2))
     .attr("dy", "1em")
     .style("text-anchor", "middle")
-    .text("Counts");   
+    .text("Counts");
 
-
-    // define the line
+  // define the line
   valueline = d3.line()
     .x(function (d) {
       return x(d.date);
@@ -119,33 +130,43 @@ function TimeChart(chartOptions, minDate) {
       return y(d.count);
     });
 
-  // Helper functions //
+  var justBrushed = false;
+  var doubleClicked;
 
   //Figures out what user selected
   function brushended() {
     var s = d3.event.selection;
 
-
     if (s) {
-      console.log(s)
+
       $("#submit").removeClass("inactive");
 
+      idleTimeout = null;
       x.domain(s.map(x.invert, x));
       svg.select(".brush").call(brush.move, null);
+
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
+
       datePicker.setStartDate(start);
       datePicker.setEndDate(end);
-      getTotal({"start": start, "end":end});
 
+      justBrushed = true;
 
     } else { //double click
-      console.log("no selection")
+
+      doubleClicked = false;
+
       if (!idleTimeout) {
         return idleTimeout = setTimeout(idled, idleDelay);
       }
+
+      doubleClicked = true;
+
       x.domain(x0);
       y.domain(y0);
+
+      justBrushed = false;
     }
 
     zoom();
@@ -153,6 +174,7 @@ function TimeChart(chartOptions, minDate) {
 
   //zoom the chart in
   function zoom() {
+    //set up max zoom here
     xAxis.transition().call(d3.axisBottom(x).ticks(ticks));
     yAxis.transition().call(d3.axisLeft(y));
 
@@ -161,6 +183,12 @@ function TimeChart(chartOptions, minDate) {
 
   function idled() {
     idleTimeout = null;
+
+    if (mouse && !doubleClicked && !justBrushed) {
+      var xDate = d3Format(x.invert(mouse[0]));
+      datePicker.setStartDate(xDate);
+      datePicker.setEndDate(xDate);
+    }
   }
 
   function getTotal(start, end) {
@@ -196,10 +224,10 @@ function TimeChart(chartOptions, minDate) {
     })];
     x = d3.scaleUtc().domain(x0).range([0, width]);
 
-    y = d3.scaleLinear().domain(y0).range([height, 0]);
+    y = d3.scaleLinear().domain(y0).range([height, 1]);
 
     idleDelay = 350;
-    
+
     ticks = width / 65 < 10 ? 5 : 10;
 
     line = svg.append("path")
@@ -207,27 +235,27 @@ function TimeChart(chartOptions, minDate) {
       .attr("class", "line")
       .attr("d", valueline)
       .attr("pointer-events", "none")
-      .attr("transform", "translate(" + margin.left  + ")");
+      .attr("transform", "translate(" + margin.left + ")");
 
     // Add the X Axis
     xAxis = svg.append("g")
       .attr("class", "x-axis")
-      .attr("transform", "translate(" + margin.left  + "," + height + ")")
+      .attr("transform", "translate(" + margin.left + "," + height + ")")
       .call(d3.axisBottom(x).ticks(ticks));
 
     // // Add the Y Axis
     yAxis = svg.append("g")
       .attr("class", "y-axis")
       .call(d3.axisLeft(y))
-      .attr("transform", "translate(" + margin.left +")");
+      .attr("transform", "translate(" + margin.left + ")");
   }
 
   function processData(data) {
     rawData = data;
 
     var processedData = [],
-    today = moment.utc(),
-    firstMeas = moment.utc(minimumDate);
+      today = moment.utc(),
+      firstMeas = moment.utc(minimumDate);
     for (var d = firstMeas; d <= today; d.add(1, "days")) {
       dString = d.format(dateFormat);
       hours = rawData[dString] ? rawData[dString] : 0;
@@ -245,17 +273,16 @@ function TimeChart(chartOptions, minDate) {
     // Select the section we want to apply our changes to
     var svg = d3.select("body").transition();
 
-
     line.data([chartData]);
     // Make the changes
-    svg.select(".line")   // change the line
-        .attr("d", valueline)
-        .duration(750);
+    svg.select(".line") // change the line
+      .attr("d", valueline)
+      .duration(750);
 
   }
-  
+
   function updateBounds(start, end) {
-    
+
     getTotal(start, end);
     svg.select(".brush").call(brush.move, null);
     if (start == end) {
@@ -297,7 +324,7 @@ function TimeChart(chartOptions, minDate) {
       .handleSize(height);
 
     svg.select(".brush").call(brush);
-    
+
     svg.select('#clip rect')
       .attr('width', width)
       .attr('height', height);
@@ -314,7 +341,7 @@ function TimeChart(chartOptions, minDate) {
     reset: reset,
     getTotal: getTotal,
     resize: resize,
-    setDatepicker: function(dElem){
+    setDatepicker: function (dElem) {
       datePicker = dElem;
     }
   };
