@@ -112,7 +112,6 @@ $(function () {
       timeChart.resize($("#control-bar").width() - $("#search").width() - 20);
     });
   });
-  console.log(dateRange.toString());
   // Get actual tremor
   getEvents(apiBaseUrl, dateRange.toString(), getBoundsString(bounds)).done(function (response) {
     updateMarkers(response);
