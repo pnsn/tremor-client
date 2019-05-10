@@ -72,6 +72,7 @@ function TimeChart(chartOptions, minDate) {
 
 
   function brushing() {
+
     var s = d3.event.selection;
     if (s) {
       var values = s.map(x.invert, x);
@@ -105,10 +106,12 @@ function TimeChart(chartOptions, minDate) {
         d += " " + offset + "," + 0;
         return d;
       });
+      if(x) {
+        var xDate = d3Format(x.invert(mouse[0]));
+        var str = xDate + " : " + (rawData[xDate] ? rawData[xDate] : 0);
+        text.text(str);
+      }
 
-      var xDate = d3Format(x.invert(mouse[0]));
-      var str = xDate + " : " + (rawData[xDate] ? rawData[xDate] : 0);
-      text.text(str);
     });
 
   // Y-axis label
@@ -287,9 +290,6 @@ function TimeChart(chartOptions, minDate) {
   }
 
   function updateBounds(start, end) {
-
-    getTotal(start, end);
-    svg.select(".brush").call(brush.move, null);
     if (start == end) {
       end = moment.utc(start).add(1, "day").format(dateFormat);
     }

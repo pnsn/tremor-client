@@ -129,7 +129,8 @@ $(function () {
   $("#heatmap-warning span").text(drawLimit);
 
   // Buttons on chart for quick zooming
-  $("#chart-buttons a").click(function () {
+  $("#chart-buttons a").click(function (e) {
+    e.stopPropagation();
     var range = [];
     switch ($(this).attr("value")) {
     case "day":
@@ -147,6 +148,7 @@ $(function () {
     default:
       range = [moment.utc(minDate), moment.utc()];
     }
+
 
     if (range.length > 0) {
       updateDateRange(range);
@@ -288,6 +290,7 @@ $(function () {
 
     var start = dateRange.getStart();
     var end = dateRange.getEnd();
+
     datePicker.setStartDate(start);
     datePicker.setEndDate(end);
 
