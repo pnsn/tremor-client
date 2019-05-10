@@ -18,7 +18,6 @@ function TremorMap(config) {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   });
 
-
   map.addLayer(osm);
   L.control.scale().addTo(map);
 
@@ -37,9 +36,6 @@ function TremorMap(config) {
       // background: linear-gradient(to right, purple, blue, cyan, green, yellow, orange, red);
     }
   });
-
-
-  
 
   L.control.key = function (opts) {
     return new L.Control.Key(opts);

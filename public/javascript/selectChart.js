@@ -153,6 +153,11 @@ function TimeChart(chartOptions, minDate) {
 
       justBrushed = true;
 
+      setTimeout(function(){
+      
+        justBrushed = false;
+      }, idleDelay);
+
     } else { //double click
 
       doubleClicked = false;
