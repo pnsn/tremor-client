@@ -290,12 +290,13 @@ function TimeChart(chartOptions, minDate) {
   }
 
   function updateBounds(start, end) {
+    console.log("updateBounds")
     if (start == end) {
       end = moment.utc(start).add(1, "day").format(dateFormat);
     }
     x.domain([moment.utc(start), moment.utc(end)]);
     zoom();
-  }
+  } 
 
   function reset() {
     x.domain(x0);

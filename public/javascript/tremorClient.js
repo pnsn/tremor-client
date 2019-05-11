@@ -20,8 +20,7 @@ $(function () {
 
   // Date ranges - get from URL or start from yesterday
 
-  var dateRange = new DateRange(search_params.get('start'), search_params.get('end'), $.clientConfig.dateFormat);
-
+  var dateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'), $.clientConfig.dateFormat);
   // Coloring
   var defaultColor;
   $.each($.clientConfig.mapOptions.coloringOptions.colors, function (id, color) {
@@ -359,7 +358,6 @@ function getEvents(apiBaseUrl, rangeStr, boundsStr) {
 
 // Stores date range as strings
 function DateRange(startStr, endStr, dateFormat) {
-
   var start = startStr && moment.utc(startStr, dateFormat).isValid() ? moment.utc(startStr, dateFormat).format(dateFormat) : moment.utc().subtract(1, 'days').format(dateFormat);
   var end = endStr && moment.utc(endStr, dateFormat).isValid() ? moment.utc(endStr, dateFormat).format(dateFormat) : start;
 
