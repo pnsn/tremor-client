@@ -24,7 +24,7 @@ $.clientConfig = {
           "numBreaks" : 100,
           colors : {
             "red": {
-              name: "Normal (red)",
+              name: "Normal (Red)",
               type: "single",
               fill: "#ef0b25",
               outline: "#770512",

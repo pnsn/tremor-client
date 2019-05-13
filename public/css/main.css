@@ -360,7 +360,6 @@ button:disabled {
 @media (min-width: 768px) {
   #content #map-container {
     height: 850px;
-    width: 77%;
   }
 }
 #content #map-container #tremor-map {
@@ -578,10 +577,34 @@ h4 {
     width: 23%;
   }
 }
+@media (min-width: 768px) {
+  .right-column {
+    min-width: 270px;
+    width: 18%;
+  }
+}
+@media (min-width: 992px) {
+  .right-column {
+    min-width: 270px;
+    width: 13%;
+  }
+}
 
 .left-column {
   width: 77%;
   display: inline-block;
+}
+@media (min-width: 768px) {
+  .left-column {
+    min-width: 270px;
+    width: 82%;
+  }
+}
+@media (min-width: 992px) {
+  .left-column {
+    min-width: 270px;
+    width: 87%;
+  }
 }
 
 /*# sourceMappingURL=main.css.map */

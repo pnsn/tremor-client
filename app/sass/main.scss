@@ -104,9 +104,25 @@ h4 {
     min-width:270px;
     width:23%;
   }
+  @include md {
+    min-width:270px;
+    width:18%;
+  }
+  @include lg {
+    min-width:270px;
+    width:13%;
+  }
   display:inline-block;
 }
 .left-column {
   width: 77%;
+  @include md {
+    min-width:270px;
+    width:82%;
+  }
+  @include lg {
+    min-width:270px;
+    width:87%;
+  }
   display:inline-block;
 }
