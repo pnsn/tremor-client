@@ -1,5 +1,5 @@
 //Fun config stuff yay
-$.clientConfig = {
+$.tremorDefaultConfig = {
   drawLimit: 20000, //max number of events to draw
   dateFormat: "YYYY-MM-DD", //Date format to use MUST BE SET FOR CHART AND DATEPICKER BELOW
   apiBaseUrl: "https://tremorapi.pnsn.org/api/v1.0", //Where to get the data from
@@ -64,9 +64,9 @@ $.clientConfig = {
     }
   },
   chartOptions: {
-    "container": "#chart",
-    "height": $("#chart").height() - $("#chart-info").height(),
-    "width": $("#chart").width(),
+    "container": "#tremor-chart",
+    "height": $("#tremor-chart").height() - $("#chart-info").height(),
+    "width": $("#tremor-chart").width(),
     "format": "YYYY-MM-DD",
     "d3Format" : "%Y-%m-%d"
   },

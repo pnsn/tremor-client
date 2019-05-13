@@ -1,6 +1,7 @@
 //** Makes a D3 chart that can zoom in and select a period of time */
-
-function TimeChart(chartOptions, minDate) {
+//** Takes in config options and a minimum selectable date */
+//** Can (optionally) integrate with a datepicker or other external date UI */
+function TimeChart(config, minDate) {
   //** Instantiate some variables */
 
   var datePicker, chartData, rawData,
@@ -12,18 +13,18 @@ function TimeChart(chartOptions, minDate) {
       bottom: 12,
       left: 14
     },
-    height = chartOptions.height - margin.top - margin.bottom,
-    width = chartOptions.width - margin.right - margin.left,
+    height = config.height - margin.top - margin.bottom,
+    width = config.width - margin.right - margin.left,
     idleDelay = 350, // time to wait between clicks
     minimumDate = minDate, // lowest selectable date
-    dateFormat = chartOptions.format, // format to display
-    d3Format = d3.utcFormat(chartOptions.d3Format); // d3 format to display
-    d3Parse = d3.utcParse(chartOptions.d3Format); // d3 parse format
+    dateFormat = config.format, // format to display
+    d3Format = d3.utcFormat(config.d3Format); // d3 format to display
+    d3Parse = d3.utcParse(config.d3Format); // d3 parse format
 
   //** D3 Elements*/
 
   // Actual chart
-  svg = d3.select(chartOptions.container)
+  svg = d3.select(config.container)
     .append("svg:svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom);
@@ -168,8 +169,7 @@ function TimeChart(chartOptions, minDate) {
       var start = moment.utc(x.domain()[0]);
       var end = moment.utc(x.domain()[1]);
 
-      datePicker.setStartDate(start);
-      datePicker.setEndDate(end);
+      changeUIDates(start, end);
 
       // Prevent accidental selection
       justBrushed = true;
@@ -216,8 +216,7 @@ function TimeChart(chartOptions, minDate) {
 
     if (mouse && !doubleClicked && !justBrushed) {
       var xDate = d3Format(x.invert(mouse[0]));
-      datePicker.setStartDate(xDate);
-      datePicker.setEndDate(xDate);
+      changeUIDates(xDate, xDate);
     }
   }
 
@@ -372,6 +371,14 @@ function TimeChart(chartOptions, minDate) {
   // Stores datepicker elemement
   function setDatepicker(dElem) {
     datePicker = dElem;
+  }
+
+  // Changes dates datepicker or other UI
+  function changeUIDates(start, end) {
+    if (datePicker) {
+      datePicker.setStartDate(start);
+      datePicker.setEndDate(end);
+    }
   }
 
   //** Methods available for external use */

@@ -1,5 +1,6 @@
 //** Makes a map with passed in config options */
-
+//** Leaflet map that adds dots from a geojson */
+//** Requires external UI elements */
 function TremorMap(config) {
   //** Instantiate some variables */
 
@@ -317,7 +318,7 @@ function TremorMap(config) {
   }
   
   //** Methods available for external use */
-  
+
   return {
     recolorMarkers: recolorMarkers,
     updateMarkers: updateMarkers,

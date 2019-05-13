@@ -1,17 +1,18 @@
 $(function () {
+  var config = $.tremorDefaultConfig;
   //** Instantiate some variables */
 
   var datePicker, tremorMap, timeChart, tour, allTremorCounts, dateRange, bounds,
-    drawLimit = $.clientConfig.drawLimit, //max number of events to show at once
-    apiBaseUrl = $.clientConfig.apiBaseUrl, //API url
-    mapOptions = $.clientConfig.mapOptions, //options for leaflet map
-    chartOptions = $.clientConfig.chartOptions, //options for D3 chart
-    tourOptions = $.clientConfig.tourOptions, //options for Bootstrap Tour
-    datePickerOptions = $.clientConfig.datePickerOptions, //options for DateRangePicker
+    drawLimit = config.drawLimit, //max number of events to show at once
+    apiBaseUrl = config.apiBaseUrl, //API url
+    mapOptions = config.mapOptions, //options for leaflet map
+    chartOptions = config.chartOptions, //options for D3 chart
+    tourOptions = config.tourOptions, //options for Bootstrap Tour
+    datePickerOptions = config.datePickerOptions, //options for DateRangePicker
     search_params = new URLSearchParams(window.location.search), //url params
     datePickerContainer = $('input[name="date-range"]'),
     coloringSelector = $("#display-type"), //how map markers are colored
-    minDate = $.clientConfig.minDate;
+    minDate =config.minDate;
 
   //** Set up main page elements */
   tremorMap = new TremorMap(mapOptions);
@@ -21,11 +22,11 @@ $(function () {
   //** Initialize from URL parameters */
 
   // Date ranges - get from URL or start from yesterday
-  dateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'), $.clientConfig.dateFormat);
+  dateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
 
   // Add colors from config
   var defaultColor;
-  $.each($.clientConfig.mapOptions.coloringOptions.colors, function (id, color) {
+  $.each(config.mapOptions.coloringOptions.colors, function (id, color) {
     if (color.default) {
       defaultColor = id;
     }

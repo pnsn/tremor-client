@@ -210,46 +210,46 @@ button:disabled {
   height: 100%;
 }
 
-#chart {
+#tremor-chart {
   height: 100%;
   width: 100%;
 }
-#chart .line, #chart .mouse-line {
+#tremor-chart .line, #tremor-chart .mouse-line {
   fill: none;
   stroke: #ababab;
   stroke-width: 2px;
 }
-#chart path.line, #chart path.mouse-line {
+#tremor-chart path.line, #tremor-chart path.mouse-line {
   stroke-width: 1.5px;
   clip-path: url(#clip);
 }
-#chart path.line.modified, #chart path.modified.mouse-line {
+#tremor-chart path.line.modified, #tremor-chart path.modified.mouse-line {
   stroke: #5f5f5f;
 }
-#chart .mouse-line {
+#tremor-chart .mouse-line {
   stroke-width: 0.5px;
 }
-#chart text {
+#tremor-chart text {
   fill: black;
   font-size: 0.7rem;
   font-family: "Open Sans", Arial, "sans serif";
 }
-#chart .background {
+#tremor-chart .background {
   fill: #f8f8f8;
 }
-#chart .y-axis .tick {
+#tremor-chart .y-axis .tick {
   display: none;
 }
-#chart .y-axis path, #chart .x-axis path {
+#tremor-chart .y-axis path, #tremor-chart .x-axis path {
   stroke: #ababab;
 }
-#chart .brush .selection {
+#tremor-chart .brush .selection {
   fill-opacity: 0.3;
 }
-#chart .brush .handle-line {
+#tremor-chart .brush .handle-line {
   fill: #5f5f5f;
 }
-#chart .brush .handle-mini {
+#tremor-chart .brush .handle-mini {
   fill: white;
   stroke-width: 1px;
   stroke: #5f5f5f;
