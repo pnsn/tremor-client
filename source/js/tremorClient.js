@@ -83,7 +83,6 @@ $(function () {
 
   // Add date picker to container and tell the timeChart
   datePicker = datePickerContainer.data('daterangepicker'); //actual datePicker
-  timeChart.setDatepicker(datePicker);
 
   //** Get data and do stuff with it */
 
@@ -159,7 +158,6 @@ $(function () {
   $("#previous-day").click(function () {
     var range = [moment.utc(dateRange.getStart()).subtract(1, 'days'), moment.utc(dateRange.getEnd()).subtract(1, 'days')];
     updateDateRange(range);
-
   });
 
   // Shift range forward a day
@@ -251,6 +249,11 @@ $(function () {
       updateMarkers(response);
     });
 
+  });
+
+  // Waits for dateChanged event on chart and updates UI
+  $(chartOptions.container).on("dateChanged", function(e, dates){
+    updateDateRange([dates.start, dates.end]);
   });
 
   //** Helper functions */

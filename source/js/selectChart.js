@@ -368,17 +368,9 @@ function TimeChart(config, minDate) {
     zoom();
   }
 
-  // Stores datepicker elemement
-  function setDatepicker(dElem) {
-    datePicker = dElem;
-  }
-
   // Changes dates datepicker or other UI
   function changeUIDates(start, end) {
-    if (datePicker) {
-      datePicker.setStartDate(start);
-      datePicker.setEndDate(end);
-    }
+    $(config.container).trigger('dateChanged', {"start": start, "end":end});
   }
 
   //** Methods available for external use */
@@ -389,7 +381,6 @@ function TimeChart(config, minDate) {
     updateBounds: updateBounds,
     reset: reset,
     getTotal: getTotal,
-    resize: resize,
-    setDatepicker: setDatepicker
+    resize: resize
   };
 }
