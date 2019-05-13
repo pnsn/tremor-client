@@ -1,161 +1,154 @@
 //Fun config stuff yay
 $.clientConfig = {
-    drawLimit: 20000, //max number of events to draw
-    dateFormat: "YYYY-MM-DD", //Date format to use MUST BE SET FOR CHART AND DATEPICKER BELOW
-    apiBaseUrl: "https://tremorapi.pnsn.org/api/v1.0", //Where to get the data from
-    minDate: "2009-08-06",
-    mapOptions: {
-      "mapContainer": 'tremor-map',
-      "center": [45.5122, -122.6587],
-      "zoom": 5.5,
-      "boundsOptions" :  {
-        color: '#083f08',
-        weight: 2,
-        fillOpacity: 0,
-        opacity: 1
-      },
-      "markerOptions" : {
-        weight: 1,
-        opacity: 1,
-        fillOpacity: 0.9,
-        radius: 2.75,
-      },
-      "coloringOptions" : {
-          "numBreaks" : 100,
-          colors : {
-            "red": {
-              name: "Normal (Red)",
-              type: "single",
-              fill: "#ef0b25",
-              outline: "#770512",
-              default: true
-            },
-            "parula" : {
-              name: "Color vs Time (Parula)",
-              type: "spectrum",
-              fill: ["#352B8A","#0760Df", "#1483D4" ,"#05A5C8", "#31B7A1", "#8ABE75", "#D2Ba58", "#FDC931", "#F8F80F"],
-              outline: ["black", "black"]
-            },
-            "jet" : {
-              name: "Color vs Time (Jet)",
-              type: "spectrum",
-              fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
-              outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
-            },
-            "monochrome" : {
-              name: "Color vs Time (Black & White)",
-              type: "spectrum",
-              fill: ["black", "white"],
-              outline: ["black", "black"]
-            },
-            "hot" : {
-              name: "Color vs Time (Hot)",
-              type: "spectrum",
-              fill: ["black", "red", "orange", "yellow", "white"],
-              outline: ["black", "black"]
-            },
-          }
-      },
-      "leafletOptions": {
-        "minZoom": 5,
-        "maxZoom": 11,
-        "zoomSnap": 0.5,
-        "preferCanvas": true
+  drawLimit: 20000, //max number of events to draw
+  dateFormat: "YYYY-MM-DD", //Date format to use MUST BE SET FOR CHART AND DATEPICKER BELOW
+  apiBaseUrl: "https://tremorapi.pnsn.org/api/v1.0", //Where to get the data from
+  minDate: "2009-08-06",
+  mapOptions: {
+    "mapContainer": 'tremor-map',
+    "center": [45.5122, -122.6587],
+    "zoom": 5.5,
+    "boundsOptions": {
+      color: '#083f08',
+      weight: 2,
+      fillOpacity: 0,
+      opacity: 1
+    },
+    "markerOptions": {
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.9,
+      radius: 2.75,
+    },
+    "coloringOptions": {
+      "numBreaks": 100,
+      colors: {
+        "red": {
+          name: "Normal (Red)",
+          type: "single",
+          fill: "#ef0b25",
+          outline: "#770512",
+          default: true
+        },
+        "parula": {
+          name: "Color vs Time (Parula)",
+          type: "spectrum",
+          fill: ["#352B8A", "#0760Df", "#1483D4", "#05A5C8", "#31B7A1", "#8ABE75", "#D2Ba58", "#FDC931", "#F8F80F"],
+          outline: ["black", "black"]
+        },
+        "jet": {
+          name: "Color vs Time (Jet)",
+          type: "spectrum",
+          fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
+          outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
+        },
+        "monochrome": {
+          name: "Color vs Time (Black & White)",
+          type: "spectrum",
+          fill: ["black", "white"],
+          outline: ["black", "black"]
+        },
+        "hot": {
+          name: "Color vs Time (Hot)",
+          type: "spectrum",
+          fill: ["black", "red", "orange", "yellow", "white"],
+          outline: ["black", "black"]
+        },
       }
     },
-      chartOptions: {
-        "container": "#chart",
-        "height": $("#chart").height() - $("#chart-info").height(),
-        "width": $("#chart").width(),
-        "format": "YYYY-MM-DD"
+    "leafletOptions": {
+      "minZoom": 5,
+      "maxZoom": 11,
+      "zoomSnap": 0.5,
+      "preferCanvas": true
+    }
+  },
+  chartOptions: {
+    "container": "#chart",
+    "height": $("#chart").height() - $("#chart-info").height(),
+    "width": $("#chart").width(),
+    "format": "YYYY-MM-DD",
+    "d3Format" : "%Y-%m-%d"
+  },
+  datePickerOptions: {
+    "showDropdowns": true,
+    "autoApply": true,
+    "opens": "left",
+    "locale": {
+      "format": "YYYY-MM-DD",
+      "separator": " - ",
+      "customRangeLabel": "Custom",
+      "weekLabel": "W",
+      "daysOfWeek": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+      "monthNames": [
+        "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+      ],
+      "firstDay": 1
+    },
+    "alwaysShowCalendars": true,
+    "linkedCalendars": false
+  },
+  tourOptions: {
+    name: '7',
+    backdrop: true,
+    backdropPadding: 5,
+    steps: [{
+        element: "#header-text",
+        title: "Welcome to the new Tremor Application!",
+        content: "The old Tremor App was outdated and didn't work on newer devices, so we rebuilt it. This rebuild allows us to add new tools and make it more usable.",
+        placement: "bottom"
       },
-      datePickerOptions: {
-        "showDropdowns": true,
-        "autoApply": true,
-        "opens": "left",
-        // ranges: {
-        //   'Today': [moment.utc(), moment.utc()],
-        //   'Yesterday': [moment.utc().subtract(1, 'days'), moment.utc().subtract(1, 'days')],
-        //   'Last 7 Days': [moment.utc().subtract(6, 'days'), moment.utc()],
-        //   'Last 30 Days': [moment.utc().subtract(29, 'days'), moment.utc()],
-        //   'This Month': [moment.utc().startOf('month'), moment.utc().endOf('month')],
-        //   'Last Month': [moment.utc().subtract(1, 'month').startOf('month'), moment.utc().subtract(1, 'month').endOf('month')]
-        // },
-        "locale": {
-          "format": "YYYY-MM-DD",
-          "separator": " - ",
-          "customRangeLabel": "Custom",
-          "weekLabel": "W",
-          "daysOfWeek": ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
-          "monthNames": [
-            "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
-          ],
-          "firstDay": 1
-        },
-        "alwaysShowCalendars": true,
-        "linkedCalendars": false
+      {
+        element: "#chart-container",
+        title: "Time Chart",
+        content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range. If you add a geographic filter, it will update this chart to show tremor in that region.",
+        placement: "bottom"
       },
-      tourOptions: {
-        name: '7',
-        backdrop: true,
-        backdropPadding: 5,
-        steps: [{
-            element: "#header-text",
-            title: "Welcome to the new Tremor Application!",
-            content: "The old Tremor App was outdated and didn't work on newer devices, so we rebuilt it. This rebuild allows us to add new tools and make it more usable.",
-            placement: "bottom"
-          },
-          {
-            element: "#chart-container",
-            title: "Time Chart",
-            content: "The chart shows the total counts of tremor for each day over time. You can click and drag to zoom and select a time range. If you add a geographic filter, it will update this chart to show tremor in that region.",
-            placement: "bottom"
-          },
-          {
-            element: "#date-container",
-            title: "Date Selector",
-            content: "Want to select a range? Click on the time range. Want to shift your time range by a day? Press the buttons to the left and right of the time range.",
-            placement: "bottom"
-          },
-          {
-            element: "#filter-container",
-            title: "Geographic Filtering",
-            content: "Only want to look at one region? Easy! Click 'Add Geographic Filter' and draw a region on the map.",
-            placement: "left"
-          },
-          {
-            element: "#submit",
-            title: "Submitting Your Search",
-            content: "Before your changes will be in effect, you must press search! After the data loads, your results will be plotted on the map and the list.",
-            placement: "left"
-          },
-          {
-            element: "#map-container",
-            title: "Map",
-            content: "Toggle overlays in the top right corner and zoom in or out on the top left.",
-            placement: "right"
-          },
-          {
-            element: "#search-results-container",
-            title: "Search Results",
-            content: "Results are rendered on the map and added to this list. Note: a maximum of 20,000 events are returned for a search but the list will not render for queries greater than 5000.",
-            placement: "left"
-          },
-          {
-            element: "#display-type-container",
-            title: "Visualize",
-            content: "Plot tremor by time, density, or single color.",
-            placement: "left"
-          },
-          {
-            element: "#download-container",
-            title: "Download",
-            content: "Want to play with the data on your own? Download your results as either GeoJSON or Comma Separated Values (CSV).",
-            placement: "left",
-            onShown: function () {
-              $("button[data-role='next']").hide();
-            }
-          }
-        ]
+      {
+        element: "#date-container",
+        title: "Date Selector",
+        content: "Want to select a range? Click on the time range. Want to shift your time range by a day? Press the buttons to the left and right of the time range.",
+        placement: "bottom"
+      },
+      {
+        element: "#filter-container",
+        title: "Geographic Filtering",
+        content: "Only want to look at one region? Easy! Click 'Add Geographic Filter' and draw a region on the map.",
+        placement: "left"
+      },
+      {
+        element: "#submit",
+        title: "Submitting Your Search",
+        content: "Before your changes will be in effect, you must press search! After the data loads, your results will be plotted on the map and the list.",
+        placement: "left"
+      },
+      {
+        element: "#map-container",
+        title: "Map",
+        content: "Toggle overlays in the top right corner and zoom in or out on the top left.",
+        placement: "right"
+      },
+      {
+        element: "#search-results-container",
+        title: "Search Results",
+        content: "Results are rendered on the map and added to this list. Note: a maximum of 20,000 events are returned for a search but the list will not render for queries greater than 5000.",
+        placement: "left"
+      },
+      {
+        element: "#display-type-container",
+        title: "Visualize",
+        content: "Plot tremor by time, density, or single color.",
+        placement: "left"
+      },
+      {
+        element: "#download-container",
+        title: "Download",
+        content: "Want to play with the data on your own? Download your results as either GeoJSON or Comma Separated Values (CSV).",
+        placement: "left",
+        onShown: function () {
+          $("button[data-role='next']").hide();
+        }
       }
-    };
+    ]
+  }
+};

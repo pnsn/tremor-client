@@ -1,55 +1,56 @@
-// Makes a map 
-function TremorMap(config) {
-  var map,
-    eventMarkers,
-    heatmap,
-    overlays = {},
-    mapKey,
-    shapeOptions = config.boundsOptions,
-    colors = config.coloringOptions.colors;
+//** Makes a map with passed in config options */
 
-    L.Control.include({
-      _refocusOnMap: L.Util.falseFn // Do nothing.
-    });
-  
+function TremorMap(config) {
+  //** Instantiate some variables */
+
+  var map, eventMarkers, heatmap, overlays, mapKey, osm,
+    rectangle, drawnRectangle, customMarker,
+    shapeOptions = config.boundsOptions,
+    colors = config.coloringOptions.colors,
+    rainbow = new Rainbow(),
+    rainbowDark = new Rainbow(),
+    editableLayers = new L.FeatureGroup();
+
+  // Make the map
   map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
-  var osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  //Make the basemap
+  osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   });
 
-  map.addLayer(osm);
-  L.control.scale().addTo(map);
-
+  //Make a key that can be recolored
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
       div.innerHTML = "<div class='end'></div><div id='key-colored'></div><div class='start'></div>";
       return div;
     },
-    recolor: function(coloring) {
+    recolor: function (coloring) {
       var str = "";
-      $.each(coloring.fill, function(i, color){
+      $.each(coloring.fill, function (i, color) {
         str += "," + color;
       });
       $("#key-colored").css("background-image", "linear-gradient(to top" + str + ")");
       // background: linear-gradient(to right, purple, blue, cyan, green, yellow, orange, red);
     }
   });
-
   L.control.key = function (opts) {
     return new L.Control.Key(opts);
   };
 
+  //Create a key (added to map later)
   mapKey = L.control.key({
     position: 'topleft',
   });
 
-  var rainbow = new Rainbow();
-  var rainbowDark = new Rainbow();
-  
+  //Create empty rainbows for coloring
+  rainbow = new Rainbow();
+  rainbowDark = new Rainbow();
+
+  // Custom leaflet marker
   // Allows storing of additional data in marker
-  var customMarker = L.CircleMarker.extend({
+  customMarker = L.CircleMarker.extend({
     options: {
       weight: config.markerOptions.weight,
       opacity: config.markerOptions.opacity,
@@ -57,12 +58,14 @@ function TremorMap(config) {
       radius: config.markerOptions.radius,
       timeIndex: 0,
       id: "",
-      fill: "white",
-      outline: "black"
+      fill: "white", //default
+      outline: "black" //default
     },
-    setColoring : function(coloring){
-      if(colors[coloring]){
-        if(colors[coloring].type ==  "spectrum") {
+
+    //sets spectrum or single color using config
+    setColoring: function (coloring) {
+      if (colors[coloring]) {
+        if (colors[coloring].type == "spectrum") {
           this.setStyle({
             fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
             color: "#" + rainbowDark.colorAt(this.options.timeIndex)
@@ -72,80 +75,15 @@ function TremorMap(config) {
             fillColor: colors[coloring].fill,
             color: colors[coloring].outline
           });
-        } 
+        }
       }
 
     }
   });
 
-
-
-  var editableLayers = new L.FeatureGroup();
-  map.addLayer(editableLayers);
-
-
-
-  var rectangle, drawnRectangle;
-
-  function startDrawing(){
-    var dfd = $.Deferred();
-    editableLayers.clearLayers();
-    rectangle = new L.Draw.Rectangle(map, {"shapeOptions": shapeOptions});
-    rectangle.enable();
-
-    map.on(L.Draw.Event.CREATED, function (e) {
-      var type = e.layerType,
-          layer = e.layer;
-  
-      editableLayers.addLayer(layer);
-      dfd.resolve(getBounds());
-    });
-
-    map.on('draw:drawstop', function (e) {
-      dfd.reject("cancel");
-    });
-    
-
-    return dfd.promise();
-  }
-
-  function removeBounds(){
-    editableLayers.clearLayers();
-    if(rectangle) {
-      rectangle.disable();
-      rectangle = null;
-    }
-    if(drawnRectangle) {
-      drawnRectangle = null;
-    }
-  }
-
-  function addBounds(bounds){
-    editableLayers.clearLayers();
-
-    drawnRectangle = L.rectangle([[bounds.lat_max,bounds.lon_max],[bounds.lat_min,bounds.lon_min]], shapeOptions);
-
-    editableLayers.addLayer(drawnRectangle);
-  }
-
-  function getBounds(){
-    if(editableLayers.getLayers().length > 0) {
-    
-     var layer = editableLayers.getLayers()[0];
-     var bounds = layer.getBounds();
-      return {
-        "lat_max" : bounds.getNorth(),
-        "lat_min" : bounds.getSouth(),
-        "lon_max" : bounds.getEast(),
-        "lon_min" : bounds.getWest()
-      };
-    } else {
-      return;
-    }
-  }
-
+  // Map overlays for leaflet overlay control
   overlays = {
-    "Seismometers" : L.geoJSON(seismometersGeoJSON, {
+    "Seismometers": L.geoJSON(seismometersGeoJSON, {
       pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {
           icon: L.icon({
@@ -155,21 +93,95 @@ function TremorMap(config) {
         }).bindPopup("<div>" + feature.properties.station + "</div>");
       }
     }),
-    "Past Tremor" : L.geoJSON(pastTremorGeoJSON, {
+    "Past Tremor": L.geoJSON(pastTremorGeoJSON, {
       style: pastTremorGeoJSON.properties.style
     }),
-    "JDF Plate Contours" : L.geoJSON(contoursGeoJSON, {
+    "JDF Plate Contours": L.geoJSON(contoursGeoJSON, {
       style: function (feature) {
         return feature.properties.style;
       }
     })
   };
 
-  L.control.layers({}, overlays).addTo(map);
+  // Add everything to the map
+  map.addLayer(osm); //background
+  L.control.scale().addTo(map); //scale
+  map.addLayer(editableLayers); //layers
+  L.control.layers({}, overlays).addTo(map); //overlays
 
-  // Helper functions // 
+  //Supposed to fix recentering on chrome
+  L.Control.include({
+    _refocusOnMap: L.Util.falseFn // Do nothing.
+  });
 
-  //removes event based layers
+  //** Helper functions */
+
+  // Allows user to start drawing a single rectangle on the map
+  // Returns a promise to indicate when drawing is done
+  // Promise is resolved with bounds or rejected on cancel
+  function startDrawing() {
+    var dfd = $.Deferred();
+    editableLayers.clearLayers();
+    rectangle = new L.Draw.Rectangle(map, {
+      "shapeOptions": shapeOptions
+    });
+    rectangle.enable();
+
+    map.on(L.Draw.Event.CREATED, function (e) {
+      var type = e.layerType,
+        layer = e.layer;
+
+      editableLayers.addLayer(layer);
+      dfd.resolve(getBounds());
+    });
+
+    map.on('draw:drawstop', function (e) {
+      dfd.reject("cancel");
+    });
+
+    return dfd.promise();
+  }
+
+  // Removes drawn bounds from map
+  function removeBounds() {
+    editableLayers.clearLayers();
+    if (rectangle) {
+      rectangle.disable();
+      rectangle = null;
+    }
+    if (drawnRectangle) {
+      drawnRectangle = null;
+    }
+  }
+
+  // Adds a rectangle to map using passed in bounds object
+  function addBounds(bounds) {
+    editableLayers.clearLayers();
+    drawnRectangle = L.rectangle([
+      [bounds.lat_max, bounds.lon_max],
+      [bounds.lat_min, bounds.lon_min]
+    ], shapeOptions);
+    editableLayers.addLayer(drawnRectangle);
+  }
+
+  // Returns a bounds object if there is a rectangle on the map
+  function getBounds() {
+    if (editableLayers.getLayers().length > 0) {
+
+      var layer = editableLayers.getLayers()[0];
+      var bounds = layer.getBounds();
+      return {
+        "lat_max": bounds.getNorth(),
+        "lat_min": bounds.getSouth(),
+        "lon_max": bounds.getEast(),
+        "lon_min": bounds.getWest()
+      };
+    } else {
+      return;
+    }
+  }
+
+  // Removes event based layers
   function clearLayers() {
     toggleLayer(false, heatmap);
     toggleLayer(false, eventMarkers);
@@ -203,16 +215,18 @@ function TremorMap(config) {
     }
   }
 
+  // Recolors all markers in the passed in style
+  // Bypassed if alreadyColored
   function recolorMarkers(coloringName, alreadyColored) {
     clearLayers();
 
-    if(coloringName == "heat-map") {
+    if (coloringName == "heat-map") {
       drawHeatMap();
       if (mapKey._map != null) {
         map.removeControl(mapKey);
       }
     } else {
-      if(!alreadyColored) {
+      if (!alreadyColored) {
         prepareSpectrum(colors[coloringName]);
 
         eventMarkers.eachLayer(function (marker) {
@@ -223,12 +237,13 @@ function TremorMap(config) {
     }
   }
 
-  function prepareSpectrum(coloring){ 
-    if(coloring && coloring.type == "spectrum") {
+  // Sets rainbow coloring to be used on mapkey and icons
+  function prepareSpectrum(coloring) {
+    if (coloring && coloring.type == "spectrum") {
       rainbow.setSpectrumByArray(coloring.fill);
       rainbowDark.setSpectrumByArray(coloring.outline);
       if (mapKey._map == null) {
-       map.addControl(mapKey);
+        map.addControl(mapKey);
       }
       mapKey.recolor(coloring);
     } else {
@@ -238,25 +253,28 @@ function TremorMap(config) {
     }
   }
 
-  function updateMarkers(response, coloringName) {
+  // Makes new markers with given data and coloringName
+  function updateMarkers(data, coloringName) {
     clearLayers();
 
-    var firstEventTime = new Date(response.features[0].properties.time);
-    var lastEventTime = new Date(response.features[response.features.length - 1].properties.time);
+    var firstEventTime = new Date(data.features[0].properties.time);
+    var lastEventTime = new Date(data.features[data.features.length - 1].properties.time);
 
     var timeIndex, time, id, lat, lng;
-    
+
     prepareSpectrum(colors[coloringName]);
 
-    eventMarkers = L.geoJSON(response.features, {
+    //Go through all the data and create markers
+    eventMarkers = L.geoJSON(data.features, {
       pointToLayer: function (feature, latlng) {
         time = new Date(feature.properties.time);
         id = feature.properties.id;
         lat = latlng.lat;
         lng = latlng.lng;
 
+        //timeIndex is used to assign coloring relative to start and end dates
         timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-        
+
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
@@ -266,13 +284,13 @@ function TremorMap(config) {
         marker.setColoring(coloringName);
 
         marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
-        .on('mouseover', function () {
-          $(".active-event").removeClass("active-event");
-          $(".event-" + id).addClass("active-event");
-        });
+          .on('mouseover', function () {
+            $(".active-event").removeClass("active-event");
+            $(".event-" + id).addClass("active-event");
+          });
 
         // do all the listy stuff
-        if (response.features.length < 5000) {
+        if (data.features.length < 5000) {
           var listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
           listItem.click(function () {
             $(this).addClass("active-event");
@@ -294,25 +312,20 @@ function TremorMap(config) {
         return marker;
       }
     });
+
     recolorMarkers(coloringName, true);
   }
-
+  
+  //** Methods available for external use */
+  
   return {
-
     recolorMarkers: recolorMarkers,
-
     updateMarkers: updateMarkers,
-
     addBounds: addBounds,
-
     startDrawing: startDrawing,
-
     removeBounds: removeBounds,
-
     getBounds: getBounds,
-
     clearLayers: clearLayers,
-
   };
 
 }
