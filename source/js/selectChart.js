@@ -11,7 +11,7 @@ function TimeChart(config, minDate) {
       top: 8,
       right: 0,
       bottom: 12,
-      left: 14
+      left: 14.25
     },
     height = config.height - margin.top - margin.bottom,
     width = config.width - margin.right - margin.left,
