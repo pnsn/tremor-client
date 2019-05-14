@@ -341,7 +341,7 @@ function TremorMap(config) {
             $(".active-event").removeClass("active-event");
             listItem.addClass("active-event");
           });
-          $("#event-list").append(listItem);
+          $("#event-list").prepend(listItem);
         }
         return marker;
       }

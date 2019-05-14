@@ -4,14 +4,14 @@
 function TimeChart(config, minDate) {
   //** Instantiate some variables */
 
-  var datePicker, chartData, rawData,
+  var chartData, rawData,
     svg, bg, x, y, x0, y0, xAxis, yAxis, line, valueline, brush,
     idleTimeout, mouseG, brushG, mouse, vertLine, countText, ticks,
     margin = { // Space for chart elements in chart container
       top: 8,
       right: 0,
       bottom: 12,
-      left: 14
+      left: 14.25
     },
     height = config.height - margin.top - margin.bottom,
     width = config.width - margin.right - margin.left,
@@ -104,11 +104,12 @@ function TimeChart(config, minDate) {
   // Shows total counts in selected range
   function brushing() {
     var s = d3.event.selection;
-    if (s) {
-      var values = s.map(x.invert, x);
-      var start = d3Format(values[0]);
-      var end = d3Format(values[1]);
-      var str = start + " - " + end + " : " + getTotal(start, end);
+    var values, start, end, str;
+    if (s && s[1]-s[0]>1) {
+      values = s.map(x.invert, x);
+      start = d3Format(values[0]);
+      end = d3Format(values[1]);
+      str = start + " - " + end + " : " + getTotal(start, end);
 
       countText.text(str);
     }
@@ -133,6 +134,9 @@ function TimeChart(config, minDate) {
       mouse = d3.mouse(this);
       var offset = mouse[0] + margin.left;
 
+      // Hide the vertical line
+      vertLine.style("opacity", "1");
+      
       // reposition line
       vertLine.attr("d", function () {
         var d = "M" + offset + "," + height;
@@ -158,36 +162,39 @@ function TimeChart(config, minDate) {
 
     // if there is a selection (brush)
     if (s) {
+      if(s[1]-s[0]>1) {
+        idleTimeout = null;
 
-      $("#submit").removeClass("inactive");
+        svg.select(".brush").call(brush.move, null);
+  
+        var range = s.map(x.invert, x);
+        var start = moment.utc(range[0]);
+        var end = moment.utc(range[1]);
+  
+        // Prevent accidental selection
+        justBrushed = true;
+        setTimeout(function () {
+          justBrushed = false;
+        }, idleDelay);
+  
+        // Hide the vertical line
+        vertLine.style("opacity", "0");
+  
+        // Prevent zooming in too far
+        if(end.diff(start, "hours") < 24 ){
+          start = start.startOf('day');
+          end = end.endOf('day');
+        }
+  
+        x.domain([start,end]);
+        changeUIDates(start, end);
+        zoom();
 
-      idleTimeout = null;
+      } else {
 
-      svg.select(".brush").call(brush.move, null);
-
-      var range = s.map(x.invert, x);
-
-      var start = moment.utc(range[0]);
-      var end = moment.utc(range[1]);
-
-      // Prevent accidental selection
-      justBrushed = true;
-      setTimeout(function () {
-        justBrushed = false;
-      }, idleDelay);
-
-      // Hide the vertical line
-      vertLine.style("opacity", "0");
-
-      // Prevent zooming in too far
-      if(end.diff(start, "hours") < 24 ){
-        start = start.startOf('day');
-        end = end.endOf('day');
+        svg.select(".brush").call(brush.move, null);
       }
-
-      x.domain([start,end]);
-      changeUIDates(start, end);
-      zoom();
+ 
 
     } else { //double click or single click (no brush)
 
@@ -212,9 +219,6 @@ function TimeChart(config, minDate) {
   // Zoom the chart to specified range
   // Transitions the line
   function zoom() {
-    //set up max zoom here
-
-
     xAxis.transition().call(d3.axisBottom(x).ticks(ticks));
     yAxis.transition().call(d3.axisLeft(y));
 
