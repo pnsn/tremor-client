@@ -28,7 +28,6 @@ function TremorMap(config) {
       return div;
     },
     recolor: function (coloring) {
-      console.log("hi", dateEnd, dateStart);
       if(coloring.type == "magnitude") {
         $("#key-top").text("Me = 2.0");
         $("#key-bottom").text("0.0");
