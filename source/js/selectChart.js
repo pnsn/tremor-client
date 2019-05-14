@@ -228,7 +228,7 @@ function TimeChart(config, minDate) {
 
     if (x && mouse && !doubleClicked && !justBrushed) {
       var xDate = d3Format(x.invert(mouse[0]));
-      xDate = moment.utc(xDate)
+      xDate = moment.utc(xDate);
       changeUIDates(xDate, xDate);
     }
   }
