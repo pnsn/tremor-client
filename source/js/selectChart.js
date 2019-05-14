@@ -176,6 +176,9 @@ function TimeChart(config, minDate) {
         justBrushed = false;
       }, idleDelay);
 
+      // Hide the vertical line
+      vertLine.style("opacity", "0");
+
       // Prevent zooming in too far
       if(end.diff(start, "hours") < 24 ){
         start = start.startOf('day');
