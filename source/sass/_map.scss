@@ -49,7 +49,7 @@
 }
 
 .map-key {
-  height: 230px;
+  min-height: 230px;
   div {
     font-size: .8em;
     width: 100%;
@@ -58,9 +58,12 @@
     border: solid 1px black;
     height: 200px;
   }
-  img {
-    margin: auto;
-    display:block;
-    height:100%;
+  #key-no-data div{
+    border: solid 1px black;  
+    background-color: #ababab;
+    border-radius: 50%;
+    height: 5px;
+    width: 5px;
+    display: inline-block;
   }
 }

@@ -168,9 +168,9 @@ $(function () {
 
   // Change coloring
   coloringSelector.change(function () {
+    $("#key-top").text(dateRange.getEnd());
+    $("#key-bottom").text(dateRange.getStart());
     tremorMap.recolorMarkers(coloringSelector.val());
-    $(".start").text(dateRange.getStart());
-    $(".end").text(dateRange.getEnd());
   });
 
   // Add a geographic filter on the map

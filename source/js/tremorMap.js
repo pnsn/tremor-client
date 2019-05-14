@@ -24,16 +24,23 @@ function TremorMap(config) {
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
-      div.innerHTML = "<div class='end'></div><div id='key-colored'></div><div class='start'></div>";
+      div.innerHTML = "<div id='key-top'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
       return div;
     },
     recolor: function (coloring) {
+
+      if(coloring.type == "magnitude") {
+        $("#key-top").text("Me = 2.0");
+        $("#key-bottom").text("0.0");
+        $("#key-no-data").show();
+      } else {
+        $("#key-no-data").hide();
+      }
       var str = "";
       $.each(coloring.fill, function (i, color) {
         str += "," + color;
       });
       $("#key-colored").css("background-image", "linear-gradient(to top" + str + ")");
-      // background: linear-gradient(to right, purple, blue, cyan, green, yellow, orange, red);
     }
   });
   L.control.key = function (opts) {
@@ -57,6 +64,7 @@ function TremorMap(config) {
       opacity: config.markerOptions.opacity,
       fillOpacity: config.markerOptions.fillOpacity,
       radius: config.markerOptions.radius,
+      magIndex: -1,
       timeIndex: 0,
       id: "",
       fill: "white", //default
@@ -66,19 +74,37 @@ function TremorMap(config) {
     //sets spectrum or single color using config
     setColoring: function (coloring) {
       if (colors[coloring]) {
-        if (colors[coloring].type == "spectrum") {
-          this.setStyle({
-            fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
-            color: "#" + rainbowDark.colorAt(this.options.timeIndex)
-          });
-        } else {
+        switch (colors[coloring].type) {
+          case "magnitude":
+            if (this.options.magIndex >= 0) {
+              this.setStyle({
+                fillColor: "#" + rainbow.colorAt(this.options.magIndex),
+                color: "#" + rainbowDark.colorAt(this.options.magIndex)
+              });
+            } else {
+              this.setStyle({
+                fillColor: "#ababab",
+                color: "black" 
+              });
+            }
+            break;
+          
+          case "time":
+            this.setStyle({
+              fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
+              color: "#" + rainbowDark.colorAt(this.options.timeIndex)
+            });
+            break;
+
+          default:
           this.setStyle({
             fillColor: colors[coloring].fill,
             color: colors[coloring].outline
           });
-        }
-      }
 
+        }
+
+      }
     }
   });
 
@@ -240,7 +266,7 @@ function TremorMap(config) {
 
   // Sets rainbow coloring to be used on mapkey and icons
   function prepareSpectrum(coloring) {
-    if (coloring && coloring.type == "spectrum") {
+    if (coloring && coloring.type == "time" || coloring.type == "magnitude") {
       rainbow.setSpectrumByArray(coloring.fill);
       rainbowDark.setSpectrumByArray(coloring.outline);
       if (mapKey._map == null) {
@@ -270,21 +296,25 @@ function TremorMap(config) {
       pointToLayer: function (feature, latlng) {
         time = new Date(feature.properties.time);
         id = feature.properties.id;
+        mag = feature.properties.amplitude ? (Math.log10(feature.properties.amplitude)-2.7)/2 : null;
         lat = latlng.lat;
         lng = latlng.lng;
 
         //timeIndex is used to assign coloring relative to start and end dates
         timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-
+        magIndex = mag ? mag / 2 * 100 : -1;
+  
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
           id: id,
+          magIndex: magIndex
         });
 
-        marker.setColoring(coloringName);
+        var magString = "<div>Magnitude (energy): " + (mag ? Math.round(mag * 100) /100 : "no data") + "</div>";
 
-        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>")
+        marker.setColoring(coloringName);
+        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
             $(".event-" + id).addClass("active-event");
