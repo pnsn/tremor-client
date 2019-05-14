@@ -163,13 +163,12 @@ function TimeChart(config, minDate) {
 
       idleTimeout = null;
 
-      x.domain(s.map(x.invert, x));
       svg.select(".brush").call(brush.move, null);
 
-      var start = moment.utc(x.domain()[0]);
-      var end = moment.utc(x.domain()[1]);
+      var range = s.map(x.invert, x);
 
-      changeUIDates(start, end);
+      var start = moment.utc(range[0]);
+      var end = moment.utc(range[1]);
 
       // Prevent accidental selection
       justBrushed = true;
@@ -177,6 +176,14 @@ function TimeChart(config, minDate) {
         justBrushed = false;
       }, idleDelay);
 
+      // Prevent zooming in too far
+      if(end.diff(start, "hours") < 24 ){
+        start = start.startOf('day');
+        end = end.endOf('day');
+      }
+
+      x.domain([start,end]);
+      changeUIDates(start, end);
       zoom();
 
     } else { //double click or single click (no brush)
@@ -203,6 +210,8 @@ function TimeChart(config, minDate) {
   // Transitions the line
   function zoom() {
     //set up max zoom here
+
+
     xAxis.transition().call(d3.axisBottom(x).ticks(ticks));
     yAxis.transition().call(d3.axisLeft(y));
 
@@ -214,7 +223,7 @@ function TimeChart(config, minDate) {
   function idled() {
     idleTimeout = null;
 
-    if (mouse && !doubleClicked && !justBrushed) {
+    if (x && mouse && !doubleClicked && !justBrushed) {
       var xDate = d3Format(x.invert(mouse[0]));
       xDate = moment.utc(xDate)
       changeUIDates(xDate, xDate);
