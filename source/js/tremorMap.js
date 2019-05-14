@@ -24,7 +24,7 @@ function TremorMap(config) {
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
-      div.innerHTML = "<div id='key-top)'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
+      div.innerHTML = "<div id='key-top'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
       return div;
     },
     recolor: function (coloring) {
