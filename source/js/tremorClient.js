@@ -168,8 +168,6 @@ $(function () {
 
   // Change coloring
   coloringSelector.change(function () {
-    $("#key-top").text(dateRange.getEnd());
-    $("#key-bottom").text(dateRange.getStart());
     tremorMap.recolorMarkers(coloringSelector.val());
   });
 
@@ -265,8 +263,8 @@ $(function () {
 
   // Updates UI and markers when new data requested
   function updateMarkers(response) {
+    tremorMap.setRange(dateRange.getStart(), dateRange.getEnd());
     tremorMap.updateMarkers(response, coloringSelector.val());
-
     $(".start").text(dateRange.getStart());
     $(".end").text(dateRange.getEnd());
 

@@ -5,7 +5,7 @@ function TremorMap(config) {
   //** Instantiate some variables */
 
   var map, eventMarkers, heatmap, overlays, mapKey, osm,
-    rectangle, drawnRectangle, customMarker,
+    rectangle, drawnRectangle, customMarker, dateStart, dateEnd,
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors,
     rainbow = new Rainbow(),
@@ -28,12 +28,14 @@ function TremorMap(config) {
       return div;
     },
     recolor: function (coloring) {
-
+      console.log("hi", dateEnd, dateStart);
       if(coloring.type == "magnitude") {
         $("#key-top").text("Me = 2.0");
         $("#key-bottom").text("0.0");
         $("#key-no-data").show();
       } else {
+        $("#key-top").text(dateEnd);
+        $("#key-bottom").text(dateStart);
         $("#key-no-data").hide();
       }
       var str = "";
@@ -269,9 +271,11 @@ function TremorMap(config) {
     if (coloring && coloring.type == "time" || coloring.type == "magnitude") {
       rainbow.setSpectrumByArray(coloring.fill);
       rainbowDark.setSpectrumByArray(coloring.outline);
+      
       if (mapKey._map == null) {
         map.addControl(mapKey);
       }
+
       mapKey.recolor(coloring);
     } else {
       if (mapKey._map != null) {
@@ -357,6 +361,10 @@ function TremorMap(config) {
     removeBounds: removeBounds,
     getBounds: getBounds,
     clearLayers: clearLayers,
+    setRange: function(start, end){
+      dateStart = start;
+      dateEnd = end;
+    }
   };
 
 }
