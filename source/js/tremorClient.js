@@ -253,7 +253,12 @@ $(function () {
 
   // Waits for dateChanged event on chart and updates UI
   $(chartOptions.container).on("dateChanged", function(e, dates){
-    updateDateRange([dates.start, dates.end]);
+    dateRange.setRange(dates.start, dates.end);
+
+    datePicker.setStartDate(dateRange.getStart());
+    datePicker.setEndDate(dateRange.getEnd());
+
+    $("#submit").removeClass("inactive");
   });
 
   //** Helper functions */
@@ -287,7 +292,6 @@ $(function () {
 
   // Updates the chart and datepicker with given range
   function updateDateRange(range) {
-
     dateRange.setRange(range[0], range[1]);
 
     var start = dateRange.getStart();
