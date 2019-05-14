@@ -24,7 +24,7 @@ function TremorMap(config) {
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
       var div = L.DomUtil.create('div', 'map-key map-control');
-      div.innerHTML = "<div id='key-top'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
+      div.innerHTML = "<div id='key-top)'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
       return div;
     },
     recolor: function (coloring) {
@@ -71,7 +71,6 @@ function TremorMap(config) {
       fill: "white", //default
       outline: "black" //default
     },
-
     //sets spectrum or single color using config
     setColoring: function (coloring) {
       if (colors[coloring]) {
@@ -297,24 +296,22 @@ function TremorMap(config) {
     //Go through all the data and create markers
     eventMarkers = L.geoJSON(data.features, {
       pointToLayer: function (feature, latlng) {
-        time = new Date(feature.properties.time);
-        id = feature.properties.id;
-        mag = feature.properties.amplitude ? (Math.log10(feature.properties.amplitude)-2.7)/2 : null;
-        lat = latlng.lat;
-        lng = latlng.lng;
+        var id = feature.properties.id,
+          time = new Date(feature.properties.time),
+          lat = latlng.lat,
+          lng = latlng.lng,
+          mag = feature.properties.amplitude ? (Math.log10(feature.properties.amplitude)-2.7)/2 : null,
+          //timeIndex is used to assign coloring relative to start and end dates
+          timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100,
+          magIndex = mag ? mag / 2 * 100 : -1,
+          magString = "<div>Magnitude (energy): " + (mag ? Math.round(mag * 100) /100 : "no data") + "</div>";
 
-        //timeIndex is used to assign coloring relative to start and end dates
-        timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-        magIndex = mag ? mag / 2 * 100 : -1;
-  
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
           id: id,
           magIndex: magIndex
         });
-
-        var magString = "<div>Magnitude (energy): " + (mag ? Math.round(mag * 100) /100 : "no data") + "</div>";
 
         marker.setColoring(coloringName);
         marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
@@ -332,6 +329,7 @@ function TremorMap(config) {
           }).on('mouseenter', function () {
             $(this).addClass("active-event");
             marker.setRadius(6);
+            marker.bringToFront();
           }).on('mouseout', function () {
             $(this).removeClass("active-event");
             marker.setRadius(config.markerOptions.radius);
@@ -340,7 +338,9 @@ function TremorMap(config) {
           marker.on('click', function () {
             $(".active-event").removeClass("active-event");
             listItem.addClass("active-event");
+            $(".event-" + id)[0].scrollIntoView();
           });
+
           $("#event-list").prepend(listItem);
         }
         return marker;
