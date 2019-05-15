@@ -9,7 +9,6 @@ function TremorMap(config) {
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors,
     rainbow = new Rainbow(),
-    rainbowDark = new Rainbow(),
     editableLayers = new L.FeatureGroup();
 
   // Make the map
@@ -55,7 +54,6 @@ function TremorMap(config) {
 
   //Create empty rainbows for coloring
   rainbow = new Rainbow();
-  rainbowDark = new Rainbow();
 
   // Custom leaflet marker
   // Allows storing of additional data in marker
@@ -73,36 +71,30 @@ function TremorMap(config) {
     },
     //sets spectrum or single color using config
     setColoring: function (coloring) {
+      var fill;
       if (colors[coloring]) {
         switch (colors[coloring].type) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
-              this.setStyle({
-                fillColor: "#" + rainbow.colorAt(this.options.magIndex),
-                color: "#" + rainbowDark.colorAt(this.options.magIndex)
-              });
+              fill = "#" + rainbow.colorAt(this.options.magIndex);
             } else {
-              this.setStyle({
-                fillColor: "#ababab",
-                color: "black" 
-              });
+              fill = "#ababab";
             }
             break;
           
           case "time":
-            this.setStyle({
-              fillColor: "#" + rainbow.colorAt(this.options.timeIndex),
-              color: "#" + rainbowDark.colorAt(this.options.timeIndex)
-            });
+              fill = "#" + rainbow.colorAt(this.options.timeIndex);
             break;
 
           default:
-          this.setStyle({
-            fillColor: colors[coloring].fill,
-            color: colors[coloring].outline
-          });
-
+            fill = colors[coloring].fill;
         }
+
+        this.setStyle({
+          fillColor: fill,
+          color: colors[coloring].outline
+        });
+
 
       }
     }
@@ -268,8 +260,7 @@ function TremorMap(config) {
   function prepareSpectrum(coloring) {
     if (coloring && coloring.type == "time" || coloring.type == "magnitude") {
       rainbow.setSpectrumByArray(coloring.fill);
-      rainbowDark.setSpectrumByArray(coloring.outline);
-      
+ 
       if (mapKey._map == null) {
         map.addControl(mapKey);
       }

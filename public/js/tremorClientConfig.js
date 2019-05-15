@@ -27,26 +27,26 @@ $.tremorDefaultConfig = {
           name: "Normal (Red)",
           type: "single",
           fill: "#ef0b25",
-          outline: "#770512",
+          outline: "black",
           default: true
         },
         "parula": {
           name: "Color vs Time (Parula)",
           type: "time",
           fill: ["#352B8A", "#0760Df", "#1483D4", "#05A5C8", "#31B7A1", "#8ABE75", "#D2Ba58", "#FDC931", "#F8F80F"],
-          outline: ["black", "black"]
+          outline: "black"
         },
         "jet": {
           name: "Color vs Time (Jet)",
           type: "time",
           fill: ["#00008F", "#0000FF", "#0080FF", "#00FFFF", "#80FF80", "#FFEF00", "#FF8000", "#FF0000", "#800000"],
-          outline: ["black", "black"]
+          outline: "black"
         },
         "magnitude": {
           name: "Color vs Magnitude (Test)",
           type: "magnitude",
           fill: ["white", "yellow", "orange", "red"],
-          outline: ["black", "black"]
+          outline: "black"
         },
       }
     },
