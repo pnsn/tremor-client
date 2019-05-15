@@ -298,6 +298,7 @@ function TremorMap(config) {
           var magIndex = mag ? mag / 2 * 100 : -1,
           magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
 
+          var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
@@ -306,7 +307,7 @@ function TremorMap(config) {
         });
 
         marker.setColoring(coloringName);
-        marker.bindPopup("<div> Time: " + feature.properties.time + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
+        marker.bindPopup("<div> Time: " + timeString + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
             $(".event-" + id).addClass("active-event");
@@ -314,7 +315,7 @@ function TremorMap(config) {
 
         // do all the listy stuff
         if (data.features.length < 5000) {
-          var listItem = $("<li class='event-nav event-" + id + "'><div>" + feature.properties.time.replace("GMT", "") + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
+          var listItem = $("<li class='event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
           listItem.click(function () {
             $(this).addClass("active-event");
             marker.openPopup();
