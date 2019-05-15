@@ -15,7 +15,7 @@ $.tremorDefaultConfig = {
       opacity: 1
     },
     "markerOptions": {
-      weight: 1,
+      weight: 0.5,
       opacity: 1,
       fillOpacity: 0.9,
       radius: 2.75,
@@ -39,8 +39,8 @@ $.tremorDefaultConfig = {
         "jet": {
           name: "Color vs Time (Jet)",
           type: "time",
-          fill: ["#1737e5", "#14E7C8", "#2EEA11", "#ECD00E", "#ef0b25"],
-          outline: ["#0B1B72", "#0A7364", "#177508", "#766807", "#770512"]
+          fill: ["#00008F", "#0000FF", "#0080FF", "#00FFFF", "#80FF80", "#FFEF00", "#FF8000", "#FF0000", "#800000"],
+          outline: ["black", "black"]
         },
         "monochrome": {
           name: "Color vs Time (Black & White)",
