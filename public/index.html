@@ -1,3 +1,5 @@
+
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -15,7 +17,6 @@
     <link rel="stylesheet" type="text/css" href="css/bootstrap-tour-standalone.min.css" />
     <!-- End External Styles -->
     <link rel="stylesheet" href="css/tremor-map.css" />
-
     <!-- External JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -30,151 +31,127 @@
   </head>
   <body>
     <div id="tremor-client">
-        <div id="header" class="flex-container flex-column" >
-            <div id="info-container" class="flex-container flex-column" >
-                <div id="info" class="flex-container flex-row">
-                    <h2 id="header-text">Episodic Tremor & Slip Events <span>(ETS)</span></h2>
-                    <div id="updated">Updated <span></span></div>
-                    <a href="https://pnsn.org/tremor/overview" target="blank" title="Go to PNSN Tremor Overview">about tremor</a>
-                    <button id="start-tour" class="primary">Start Tour</button>
-                </div>
-            </div>
-  
-            <div id="control-bar" class="flex-container flex-row">
-              <div id="chart-container" class="left-column">
-                  <div id="chart-info" class="flex-container flex-row">
-                    <div class="info-text">Click and drag on chart to zoom in. Double click to zoom out.</div>
-  
-                    <div id="chart-buttons" class="info-text">
-                      zoom to last:
-                      <a value="day" title="zoom to last day">day</a>
-                      <a value="week" title="zoom to last week">week</a>
-                      <a value="month" title="zoom to last month">month</a>
-                      <a value="all" id="zoom-all" title="zoom to all data">all data</a>
-                    </div>
-                  </div>
-                  <div id="tremor-chart"></div>
-              </div>
-              <div id="search" class="right-column">
-                <h3>Search</h3>
-  
-                <div class="row flex-container flex-row" id="date-container"> 
-                  <button id="previous-day" class="secondary" title="Previous day"><span class="icon"><</span></button>
-                  <input id="date-range-picker" name="date-range" type="text"/>
-                  <button id="next-day"  class="secondary" title="Next day"><span class="icon">></span></button>
-                </div>
-                <div class="row" id="filter-container">
-                  <button id="draw-filter"  class="secondary">Add geographic filter</button>
-                  <button id="remove-filter"  class="secondary">Remove geographic filter</button>
-                  <button id="submit" class="primary" >Search</button>
-                </div>
-  
-                <div id="help-text-container">
-                    <div class="info-text">
-                        Click Search to apply changes.
-                      </div>  
-                  <div class="info-text" id="draw-filter-text">
-                    Click and drag on the map to constrain geography.
-                  </div>  
-  
-                </div>
-  
-              </div>
-  
-  
-  
-            </div>
-  
+      <div id="tremor-header" class="flex-container flex-column" >
+        <div id="info-container" class="flex-container flex-column" >
+          <div id="info" class="flex-container flex-row">
+            <h2 id="header-text">Episodic Tremor & Slip Events <span>(ETS)</span></h2>
+            <div id="updated">Updated <span></span></div>
+            <a href="https://pnsn.org/tremor/overview" target="blank" title="Go to PNSN Tremor Overview">about tremor</a>
+            <button id="start-tour" class="primary">Start Tour</button>
+          </div>
         </div>
-  
-        <div id="content" class="flex-container">
-  
-  
-          <div id="map-container" class="left-column">
-              <div id="tremor-map"></div>
-          </div>
-  
-          <div id="sidebar" class="flex-container flex-column right-column">
-            <div id="search-results-container">
-  
-                <h3>Search Results</h3>
-  
-                <div id="date-range" class="results-text">
-                  Dates: <span class="start"></span> - <span class="end"></span>
-                </div>
-                <div id="epicenters" class="results-text">Total: <span></span> epicenters</div>
-      
-                <div id="display-type-container" >
-                    <div id="display-type-label" class="results-text">View as: </div>
-                    <div class="select">
-                      <select id="display-type">
-                          <option value="heat-map"> <span>Heat Map</span></option>
-                      </select> 
-                      <div class="select-arrow"></div>   
-                  </div>
-                </div>
-  
-                <div id="event-nav">
-                  <div id="event-limit-warning" class="warning">
-                      The request exceeded the 20,000 epicenter limit. Only 20,000 epicenters will be plotted.
-                  </div>
-                  <div id="event-list-warning" class="warning">
-                      List not generated for more than 5000 epicenters.
-                  </div>
-                  <div id="event-list-head"><div class="results-text">Date (GMT)</div><div class="results-text">M(energy)</div></div>
-                  <ul id="event-list" class="sidebar-list">
-                  </ul>
-      
-                </div>
+        <div id="tremor-control-bar" class="flex-container flex-row">
+          <div id="chart-container" class="left-column">
+            <div id="chart-info" class="flex-container flex-row">
+              <div class="info-text">Click and drag on chart to zoom in. Double click to zoom out.</div>
+              <div id="chart-buttons" class="info-text">
+                zoom to last:
+                <a value="day" title="zoom to last day">day</a>
+                <a value="week" title="zoom to last week">week</a>
+                <a value="month" title="zoom to last month">month</a>
+                <a value="all" id="zoom-all" title="zoom to all data">all data</a>
+              </div>
             </div>
-  
-  
-            <div id="download-container">
-              <h3>Download</h3>
+            <div id="tremor-chart"></div>
+          </div>
+          <div id="tremor-search" class="right-column">
+            <h3>Search</h3>
+            <div class="row flex-container flex-row" id="date-container"> 
+              <button id="previous-day" class="secondary" title="Previous day"><i class="fa fa-chevron-left"></i></button>
+              <input id="date-range-picker" name="date-range" type="text"/>
+              <button id="next-day"  class="secondary" title="Next day"><i class="fa fa-chevron-right"></i></button>
+            </div>
+            <div class="row" id="filter-container">
+              <button id="draw-filter"  class="secondary">Add geographic filter</button>
+              <button id="remove-filter"  class="secondary">Remove geographic filter</button>
+              <button id="submit" class="primary" >Search</button>
+            </div>
+            <div id="help-text-container">
+              <div class="info-text">
+                Click Search to apply changes.
+              </div>
+              <div class="info-text" id="draw-filter-text">
+                Click and drag on the map to constrain geography.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tremor-content" class="flex-container">
+        <div id="tremor-map-container" class="left-column">
+          <div id="tremor-map"></div>
+        </div>
+        <div id="tremor-sidebar" class="flex-container flex-column right-column">
+          <div id="search-results-container">
+            <h3>Search Results</h3>
+            <div id="date-range" class="results-text">
+              Dates: <span class="start"></span> - <span class="end"></span>
+            </div>
+            <div id="epicenters" class="results-text">Total: <span></span> epicenters</div>
+            <div id="display-type-container" >
+              <div id="display-type-label" class="results-text">View as: </div>
               <div class="select">
-                  <select id="download-type">
-                      <option value="" selected disabled>Select Type</option>
-                      <option value="csv">CSV</option>
-                      <option value="json">GeoJSON</option>
-                    </select>
-                    <div class="select-arrow"></div>
+                <select id="display-type">
+                  <option value="heat-map"> <span>Heat Map</span></option>
+                </select>
+                <i class="fa fa-chevron-down select-arrow"></i>
               </div>
-              <button class="secondary">Download</button>
             </div>
-  
-              <!-- download stuff here -->
-          </div>
-          <div id="loading-overlay" class="flex-container">
-            <div id="loading-gif" class="text">
-              <div class="bounceball"></div>
-              Loading...
-            </div>
-            <div id="loading-warning">
-  
-              <div id="err404" class="error">
-                  <div>404: No tremor returned for selected time range.</div>
-                  <div>Please try a new search.</div>
+            <div id="tremor-event-nav">
+              <div id="event-limit-warning" class="warning">
+                The request exceeded the 20,000 epicenter limit. Only 20,000 epicenters will be plotted.
               </div>
-              <div id="err500" class="error">
-                  <div>Error: Could not reach server.</div>
-                  <div>Please try again later.</div>
+              <div id="event-list-warning" class="warning">
+                List not generated for more than 5000 epicenters.
               </div>
-              <div id="err" class="error">
-                  <div>Something went wrong!</div>
-                  <div>Please try again or send us an email at pnsn@uw.edu.</div> 
+              <div id="event-list-head" class="sidebar-list">
+                <div class="results-text">Date (GMT)</div>
+                <div class="results-text">M(energy)</div>
               </div>
+              <ul id="event-list" class="sidebar-list"></ul>
             </div>
           </div>
-  
+          <div id="download-container">
+            <h3>Download</h3>
+            <div class="select">
+              <select id="download-type">
+                <option value="" selected="true" disabled="true">Select Type</option>
+                <option value="csv">CSV</option>
+                <option value="json">GeoJSON</option>
+              </select>
+              <i class="fa fa-chevron-down select-arrow"></i>
+            </div>
+            <button class="secondary">Download</button>
+          </div>
+          <!-- download stuff here -->
+        </div>
+        <div id="loading-overlay" class="flex-container">
+          <div id="loading-gif" class="text">
+            <div class="bounceball"></div>
+            Loading...
+          </div>
+          <div id="loading-warning">
+            <div id="err404" class="error">
+              <div>404: No tremor returned for selected time range.</div>
+              <div>Please try a new search.</div>
+            </div>
+            <div id="err500" class="error">
+              <div>Error: Could not reach server.</div>
+              <div>Please try again later.</div>
+            </div>
+            <div id="err" class="error">
+              <div>Something went wrong!</div>
+              <div>Please try again or send us an email at pnsn@uw.edu.</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-
     <script src="js/tremorClientConfig.js"></script>
     <script src="js/tremorOverlays.min.js"></script>
     <script src="js/selectChart.min.js"></script>
     <script src="js/tremorMap.min.js"></script>
     <script src="js/tremorClient.min.js"></script>
-
   </body>
 </html>
+

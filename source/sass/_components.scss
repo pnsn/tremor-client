@@ -76,88 +76,10 @@ button {
   
   .select-arrow {
     position: absolute;
-    top: 10px;
-    right: 8px;
+    right: 20px;
+    top: 6px;
     width: 0;
     height: 0;
     pointer-events: none;
-    border-style: solid;
-    border-width: 8px 5px 0 5px;
-    border-color: $accent transparent transparent transparent;
   }
-  
-  .select select {
-    &:hover ~ .select-arrow, &:focus ~ .select-arrow {
-      border-top-color: #000;
-    }
-    &:disabled ~ .select-arrow {
-      border-top-color: #ccc;
-    }
-  }
-  
-  .control {
-    display: block;
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 5px;
-    cursor: pointer;
-    input {
-      position: absolute;
-      z-index: -1;
-      opacity: 0;
-    }
-  }
-  
-  .control-indicator {
-    position: absolute;
-    top: 0px;
-    left: 0;
-    height: 16px;
-    width: 16px;
-    background: $contrast;
-    border: 2px solid $gray;
-  }
-  
-  .control {
-    &:hover input:not([disabled]) ~ .control-indicator {
-      border-color: $gray-darker;
-    }
-    input {
-      &:focus ~ .control-indicator {
-        border-color: $gray-darker;
-      }
-      &:checked ~ .control-indicator {
-        background: $contrast;
-      }
-      &:disabled ~ .control-indicator {
-        background: $gray;
-        opacity: 0.6;
-        pointer-events: none;
-      }
-    }
-  }
-  
-  .control-indicator:after {
-    content: '';
-    position: absolute;
-    display: none;
-  }
-  
-  .control input:checked ~ .control-indicator:after {
-    display: block;
-  }
-  
-  .control-checkbox {
-    .control-indicator:after {
-      left: 5px;
-      top: 0px;
-      width: 5px;
-      height: 12px;
-      border: solid $primary;
-      border-width: 0 2px 2px 0;
-      transform: rotate(45deg);
-    }
-    input:disabled ~ .control-indicator:after {
-      border-color: #7b7b7b;
-    }
-  }
+

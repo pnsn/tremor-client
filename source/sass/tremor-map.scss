@@ -14,22 +14,22 @@ $screen-md-min: 768px;  // Small tablets (portrait view)
 $screen-lg-min: 992px;  // Tablets and small desktops
 $screen-xl-min: 1200px; // Large tablets and desktops
 
-body {
-  font-family: $font-family;
-  /* line-height: 1.37; */
-  margin:0;
-  font-weight: 400;
-  font-size: 14px;
-}
-
 #tremor-client {
+
   @import 'mixins';
   @import 'components';
   @import 'map';
   @import 'time-series';
   @import 'client-ui';
 
-  h2 {
+  font-family: $font-family !important;
+  /* line-height: 1.37; */
+  margin:0 !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
+
+  #header-text {
+    background-color: transparent;
     margin:0;
     align-self: center;
     display:inline-block;
@@ -86,12 +86,6 @@ body {
     color:$warning;
   }
   
-  .daterangepicker {
-    .active {
-      background-color: $accent !important;
-    }
-  }
-  
   .info-text {
     font-weight: 300;
     font-size: .8em;
@@ -125,5 +119,14 @@ body {
       width:87%;
     }
     display:inline-block;
+  }
+}
+
+.daterangepicker {
+  .in-range {
+    background-color: #e8fce8 !important;
+  }
+  .active {
+    background-color: $accent !important;
   }
 }

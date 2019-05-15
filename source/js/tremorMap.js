@@ -315,7 +315,7 @@ function TremorMap(config) {
 
         // do all the listy stuff
         if (data.features.length < 5000) {
-          var listItem = $("<li class='event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
+          var listItem = $("<li class='tremor-event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
           listItem.click(function () {
             $(this).addClass("active-event");
             marker.openPopup();

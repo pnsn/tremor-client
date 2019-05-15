@@ -13,14 +13,15 @@ function TimeChart(config, minDate) {
       bottom: 12,
       left: 14.25
     },
-    height = config.height - margin.top - margin.bottom,
-    width = config.width - margin.right - margin.left,
+    height = $(config.container).height() - $("#chart-info").height() - margin.top - margin.bottom,
+    width = $(config.container).width() - margin.right - margin.left,
     idleDelay = 350, // time to wait between clicks
     minimumDate = minDate, // lowest selectable date
     dateFormat = config.format, // format to display
     d3Format = d3.utcFormat(config.d3Format); // d3 format to display
     d3Parse = d3.utcParse(config.d3Format); // d3 parse format
 
+  console.log($(config.container).width(),$(config.container).height() );
   //** D3 Elements*/
 
   // Actual chart

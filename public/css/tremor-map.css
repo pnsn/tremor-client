@@ -1,11 +1,10 @@
-body {
-  font-family: "Open Sans", Arial, "sans serif";
+#tremor-client {
+  font-family: "Open Sans", Arial, "sans serif" !important;
   /* line-height: 1.37; */
-  margin: 0;
-  font-weight: 400;
-  font-size: 14px;
+  margin: 0 !important;
+  font-weight: 400 !important;
+  font-size: 14px !important;
 }
-
 #tremor-client input[type=text], #tremor-client select {
   padding: 2px 6px;
   font-size: 1em;
@@ -77,75 +76,11 @@ body {
 }
 #tremor-client .select-arrow {
   position: absolute;
-  top: 10px;
-  right: 8px;
+  right: 20px;
+  top: 6px;
   width: 0;
   height: 0;
   pointer-events: none;
-  border-style: solid;
-  border-width: 8px 5px 0 5px;
-  border-color: #083f08 transparent transparent transparent;
-}
-#tremor-client .select select:hover ~ .select-arrow, #tremor-client .select select:focus ~ .select-arrow {
-  border-top-color: #000;
-}
-#tremor-client .select select:disabled ~ .select-arrow {
-  border-top-color: #ccc;
-}
-#tremor-client .control {
-  display: block;
-  position: relative;
-  padding-left: 30px;
-  margin-bottom: 5px;
-  cursor: pointer;
-}
-#tremor-client .control input {
-  position: absolute;
-  z-index: -1;
-  opacity: 0;
-}
-#tremor-client .control-indicator {
-  position: absolute;
-  top: 0px;
-  left: 0;
-  height: 16px;
-  width: 16px;
-  background: white;
-  border: 2px solid #ababab;
-}
-#tremor-client .control:hover input:not([disabled]) ~ .control-indicator {
-  border-color: #5f5f5f;
-}
-#tremor-client .control input:focus ~ .control-indicator {
-  border-color: #5f5f5f;
-}
-#tremor-client .control input:checked ~ .control-indicator {
-  background: white;
-}
-#tremor-client .control input:disabled ~ .control-indicator {
-  background: #ababab;
-  opacity: 0.6;
-  pointer-events: none;
-}
-#tremor-client .control-indicator:after {
-  content: "";
-  position: absolute;
-  display: none;
-}
-#tremor-client .control input:checked ~ .control-indicator:after {
-  display: block;
-}
-#tremor-client .control-checkbox .control-indicator:after {
-  left: 5px;
-  top: 0px;
-  width: 5px;
-  height: 12px;
-  border: solid #107a10;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-#tremor-client .control-checkbox input:disabled ~ .control-indicator:after {
-  border-color: #7b7b7b;
 }
 #tremor-client .leaflet-top,
 #tremor-client .leaflet-bottom {
@@ -225,7 +160,7 @@ body {
 }
 #tremor-client #tremor-chart text {
   fill: black;
-  font-size: 0.7rem;
+  font-size: 11px;
   font-family: "Open Sans", Arial, "sans serif";
 }
 #tremor-client #tremor-chart .background {
@@ -248,90 +183,89 @@ body {
   stroke-width: 1px;
   stroke: #5f5f5f;
 }
-#tremor-client #header {
+#tremor-client #tremor-header {
   width: 100%;
   align-items: center;
 }
-#tremor-client #header #info-container {
+#tremor-client #tremor-header #info-container {
   width: 100%;
   background-color: #083f08;
   align-items: center;
 }
-#tremor-client #header #info {
+#tremor-client #tremor-header #info {
   justify-content: space-between;
   flex-wrap: wrap;
   width: 90%;
   min-height: 70px;
   color: white;
 }
-#tremor-client #header #info div, #tremor-client #header #info a, #tremor-client #header #info button {
+#tremor-client #tremor-header #info div, #tremor-client #tremor-header #info a, #tremor-client #tremor-header #info button {
   display: inline-block;
   align-self: flex-end;
   margin-bottom: 10px;
   font-weight: 300;
   color: white;
 }
-#tremor-client #header #info #start-tour {
+#tremor-client #tremor-header #info #start-tour {
   height: 10px;
 }
-#tremor-client #control-bar {
+#tremor-client #tremor-control-bar {
   padding: 5px 0px;
   justify-content: space-between;
   width: 90%;
   align-items: center;
 }
-#tremor-client #control-bar #search #submit {
+#tremor-client #tremor-control-bar #tremor-search #submit {
   float: right;
   width: 70px;
 }
 @media (min-width: 576px) {
-  #tremor-client #control-bar #search {
+  #tremor-client #tremor-control-bar #tremor-search {
     min-height: 150px;
   }
 }
-#tremor-client #control-bar #search #date-container {
+#tremor-client #tremor-control-bar #tremor-search #date-container {
   justify-content: space-between;
 }
-#tremor-client #control-bar #search #date-container span.icon {
+#tremor-client #tremor-control-bar #tremor-search #date-container span.icon {
   font-size: 1.5em;
   line-height: 4px;
 }
-#tremor-client #control-bar #search #date-range-picker {
+#tremor-client #tremor-control-bar #tremor-search #date-range-picker {
   width: 178px;
-  height: 20px;
 }
-#tremor-client #control-bar #search #filter-container {
+#tremor-client #tremor-control-bar #tremor-search #filter-container {
   margin: 3px 0px;
 }
-#tremor-client #control-bar #search #filter-container #remove-filter, #tremor-client #control-bar #search #filter-container #draw-filter-text {
+#tremor-client #tremor-control-bar #tremor-search #filter-container #remove-filter, #tremor-client #tremor-control-bar #tremor-search #filter-container #draw-filter-text {
   display: none;
 }
-#tremor-client #control-bar #chart-container {
+#tremor-client #tremor-control-bar #chart-container {
   height: 135px;
   display: none;
 }
 @media (min-width: 576px) {
-  #tremor-client #control-bar #chart-container {
+  #tremor-client #tremor-control-bar #chart-container {
     display: inline-block;
   }
 }
-#tremor-client #control-bar #chart-container #chart-info {
+#tremor-client #tremor-control-bar #chart-container #chart-info {
   width: 100%;
   justify-content: space-between;
 }
-#tremor-client #control-bar #chart-container #chart-buttons a {
+#tremor-client #tremor-control-bar #chart-container #chart-buttons a {
   cursor: pointer;
   color: #107a10;
   margin-left: 2px;
 }
-#tremor-client #control-bar #chart-container #chart-buttons a#zoom-all {
+#tremor-client #tremor-control-bar #chart-container #chart-buttons a#zoom-all {
   margin-left: 5px;
 }
-#tremor-client #control-bar #chart-container #chart-buttons a:hover {
+#tremor-client #tremor-control-bar #chart-container #chart-buttons a:hover {
   color: #083f08;
   text-decoration: underline;
 }
-#tremor-client #content {
+#tremor-client #tremor-content {
   width: 90%;
   position: relative;
   flex-direction: column;
@@ -339,33 +273,33 @@ body {
   margin: auto;
 }
 @media (min-width: 768px) {
-  #tremor-client #content {
+  #tremor-client #tremor-content {
     flex-direction: row;
   }
 }
-#tremor-client #content #map-container {
+#tremor-client #tremor-content #tremor-map-container {
   height: 500px;
   width: 100%;
   padding-bottom: 10px;
 }
 @media (min-width: 768px) {
-  #tremor-client #content #map-container {
+  #tremor-client #tremor-content #tremor-map-container {
     height: 850px;
   }
 }
-#tremor-client #content #map-container #tremor-map {
+#tremor-client #tremor-content #tremor-map-container #tremor-map {
   border: 5px solid #f8f8f8;
 }
-#tremor-client #content .text {
+#tremor-client #tremor-content .text {
   margin-left: 5px;
 }
-#tremor-client #content .bounceball {
+#tremor-client #tremor-content .bounceball {
   position: relative;
   display: inline-block;
   height: 37px;
   width: 15px;
 }
-#tremor-client #content .bounceball:before {
+#tremor-client #tremor-content .bounceball:before {
   position: absolute;
   content: "";
   display: block;
@@ -393,7 +327,7 @@ body {
     top: 0;
   }
 }
-#tremor-client #content #loading-overlay {
+#tremor-client #tremor-content #loading-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -402,68 +336,68 @@ body {
   z-index: 1000;
   background-color: rgba(171, 171, 171, 0.66);
 }
-#tremor-client #content #loading-overlay #loading-gif, #tremor-client #content #loading-overlay #loading-warning {
+#tremor-client #tremor-content #loading-overlay #loading-gif, #tremor-client #tremor-content #loading-overlay #loading-warning {
   font-size: 1.6em;
   margin: 20% auto;
   color: #083f08;
 }
 @media (min-width: 768px) {
-  #tremor-client #content #loading-overlay #loading-gif, #tremor-client #content #loading-overlay #loading-warning {
+  #tremor-client #tremor-content #loading-overlay #loading-gif, #tremor-client #tremor-content #loading-overlay #loading-warning {
     margin: auto;
     font-size: 3em;
   }
 }
-#tremor-client #content #loading-overlay #loading-warning {
+#tremor-client #tremor-content #loading-overlay #loading-warning {
   display: none;
 }
-#tremor-client #content #loading-overlay #loading-warning div {
+#tremor-client #tremor-content #loading-overlay #loading-warning div {
   text-align: center;
 }
-#tremor-client #content #loading-overlay #loading-warning .error {
+#tremor-client #tremor-content #loading-overlay #loading-warning .error {
   display: none;
 }
-#tremor-client #content #sidebar {
+#tremor-client #tremor-content #tremor-sidebar {
   height: 100%;
   background-color: white;
 }
-#tremor-client #content #sidebar #search-results-container #display-type-container div {
+#tremor-client #tremor-content #tremor-sidebar #search-results-container #display-type-container div {
   display: inline-block;
 }
-#tremor-client #content #sidebar #search-results-container #display-type-container .select {
+#tremor-client #tremor-content #tremor-sidebar #search-results-container #display-type-container .select {
   margin: 5px 0px;
   width: 210px;
 }
-#tremor-client #content #sidebar #search-results-container .results-text {
+#tremor-client #tremor-content #tremor-sidebar #search-results-container .results-text {
   color: #666666;
   font-weight: 300;
 }
-#tremor-client #content #sidebar #search-results-container #date-range span, #tremor-client #content #sidebar #search-results-container #epicenters span {
+#tremor-client #tremor-content #tremor-sidebar #search-results-container #date-range span, #tremor-client #tremor-content #tremor-sidebar #search-results-container #epicenters span {
   color: black;
   font-weight: 400;
 }
-#tremor-client #content #sidebar #download-container {
+#tremor-client #tremor-content #tremor-sidebar #download-container {
   align-self: flex-end;
   margin-bottom: 10px;
 }
-#tremor-client #content #sidebar #download-container .select {
+#tremor-client #tremor-content #tremor-sidebar #download-container .select {
   width: 50%;
 }
-#tremor-client #content #sidebar #event-list {
+#tremor-client #tremor-content #tremor-sidebar .sidebar-list {
   display: none;
 }
-#tremor-client #content #sidebar #event-list-head {
+#tremor-client #tremor-content #tremor-sidebar #event-list-head {
   margin-top: 5px;
   padding-left: 10px;
   width: 100%;
 }
-#tremor-client #content #sidebar #event-list-head div:first-child {
+#tremor-client #tremor-content #tremor-sidebar #event-list-head div:first-child {
   float: left;
 }
-#tremor-client #content #sidebar #event-list-head div:last-child {
+#tremor-client #tremor-content #tremor-sidebar #event-list-head div:last-child {
   float: right;
   margin-right: 20px;
 }
-#tremor-client #content #sidebar #event-nav ul {
+#tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul {
   margin-top: 0px;
   padding-left: 10px;
   list-style-type: none;
@@ -474,36 +408,37 @@ body {
   padding-bottom: 10px;
 }
 @media (min-width: 768px) {
-  #tremor-client #content #sidebar #event-nav ul {
+  #tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul {
     max-height: 640px;
   }
 }
-#tremor-client #content #sidebar #event-nav ul .event-nav.active-event {
+#tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul .tremor-event-nav.active-event {
   color: #e61a1a;
 }
-#tremor-client #content #sidebar #event-nav ul li div:first-child {
+#tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul li div:first-child {
   float: left;
 }
-#tremor-client #content #sidebar #event-nav ul li div:last-child {
+#tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul li div:last-child {
   float: right;
   margin-right: 20px;
 }
-#tremor-client h2 {
+#tremor-client #header-text {
+  background-color: transparent;
   margin: 0;
   align-self: center;
   display: inline-block;
   font-size: 1.6em;
   font-weight: 400;
 }
-#tremor-client h2 span {
+#tremor-client #header-text span {
   display: none;
 }
 @media (min-width: 768px) {
-  #tremor-client h2 {
+  #tremor-client #header-text {
     font-size: 2em;
     font-weight: 700;
   }
-  #tremor-client h2 span {
+  #tremor-client #header-text span {
     display: inline;
   }
 }
@@ -541,9 +476,6 @@ body {
   display: none;
   font-weight: 300;
   color: #e61a1a;
-}
-#tremor-client .daterangepicker .active {
-  background-color: #083f08 !important;
 }
 #tremor-client .info-text {
   font-weight: 300;
@@ -587,6 +519,13 @@ body {
     min-width: 270px;
     width: 87%;
   }
+}
+
+.daterangepicker .in-range {
+  background-color: #e8fce8 !important;
+}
+.daterangepicker .active {
+  background-color: #083f08 !important;
 }
 
 /*# sourceMappingURL=tremor-map.css.map */

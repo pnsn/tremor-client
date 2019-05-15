@@ -275,10 +275,10 @@ $(function () {
       $("#event-limit-warning").hide();
     }
     if (response.count > 5000) {
-      $("#event-list").hide();
+      $(".sidebar-list").hide();
       $("#event-list-warning").show();
     } else {
-      $("#event-list").show();
+      $(".sidebar-list").show();
       $("#event-list-warning").hide();
     }
 

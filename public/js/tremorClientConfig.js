@@ -59,8 +59,6 @@ $.tremorDefaultConfig = {
   },
   chartOptions: {
     "container": "#tremor-chart",
-    "height": $("#tremor-chart").height() - $("#chart-info").height(),
-    "width": $("#tremor-chart").width(),
     "format": "YYYY-MM-DD",
     "d3Format" : "%Y-%m-%d"
   },
