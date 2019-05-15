@@ -143,16 +143,16 @@
   height: 100%;
   width: 100%;
 }
-#tremor-client #tremor-chart .line, #tremor-client #tremor-chart .mouse-line {
+#tremor-client #tremor-chart .tremor-line, #tremor-client #tremor-chart .mouse-line {
   fill: none;
   stroke: #ababab;
   stroke-width: 2px;
 }
-#tremor-client #tremor-chart path.line, #tremor-client #tremor-chart path.mouse-line {
+#tremor-client #tremor-chart path.tremor-line, #tremor-client #tremor-chart path.mouse-line {
   stroke-width: 1.5px;
   clip-path: url(#clip);
 }
-#tremor-client #tremor-chart path.line.modified, #tremor-client #tremor-chart path.modified.mouse-line {
+#tremor-client #tremor-chart path.tremor-line.modified, #tremor-client #tremor-chart path.modified.mouse-line {
   stroke: #5f5f5f;
 }
 #tremor-client #tremor-chart .mouse-line {

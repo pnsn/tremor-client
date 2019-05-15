@@ -103,7 +103,7 @@ $(function () {
     if (bounds) {
       getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
         timeChart.updateData(response);
-        $("path.line").addClass("modified");
+        $("path.tremor-line").addClass("modified");
       });
     }
 
@@ -184,7 +184,8 @@ $(function () {
       function (bounds) {
         getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
           timeChart.updateData(response);
-          $("path.line").addClass("modified");
+          console.log($("path.line"));
+          $("path.tremor-line").addClass("modified");
         });
       },
       // draw canceled 

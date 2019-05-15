@@ -3,13 +3,13 @@
 	height: 100%;
 	width: 100%;
 
-	.line {
+	.tremor-line {
 		fill: none;
 		stroke: $gray;
 		stroke-width: 2px;
 	}
 
-	path.line {
+	path.tremor-line {
 		&.modified {
 			stroke: $gray-darker;
 		}
@@ -18,7 +18,7 @@
 	}
 
 	.mouse-line {
-		@extend .line;
+		@extend .tremor-line;
 		stroke-width: 0.5px;
 	}
 

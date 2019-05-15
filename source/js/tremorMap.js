@@ -15,7 +15,7 @@ function TremorMap(config) {
   map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
   //Make the basemap
-  osm = new L.TileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  osm = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
   });
 
@@ -106,7 +106,7 @@ function TremorMap(config) {
       pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {
           icon: L.icon({
-            iconUrl: 'assets/Station.png',
+            iconUrl: 'https://assets.pnsn.org/map_icons/station.png',
             iconSize: [10, 8]
           })
         }).bindPopup("<div>" + feature.properties.station + "</div>");
