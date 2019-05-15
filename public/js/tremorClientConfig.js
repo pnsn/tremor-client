@@ -42,18 +42,6 @@ $.tremorDefaultConfig = {
           fill: ["#00008F", "#0000FF", "#0080FF", "#00FFFF", "#80FF80", "#FFEF00", "#FF8000", "#FF0000", "#800000"],
           outline: ["black", "black"]
         },
-        "monochrome": {
-          name: "Color vs Time (Black & White)",
-          type: "time",
-          fill: ["black", "white"],
-          outline: ["black", "black"]
-        },
-        "hot": {
-          name: "Color vs Time (Hot)",
-          type: "time",
-          fill: ["black", "red", "orange", "yellow", "white"],
-          outline: ["black", "black"]
-        },
         "magnitude": {
           name: "Color vs Magnitude (Test)",
           type: "magnitude",
