@@ -260,7 +260,7 @@ function TremorMap(config) {
   function prepareSpectrum(coloring) {
     if (coloring && coloring.type == "time" || coloring.type == "magnitude") {
       rainbow.setSpectrumByArray(coloring.fill);
- 
+      
       if (mapKey._map == null) {
         map.addControl(mapKey);
       }
@@ -291,11 +291,12 @@ function TremorMap(config) {
           time = new Date(feature.properties.time),
           lat = latlng.lat,
           lng = latlng.lng,
-          mag = feature.properties.amplitude ? (Math.log10(feature.properties.amplitude)-2.7)/2 : null,
+          mag = feature.properties.amplitude ? (Math.round(10*(Math.log10(feature.properties.amplitude)-2.7)/2)/10).toFixed(1): null,
           //timeIndex is used to assign coloring relative to start and end dates
-          timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100,
-          magIndex = mag ? mag / 2 * 100 : -1,
-          magString = "<div>Magnitude (energy): " + (mag ? Math.round(mag * 100) /100 : "no data") + "</div>";
+          timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
+          
+          var magIndex = mag ? mag / 2 * 100 : -1,
+          magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
 
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
@@ -313,7 +314,7 @@ function TremorMap(config) {
 
         // do all the listy stuff
         if (data.features.length < 5000) {
-          var listItem = $("<li class='event-nav event-" + id + "'>" + feature.properties.time + "</li>");
+          var listItem = $("<li class='event-nav event-" + id + "'><div>" + feature.properties.time.replace("GMT", "") + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
           listItem.click(function () {
             $(this).addClass("active-event");
             marker.openPopup();

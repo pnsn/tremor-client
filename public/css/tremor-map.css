@@ -451,7 +451,20 @@ body {
 #tremor-client #content #sidebar #event-list {
   display: none;
 }
+#tremor-client #content #sidebar #event-list-head {
+  margin-top: 5px;
+  padding-left: 10px;
+  width: 100%;
+}
+#tremor-client #content #sidebar #event-list-head div:first-child {
+  float: left;
+}
+#tremor-client #content #sidebar #event-list-head div:last-child {
+  float: right;
+  margin-right: 20px;
+}
 #tremor-client #content #sidebar #event-nav ul {
+  margin-top: 0px;
   padding-left: 10px;
   list-style-type: none;
   overflow: scroll;
@@ -463,11 +476,17 @@ body {
 @media (min-width: 768px) {
   #tremor-client #content #sidebar #event-nav ul {
     max-height: 640px;
-    width: 77%;
   }
 }
 #tremor-client #content #sidebar #event-nav ul .event-nav.active-event {
   color: #e61a1a;
+}
+#tremor-client #content #sidebar #event-nav ul li div:first-child {
+  float: left;
+}
+#tremor-client #content #sidebar #event-nav ul li div:last-child {
+  float: right;
+  margin-right: 20px;
 }
 #tremor-client h2 {
   margin: 0;
