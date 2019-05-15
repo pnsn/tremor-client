@@ -329,7 +329,6 @@ function TremorMap(config) {
           }).on('mouseenter', function () {
             $(this).addClass("active-event");
             marker.setRadius(6);
-            marker.bringToFront();
           }).on('mouseout', function () {
             $(this).removeClass("active-event");
             marker.setRadius(config.markerOptions.radius);

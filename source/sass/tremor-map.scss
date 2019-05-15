@@ -14,12 +14,6 @@ $screen-md-min: 768px;  // Small tablets (portrait view)
 $screen-lg-min: 992px;  // Tablets and small desktops
 $screen-xl-min: 1200px; // Large tablets and desktops
 
-@import 'mixins';
-@import 'components';
-@import 'map';
-@import 'time-series';
-@import 'client-ui';
-
 body {
   font-family: $font-family;
   /* line-height: 1.37; */
@@ -28,100 +22,108 @@ body {
   font-size: 14px;
 }
 
-h2 {
-  margin:0;
-  align-self: center;
-  display:inline-block;
-
-  font-size: 1.6em;
-  font-weight: 400;
-  span {
+#tremor-client {
+  @import 'mixins';
+  @import 'components';
+  @import 'map';
+  @import 'time-series';
+  @import 'client-ui';
+  
+  h2 {
+    margin:0;
+    align-self: center;
+    display:inline-block;
+  
+    font-size: 1.6em;
+    font-weight: 400;
+    span {
+      display:none;
+    }
+    @include md {
+      span {
+        display:inline;
+      }
+      font-size: 2em;
+      font-weight: 700;
+    }
+  }
+  
+  h3 {
+    font-size: 1.5em;
+    font-weight: 400;
+    margin: 2px 0px;
+  
+    @include md {
+      margin: 5px 0px;
+    }
+  
+  }
+  
+  h4 {
+    margin: 0;
+    font-weight: 400;
+  }
+  
+  .flex-container {
+    @include flexbox();
+  }
+  
+  .flex-row {
+    flex-direction: row;
+  }
+  
+  .flex-column {
+    flex-direction: column;
+  }
+  
+  .hidden {
     display:none;
   }
-  @include md {
-    span {
-      display:inline;
+  
+  .warning{
+    display:none;
+    font-weight: 300;
+    color:$warning;
+  }
+  
+  .daterangepicker {
+    .active {
+      background-color: $accent !important;
     }
-    font-size: 2em;
-    font-weight: 700;
   }
-}
-
-h3 {
-  font-size: 1.5em;
-  font-weight: 400;
-  margin: 2px 0px;
-
-  @include md {
-    margin: 5px 0px;
+  
+  .info-text {
+    font-weight: 300;
+    font-size: .8em;
   }
-
-}
-
-h4 {
-  margin: 0;
-  font-weight: 400;
-}
-
-.flex-container {
-  @include flexbox();
-}
-
-.flex-row {
-  flex-direction: row;
-}
-
-.flex-column {
-  flex-direction: column;
-}
-
-.hidden {
-	display:none;
-}
-
-.warning{
-  display:none;
-  font-weight: 300;
-  color:$warning;
-}
-
-.daterangepicker {
-  .active {
-    background-color: $accent !important;
+  
+  .right-column {
+    margin-left: 20px;
+    width: 99%;
+    @include sm {
+      min-width:270px;
+      width:23%;
+    }
+    @include md {
+      min-width:270px;
+      width:18%;
+    }
+    @include lg {
+      min-width:270px;
+      width:13%;
+    }
+    display:inline-block;
   }
-}
-
-.info-text {
-  font-weight: 300;
-  font-size: .8em;
-}
-
-.right-column {
-  margin-left: 20px;
-  width: 99%;
-  @include sm {
-    min-width:270px;
-    width:23%;
+  .left-column {
+    width: 77%;
+    @include md {
+      min-width:270px;
+      width:82%;
+    }
+    @include lg {
+      min-width:270px;
+      width:87%;
+    }
+    display:inline-block;
   }
-  @include md {
-    min-width:270px;
-    width:18%;
-  }
-  @include lg {
-    min-width:270px;
-    width:13%;
-  }
-  display:inline-block;
-}
-.left-column {
-  width: 77%;
-  @include md {
-    min-width:270px;
-    width:82%;
-  }
-  @include lg {
-    min-width:270px;
-    width:87%;
-  }
-  display:inline-block;
 }
