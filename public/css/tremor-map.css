@@ -506,10 +506,12 @@
   background-color: #083f08 !important;
 }
 
-#tremor-updated {
-  float: right;
-  margin-top: 15px;
-  margin-right: 15px;
+@media (min-width: 576px) {
+  #tremor-updated {
+    float: right;
+    margin-top: 15px;
+    margin-right: 15px;
+  }
 }
 
 #tremor-start-tour {
