@@ -1,4 +1,4 @@
-$(function () {
+function TremorClient() {
   var config = $.tremorDefaultConfig;
   //** Instantiate some variables */
 
@@ -303,7 +303,7 @@ $(function () {
 
     $("#submit").removeClass("inactive");
   }
-});
+}
 
 // Gets the day counts of tremor
 function getCounts(apiBaseUrl, boundsStr) {
