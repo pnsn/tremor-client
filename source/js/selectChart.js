@@ -283,6 +283,7 @@ function TimeChart(config, minDate) {
     line = svg.append("path")
       .data([chartData])
       .attr("class", "tremor-line")
+      .attr("id", "tremor-line")
       .attr("d", valueline)
       .attr("pointer-events", "none")
       .attr("transform", "translate(" + margin.left + ")");

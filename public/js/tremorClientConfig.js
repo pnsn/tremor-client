@@ -43,7 +43,7 @@ $.tremorDefaultConfig = {
           outline: "black"
         },
         "magnitude": {
-          name: "Color vs Magnitude (Test)",
+          name: "Color vs Magnitude",
           type: "magnitude",
           fill: ["white", "yellow", "orange", "red"],
           outline: "black"
@@ -85,10 +85,10 @@ $.tremorDefaultConfig = {
     backdrop: true,
     backdropPadding: 5,
     steps: [{
-        element: "#header-text",
         title: "Welcome to the new Tremor Application!",
         content: "The old Tremor App was outdated and didn't work on newer devices, so we rebuilt it. This rebuild allows us to add new tools and make it more usable.",
-        placement: "bottom"
+        placement: "bottom",
+        orphan: true
       },
       {
         element: "#chart-container",

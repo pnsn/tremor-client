@@ -91,7 +91,7 @@ function TremorClient() {
     url: apiBaseUrl + "/event/0",
     dataType: "json"
   }).done(function (response) {
-    $("#updated span").text(moment.utc(response.properties.time).fromNow());
+    $("#tremor-updated span").text(moment.utc(response.properties.time).fromNow());
   });
 
   // Total counts for time chart
@@ -108,7 +108,7 @@ function TremorClient() {
     }
 
     $(window).on('resize', function () {
-      timeChart.resize($("#control-bar").width() - $("#search").width() - 20);
+      timeChart.resize($("#tremor-control-bar").width() - $("#tremor-search").width() - 20);
     });
   });
 
@@ -118,7 +118,7 @@ function TremorClient() {
   });
 
   //** UI Events and Prepping */
-  $("#start-tour").click(function () {
+  $("#tremor-start-tour").click(function () {
     if (tour.ended()) {
       tour.restart();
     } else {
@@ -184,8 +184,10 @@ function TremorClient() {
       function (bounds) {
         getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
           timeChart.updateData(response);
-          console.log($("path.line"));
-          $("path.tremor-line").addClass("modified");
+          console.log($("#tremor-line"));
+          $("#tremor-line").addClass("modified");
+          console.log($("#tremor-line"));
+          console.log("what is happening");
         });
       },
       // draw canceled 

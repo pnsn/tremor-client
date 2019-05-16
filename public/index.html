@@ -32,14 +32,6 @@
   <body>
     <div id="tremor-client">
       <div id="tremor-header" class="flex-container flex-column" >
-        <div id="info-container" class="flex-container flex-column" >
-          <div id="info" class="flex-container flex-row">
-            <h2 id="header-text">Episodic Tremor & Slip Events <span>(ETS)</span></h2>
-            <div id="updated">Updated <span></span></div>
-            <a href="https://pnsn.org/tremor/overview" target="blank" title="Go to PNSN Tremor Overview">about tremor</a>
-            <button id="start-tour" class="primary">Start Tour</button>
-          </div>
-        </div>
         <div id="tremor-control-bar" class="flex-container flex-row">
           <div id="chart-container" class="left-column">
             <div id="chart-info" class="flex-container flex-row">
@@ -153,7 +145,10 @@
     <script src="js/tremorMap.min.js"></script>
     <script src="js/tremorClient.min.js"></script>
     <script> 
+      $("<div id='tremor-updated'>Updated <span></span></div>").insertAfter("ol.breadcrumb");
+      $("<button id='tremor-start-tour' class='primary'>Start Tour</button>").insertAfter("ol.breadcrumb");
       var tremorClient = new TremorClient();
+
     </script>
   </body>
 </html>
