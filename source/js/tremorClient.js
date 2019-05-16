@@ -245,7 +245,6 @@ function TremorClient() {
       window.history.replaceState({}, "Tremor Map", urlStr);
     }
 
-    $("#event-nav ul").empty();
     getEvents(apiBaseUrl, dateRange.toString(), boundsStr).done(function (response) {
       updateMarkers(response);
     });
@@ -266,6 +265,8 @@ function TremorClient() {
 
   // Updates UI and markers when new data requested
   function updateMarkers(response) {
+
+    $("#event-list").empty();
     tremorMap.setRange(dateRange.getStart(), dateRange.getEnd());
     tremorMap.updateMarkers(response, coloringSelector.val());
     $(".start").text(dateRange.getStart());

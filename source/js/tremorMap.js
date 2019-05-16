@@ -280,9 +280,9 @@ function TremorMap(config) {
     var firstEventTime = new Date(data.features[0].properties.time);
     var lastEventTime = new Date(data.features[data.features.length - 1].properties.time);
 
-    var timeIndex, time, id, lat, lng;
-
-    prepareSpectrum(colors[coloringName]);
+    if(colors[coloringName]) {
+      prepareSpectrum(colors[coloringName]);
+    }
 
     //Go through all the data and create markers
     eventMarkers = L.geoJSON(data.features, {
