@@ -106,7 +106,7 @@ function TremorMap(config) {
       pointToLayer: function (feature, latlng) {
         return L.marker(latlng, {
           icon: L.icon({
-            iconUrl: 'https://assets.pnsn.org/map_icons/station.png',
+            iconUrl: '/assets/map/station.png',
             iconSize: [10, 8]
           })
         }).bindPopup("<div>" + feature.properties.station + "</div>");
