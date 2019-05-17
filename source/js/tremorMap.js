@@ -71,14 +71,13 @@ function TremorMap(config) {
     },
     //sets spectrum or single color using config
     setColoring: function (coloring) {
-      var fill;
-      var radius;
+      var fill, radius;
       if (colors[coloring]) {
         switch (colors[coloring].type) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
               fill = "#" + rainbow.colorAt(this.options.magIndex);
-              radius = (this.options.magIndex / 100) * (config.markerOptions.radius - 1) + 1;
+              radius = (this.options.magIndex / 100) * config.markerOptions.radius + 0.5;
             } else {
               fill = "#ababab";
             }
@@ -95,7 +94,7 @@ function TremorMap(config) {
         this.setStyle({
           fillColor: fill,
           color: colors[coloring].outline,
-          radius: radius ? radius : this.options.radius,
+          radius: radius ? radius : config.markerOptions.radius,
         });
 
 
@@ -276,6 +275,18 @@ function TremorMap(config) {
     }
   }
 
+  function getMagIndex(mag) {
+    if (!mag) {
+      return -1;
+    } else if (mag < 0.5) {
+      return 0;
+    } else if (mag > 2.2) {
+      return 100;
+    } else {
+      return 100 * (mag - 0.5) / (2.2 - 0.5);
+    }
+  }
+
   // Makes new markers with given data and coloringName
   function updateMarkers(data, coloringName) {
     clearLayers();
@@ -299,9 +310,11 @@ function TremorMap(config) {
           //timeIndex is used to assign coloring relative to start and end dates
           timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           
-          var magIndex = mag ? (mag / 1.7 + 0.5) * 100 : -1,
-          magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
-
+          var magIndex = getMagIndex(mag);
+          var magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
+         if (mag) {
+           console.log(magIndex, mag);
+         }
           var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
@@ -309,10 +322,6 @@ function TremorMap(config) {
           id: id,
           magIndex: magIndex
         });
-
-        if(mag > 2) {
-            console.log(feature.properties.amplitude);
-        }
 
         marker.setColoring(coloringName);
         marker.bindPopup("<div> Time: " + timeString + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
