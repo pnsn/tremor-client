@@ -28,8 +28,8 @@ function TremorMap(config) {
     },
     recolor: function (coloring) {
       if(coloring.type == "magnitude") {
-        $("#key-top").text("Me = 2.0");
-        $("#key-bottom").text("0.0");
+        $("#key-top").text("Me = 2.2");
+        $("#key-bottom").text("0.5");
         $("#key-no-data").show();
       } else {
         $("#key-top").text(dateEnd);
@@ -78,7 +78,7 @@ function TremorMap(config) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
               fill = "#" + rainbow.colorAt(this.options.magIndex);
-              radius = 0.01 * this.options.magIndex * config.markerOptions.radius;
+              radius = (this.options.magIndex / 100) * (config.markerOptions.radius - 1) + 1;
             } else {
               fill = "#ababab";
             }
@@ -295,10 +295,11 @@ function TremorMap(config) {
           lat = latlng.lat,
           lng = latlng.lng,
           mag = feature.properties.amplitude ? (Math.round(10*(Math.log10(feature.properties.amplitude)-2.7)/2)/10).toFixed(1): null,
+
           //timeIndex is used to assign coloring relative to start and end dates
           timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           
-          var magIndex = mag ? mag / 2 * 100 : -1,
+          var magIndex = mag ? (mag / 1.7 + 0.5) * 100 : -1,
           magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
 
           var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
@@ -308,6 +309,10 @@ function TremorMap(config) {
           id: id,
           magIndex: magIndex
         });
+
+        if(mag > 2) {
+            console.log(feature.properties.amplitude);
+        }
 
         marker.setColoring(coloringName);
         marker.bindPopup("<div> Time: " + timeString + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
@@ -341,7 +346,7 @@ function TremorMap(config) {
         return marker;
       }
     });
-
+    //update key top and bottom with colors?
     recolorMarkers(coloringName, true);
   }
   
