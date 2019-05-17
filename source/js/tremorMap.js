@@ -72,11 +72,13 @@ function TremorMap(config) {
     //sets spectrum or single color using config
     setColoring: function (coloring) {
       var fill;
+      var radius;
       if (colors[coloring]) {
         switch (colors[coloring].type) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
               fill = "#" + rainbow.colorAt(this.options.magIndex);
+              radius = 0.01 * this.options.magIndex * config.markerOptions.radius;
             } else {
               fill = "#ababab";
             }
@@ -92,7 +94,8 @@ function TremorMap(config) {
 
         this.setStyle({
           fillColor: fill,
-          color: colors[coloring].outline
+          color: colors[coloring].outline,
+          radius: radius ? radius : this.options.radius,
         });
 
 
