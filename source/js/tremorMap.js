@@ -350,13 +350,15 @@ function TremorMap(config) {
             marker.setCalculatedRadius();
           });
 
+          $("#event-list").prepend(listItem);
+
           marker.on('click', function () {
             $(".active-event").removeClass("active-event");
             listItem.addClass("active-event");
-            $(".event-" + id)[0].scrollIntoView();
+            $("#event-list").scrollTop(listItem[0].scrollHeight - 50);
           });
 
-          $("#event-list").prepend(listItem);
+
         }
         return marker;
       }
