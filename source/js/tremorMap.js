@@ -71,13 +71,12 @@ function TremorMap(config) {
     },
     //sets spectrum or single color using config
     setColoring: function (coloring) {
-      var fill, radius;
+      var fill;
       if (colors[coloring]) {
         switch (colors[coloring].type) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
               fill = "#" + rainbow.colorAt(this.options.magIndex);
-              radius = (this.options.magIndex / 100) * config.markerOptions.radius + 0.5;
             } else {
               fill = "#ababab";
             }
@@ -93,12 +92,23 @@ function TremorMap(config) {
 
         this.setStyle({
           fillColor: fill,
-          color: colors[coloring].outline,
-          radius: radius ? radius : config.markerOptions.radius,
+          color: colors[coloring].outline
         });
 
-
+        this.setMagRadius(coloring);
       }
+    },
+    setMagRadius: function(coloring) {
+      var radius;
+
+      if (colors[coloring] && colors[coloring].type == "magnitude" && this.options.magIndex >= 0){
+        radius = (this.options.magIndex / 100) * config.markerOptions.radius + 0.5;
+      }
+
+      this.setStyle({
+        radius: radius ? radius : config.markerOptions.radius
+      });
+        
     }
   });
 
@@ -312,9 +322,6 @@ function TremorMap(config) {
           
           var magIndex = getMagIndex(mag);
           var magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
-         if (mag) {
-           console.log(magIndex, mag);
-         }
           var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
@@ -341,7 +348,7 @@ function TremorMap(config) {
             marker.setRadius(6);
           }).on('mouseout', function () {
             $(this).removeClass("active-event");
-            marker.setRadius(config.markerOptions.radius);
+            marker.setMagRadius(coloringName);
           });
 
           marker.on('click', function () {
