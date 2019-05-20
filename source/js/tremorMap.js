@@ -95,10 +95,10 @@ function TremorMap(config) {
           color: colors[coloringName].outline
         });
 
-        this.setMagRadius();
+        this.setCalculatedRadius();
       }
     },
-    setMagRadius: function() {
+    setCalculatedRadius: function() {
       var radius;
 
       if (colors[coloringName] && colors[coloringName].type == "magnitude" && this.options.magIndex >= 0){
@@ -270,7 +270,7 @@ function TremorMap(config) {
 
   // Sets rainbow coloring to be used on mapkey and icons
   function prepareSpectrum() {
-    if (colors[coloringName] && colors[coloringName].type == "time" || colors[coloringName].type == "magnitude") {
+    if (colors[coloringName] && (colors[coloringName].type == "time" || colors[coloringName].type == "magnitude")) {
       rainbow.setSpectrumByArray(colors[coloringName].fill);
       
       if (mapKey._map == null) {
@@ -318,9 +318,10 @@ function TremorMap(config) {
           //timeIndex is used to assign coloring relative to start and end dates
           timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           
-          var magIndex = getMagIndex(mag);
-          var magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
-          var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
+        var magIndex = getMagIndex(mag);
+        var magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
+        var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
+
         //Defaults to black - gets overwritten
         var marker = new customMarker([lat, lng], {
           timeIndex: timeIndex,
@@ -346,7 +347,7 @@ function TremorMap(config) {
             marker.setRadius(6);
           }).on('mouseout', function () {
             $(this).removeClass("active-event");
-            marker.setMagRadius();
+            marker.setCalculatedRadius();
           });
 
           marker.on('click', function () {
@@ -365,7 +366,11 @@ function TremorMap(config) {
   }
 
   function setColoring(color) {
-    coloringName = color;
+    if(colors[color] || color == "heat-map"){
+      coloringName = color;
+    } else {
+      coloringName = "red";
+    }
   }
   
   //** Methods available for external use */
