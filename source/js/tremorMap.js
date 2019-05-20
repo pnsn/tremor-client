@@ -4,7 +4,7 @@
 function TremorMap(config) {
   //** Instantiate some variables */
 
-  var map, eventMarkers, heatmap, overlays, mapKey, osm,
+  var map, coloringName, eventMarkers, heatmap, overlays, mapKey, osm,
     rectangle, drawnRectangle, customMarker, dateStart, dateEnd,
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors,
@@ -26,8 +26,8 @@ function TremorMap(config) {
       div.innerHTML = "<div id='key-top'></div><div id='key-colored'></div><div id='key-bottom'></div><div id='key-no-data'><span> No Data: </span><div></div></div>";
       return div;
     },
-    recolor: function (coloring) {
-      if(coloring.type == "magnitude") {
+    recolor: function () {
+      if(colors[coloringName] && colors[coloringName].type == "magnitude") {
         $("#key-top").text("Me = 2.2");
         $("#key-bottom").text("0.5");
         $("#key-no-data").show();
@@ -37,7 +37,7 @@ function TremorMap(config) {
         $("#key-no-data").hide();
       }
       var str = "";
-      $.each(coloring.fill, function (i, color) {
+      $.each(colors[coloringName].fill, function (i, color) {
         str += "," + color;
       });
       $("#key-colored").css("background-image", "linear-gradient(to top" + str + ")");
@@ -70,10 +70,10 @@ function TremorMap(config) {
       outline: "black" //default
     },
     //sets spectrum or single color using config
-    setColoring: function (coloring) {
+    setColoring: function () {
       var fill;
-      if (colors[coloring]) {
-        switch (colors[coloring].type) {
+      if (colors[coloringName]) {
+        switch (colors[coloringName].type) {
           case "magnitude":
             if (this.options.magIndex >= 0) {
               fill = "#" + rainbow.colorAt(this.options.magIndex);
@@ -87,21 +87,21 @@ function TremorMap(config) {
             break;
 
           default:
-            fill = colors[coloring].fill;
+            fill = colors[coloringName].fill;
         }
 
         this.setStyle({
           fillColor: fill,
-          color: colors[coloring].outline
+          color: colors[coloringName].outline
         });
 
-        this.setMagRadius(coloring);
+        this.setMagRadius();
       }
     },
-    setMagRadius: function(coloring) {
+    setMagRadius: function() {
       var radius;
 
-      if (colors[coloring] && colors[coloring].type == "magnitude" && this.options.magIndex >= 0){
+      if (colors[coloringName] && colors[coloringName].type == "magnitude" && this.options.magIndex >= 0){
         radius = (this.options.magIndex / 100) * config.markerOptions.radius + 0.5;
       }
 
@@ -248,7 +248,7 @@ function TremorMap(config) {
 
   // Recolors all markers in the passed in style
   // Bypassed if alreadyColored
-  function recolorMarkers(coloringName, alreadyColored) {
+  function recolorMarkers(alreadyColored) {
     clearLayers();
 
     if (coloringName == "heat-map") {
@@ -258,10 +258,10 @@ function TremorMap(config) {
       }
     } else {
       if (!alreadyColored) {
-        prepareSpectrum(colors[coloringName]);
+        prepareSpectrum();
 
         eventMarkers.eachLayer(function (marker) {
-          marker.setColoring(coloringName);
+          marker.setColoring();
         });
       }
       toggleLayer(true, eventMarkers);
@@ -269,15 +269,15 @@ function TremorMap(config) {
   }
 
   // Sets rainbow coloring to be used on mapkey and icons
-  function prepareSpectrum(coloring) {
-    if (coloring && coloring.type == "time" || coloring.type == "magnitude") {
-      rainbow.setSpectrumByArray(coloring.fill);
+  function prepareSpectrum() {
+    if (colors[coloringName] && colors[coloringName].type == "time" || colors[coloringName].type == "magnitude") {
+      rainbow.setSpectrumByArray(colors[coloringName].fill);
       
       if (mapKey._map == null) {
         map.addControl(mapKey);
       }
 
-      mapKey.recolor(coloring);
+      mapKey.recolor();
     } else {
       if (mapKey._map != null) {
         map.removeControl(mapKey);
@@ -298,15 +298,13 @@ function TremorMap(config) {
   }
 
   // Makes new markers with given data and coloringName
-  function updateMarkers(data, coloringName) {
+  function updateMarkers(data) {
     clearLayers();
 
     var firstEventTime = new Date(data.features[0].properties.time);
     var lastEventTime = new Date(data.features[data.features.length - 1].properties.time);
-
-    if(colors[coloringName]) {
-      prepareSpectrum(colors[coloringName]);
-    }
+    
+    prepareSpectrum();
 
     //Go through all the data and create markers
     eventMarkers = L.geoJSON(data.features, {
@@ -330,7 +328,7 @@ function TremorMap(config) {
           magIndex: magIndex
         });
 
-        marker.setColoring(coloringName);
+        marker.setColoring();
         marker.bindPopup("<div> Time: " + timeString + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
           .on('mouseover', function () {
             $(".active-event").removeClass("active-event");
@@ -348,7 +346,7 @@ function TremorMap(config) {
             marker.setRadius(6);
           }).on('mouseout', function () {
             $(this).removeClass("active-event");
-            marker.setMagRadius(coloringName);
+            marker.setMagRadius();
           });
 
           marker.on('click', function () {
@@ -363,7 +361,11 @@ function TremorMap(config) {
       }
     });
     //update key top and bottom with colors?
-    recolorMarkers(coloringName, true);
+    recolorMarkers(true);
+  }
+
+  function setColoring(color) {
+    coloringName = color;
   }
   
   //** Methods available for external use */
@@ -376,6 +378,7 @@ function TremorMap(config) {
     removeBounds: removeBounds,
     getBounds: getBounds,
     clearLayers: clearLayers,
+    setColoring: setColoring,
     setRange: function(start, end){
       dateStart = start;
       dateEnd = end;

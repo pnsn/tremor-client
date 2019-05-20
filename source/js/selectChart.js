@@ -20,8 +20,6 @@ function TimeChart(config, minDate) {
     dateFormat = config.format, // format to display
     d3Format = d3.utcFormat(config.d3Format); // d3 format to display
     d3Parse = d3.utcParse(config.d3Format); // d3 parse format
-
-  console.log($(config.container).width(),$(config.container).height() );
   //** D3 Elements*/
 
   // Actual chart

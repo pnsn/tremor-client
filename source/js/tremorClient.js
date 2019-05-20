@@ -168,7 +168,9 @@ function TremorClient() {
 
   // Change coloring
   coloringSelector.change(function () {
-    tremorMap.recolorMarkers(coloringSelector.val());
+    tremorMap.setColoring($(this).val());
+    tremorMap.recolorMarkers();
+    updateUrlParams();
   });
 
   // Add a geographic filter on the map
@@ -184,10 +186,7 @@ function TremorClient() {
       function (bounds) {
         getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
           timeChart.updateData(response);
-          console.log($("#tremor-line"));
           $("#tremor-line").addClass("modified");
-          console.log($("#tremor-line"));
-          console.log("what is happening");
         });
       },
       // draw canceled 
@@ -233,19 +232,9 @@ function TremorClient() {
 
     dateRange.setRange(datePicker.startDate, datePicker.endDate);
 
-    var coloring = coloringSelector.val();
+    updateUrlParams();
 
-    var urlStr = "?" + dateRange.toString() + "&coloring=" + coloring;
-
-    var boundsStr = getBoundsString(tremorMap.getBounds());
-
-    urlStr += boundsStr;
-
-    if (window.history.replaceState) {
-      window.history.replaceState({}, "Tremor Map", urlStr);
-    }
-
-    getEvents(apiBaseUrl, dateRange.toString(), boundsStr).done(function (response) {
+    getEvents(apiBaseUrl, dateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
       updateMarkers(response);
     });
 
@@ -268,7 +257,8 @@ function TremorClient() {
 
     $("#event-list").empty();
     tremorMap.setRange(dateRange.getStart(), dateRange.getEnd());
-    tremorMap.updateMarkers(response, coloringSelector.val());
+    tremorMap.setColoring(coloringSelector.val());
+    tremorMap.updateMarkers(response);
     $(".start").text(dateRange.getStart());
     $(".end").text(dateRange.getEnd());
 
@@ -306,7 +296,18 @@ function TremorClient() {
 
     $("#submit").removeClass("inactive");
   }
-}
+
+  function updateUrlParams() {
+    var urlStr = "?" + dateRange.toString() +
+              "&coloring=" + coloringSelector.val() + 
+              getBoundsString(tremorMap.getBounds());
+
+    if (window.history.replaceState) {
+      window.history.replaceState({}, "Tremor Map", urlStr);
+    }
+  }
+  
+} //end of main body
 
 // Gets the day counts of tremor
 function getCounts(apiBaseUrl, boundsStr) {
@@ -329,7 +330,7 @@ function getCounts(apiBaseUrl, boundsStr) {
 
 // Returns a string form of the bounds
 function getBoundsString(bounds) {
-  boundsStr = "";
+  var boundsStr = "";
   if (bounds) {
     $.each(bounds, function (key, value) {
       boundsStr += "&" + key + "=" + value;
@@ -364,7 +365,6 @@ function getEvents(apiBaseUrl, rangeStr, boundsStr) {
   }).promise();
 
 }
-
 // Stores date range as strings
 function DateRange(startStr, endStr, dateFormat) {
   var start, end;
