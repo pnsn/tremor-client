@@ -17,14 +17,6 @@
   border: solid $accent 2px;
 }
 
-// .leaflet-draw-toolbar .leaflet-draw-draw-rectangle {
-//   background-image: none;
-//   width: 50px !important;
-//   &:before{
-//     content:"constrain";
-//   }
-// }
-
 .map-bounds {
   background : white;
   width : 75px;
@@ -62,8 +54,8 @@
     border: solid 1px black;  
     background-color: #ababab;
     border-radius: 50%;
-    height: 5px;
-    width: 5px;
+    height: 7px;
+    width: 7px;
     display: inline-block;
   }
 }
