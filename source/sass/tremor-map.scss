@@ -149,3 +149,8 @@ $screen-xl-min: 1200px; // Large tablets and desktops
   float:right;
   margin-top:10px;
 }
+
+.tour-7 .popover-content {
+  word-break: inherit;
+  word-wrap: normal;
+}
