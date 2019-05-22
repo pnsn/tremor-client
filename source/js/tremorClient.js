@@ -2,7 +2,7 @@ function TremorClient() {
   var config = $.tremorDefaultConfig;
   //** Instantiate some variables */
 
-  var datePicker, tremorMap, timeChart, tour, allTremorCounts, dateRange, bounds,
+  var datePicker, tremorMap, timeChart, tour, allTremorCounts, selectedDateRange, currentDateRange, bounds,
     drawLimit = config.drawLimit, //max number of events to show at once
     apiBaseUrl = config.apiBaseUrl, //API url
     mapOptions = config.mapOptions, //options for leaflet map
@@ -22,7 +22,8 @@ function TremorClient() {
   //** Initialize from URL parameters */
 
   // Date ranges - get from URL or start from yesterday
-  dateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
+  selectedDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
+  currentDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
 
   // Add colors from config
   var defaultColor;
@@ -69,15 +70,15 @@ function TremorClient() {
   // Set up datepicker after dates figured out
   datePickerContainer.daterangepicker(
     Object.assign(datePickerOptions, {
-      "startDate": dateRange.getStart(),
-      "endDate": dateRange.getEnd(),
+      "startDate": selectedDateRange.getStart(),
+      "endDate": selectedDateRange.getEnd(),
       "maxDate": moment.utc(),
       "minDate": minDate
     }),
     // After select is over
     function (start, end, label) {
-      dateRange.setRange(start, end);
-      timeChart.updateBounds(dateRange.getStart(), dateRange.getEnd());
+      selectedDateRange.setRange(start, end);
+      timeChart.updateBounds(selectedDateRange.getStart(), selectedDateRange.getEnd());
       $("#submit").removeClass("inactive");
     });
 
@@ -113,7 +114,7 @@ function TremorClient() {
   });
 
   // Get actual tremor events
-  getEvents(apiBaseUrl, dateRange.toString(), getBoundsString(bounds)).done(function (response) {
+  getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(bounds)).done(function (response) {
     updateMarkers(response);
   });
 
@@ -156,13 +157,13 @@ function TremorClient() {
 
   // Shift range back a day
   $("#previous-day").click(function () {
-    var range = [moment.utc(dateRange.getStart()).subtract(1, 'days'), moment.utc(dateRange.getEnd()).subtract(1, 'days')];
+    var range = [moment.utc(selectedDateRange.getStart()).subtract(1, 'days'), moment.utc(selectedDateRange.getEnd()).subtract(1, 'days')];
     updateDateRange(range);
   });
 
   // Shift range forward a day
   $("#next-day").click(function () {
-    var range = [moment.utc(dateRange.getStart()).add(1, 'days'), moment.utc(dateRange.getEnd()).add(1, 'days')];
+    var range = [moment.utc(selectedDateRange.getStart()).add(1, 'days'), moment.utc(selectedDateRange.getEnd()).add(1, 'days')];
     updateDateRange(range);
   });
 
@@ -216,7 +217,7 @@ function TremorClient() {
   $("#download-container button").click(function () {
     var dataFormat = $("#download-type").val();
     if (dataFormat === "json" || dataFormat === "csv") {
-      var url = apiBaseUrl + "/events?" + dateRange.toString() + "&format=" + dataFormat;
+      var url = apiBaseUrl + "/events?" + currentDateRange.toString() + "&format=" + dataFormat;
       window.open(url, "_blank");
     }
   });
@@ -230,11 +231,13 @@ function TremorClient() {
 
     tremorMap.clearLayers();
 
-    dateRange.setRange(datePicker.startDate, datePicker.endDate);
+    var newRange = selectedDateRange.getRange();
+    //update date range
+    currentDateRange.setRange(newRange.start, newRange.end);
 
     updateUrlParams();
 
-    getEvents(apiBaseUrl, dateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
+    getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
       updateMarkers(response);
     });
 
@@ -242,10 +245,10 @@ function TremorClient() {
 
   // Waits for dateChanged event on chart and updates UI
   $(chartOptions.container).on("dateChanged", function(e, dates){
-    dateRange.setRange(dates.start, dates.end);
+    selectedDateRange.setRange(dates.start, dates.end);
 
-    datePicker.setStartDate(dateRange.getStart());
-    datePicker.setEndDate(dateRange.getEnd());
+    datePicker.setStartDate(selectedDateRange.getStart());
+    datePicker.setEndDate(selectedDateRange.getEnd());
 
     $("#submit").removeClass("inactive");
   });
@@ -254,13 +257,12 @@ function TremorClient() {
 
   // Updates UI and markers when new data requested
   function updateMarkers(response) {
-
     $("#event-list").empty();
-    tremorMap.setRange(dateRange.getStart(), dateRange.getEnd());
+
     tremorMap.setColoring(coloringSelector.val());
     tremorMap.updateMarkers(response);
-    $(".start").text(dateRange.getStart());
-    $(".end").text(dateRange.getEnd());
+    $(".start").text(currentDateRange.getStart());
+    $(".end").text(currentDateRange.getEnd());
 
     $("#submit").addClass("inactive");
     if (response.count >= drawLimit) {
@@ -282,12 +284,12 @@ function TremorClient() {
     $("#loading-overlay").hide();
   }
 
-  // Updates the chart and datepicker with given range
+  // Updates the chart and datepicker with given moment range
   function updateDateRange(range) {
-    dateRange.setRange(range[0], range[1]);
+    selectedDateRange.setRange(range[0], range[1]);
 
-    var start = dateRange.getStart();
-    var end = dateRange.getEnd();
+    var start = selectedDateRange.getStart();
+    var end = selectedDateRange.getEnd();
 
     datePicker.setStartDate(start);
     datePicker.setEndDate(end);
@@ -298,7 +300,7 @@ function TremorClient() {
   }
 
   function updateUrlParams() {
-    var urlStr = "?" + dateRange.toString() +
+    var urlStr = "?" + currentDateRange.toString() +
               "&coloring=" + coloringSelector.val() + 
               getBoundsString(tremorMap.getBounds());
 
@@ -391,6 +393,11 @@ function DateRange(startStr, endStr, dateFormat) {
     // Get end string
     getEnd: function () {
       return end;
+    },
+
+    // Returns moment objects
+    getRange: function() {
+      return{"start" : moment.utc(start, dateFormat), "end" : moment.utc(end, dateFormat)};
     },
 
     // Set given moment objects as the dates
