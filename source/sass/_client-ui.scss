@@ -242,6 +242,8 @@
         color:$warning;
       }
       li {
+        display:block;
+        height: 18px;
         div:first-child {
           float:left;
         }

@@ -393,6 +393,10 @@
 #tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul .tremor-event-nav.active-event {
   color: #e61a1a;
 }
+#tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul li {
+  display: block;
+  height: 18px;
+}
 #tremor-client #tremor-content #tremor-sidebar #tremor-event-nav ul li div:first-child {
   float: left;
 }
