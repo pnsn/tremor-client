@@ -235,6 +235,7 @@ function TremorClient() {
     //update date range
     currentDateRange.setRange(newRange.start, newRange.end);
 
+    
     updateUrlParams();
 
     getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
@@ -260,6 +261,7 @@ function TremorClient() {
     $("#event-list").empty();
 
     tremorMap.setColoring(coloringSelector.val());
+    tremorMap.setRange(currentDateRange.getStart(),currentDateRange.getEnd());
     tremorMap.updateMarkers(response);
     $(".start").text(currentDateRange.getStart());
     $(".end").text(currentDateRange.getEnd());
