@@ -4,7 +4,7 @@
 function TremorMap(config) {
   //** Instantiate some variables */
 
-  var map, coloringName, eventMarkers, heatmap, overlays, mapKey, osm,
+  var map, coloringName, eventMarkers, heatmap, overlays, mapKey, topoBaseMap, baseLayers,
     rectangle, drawnRectangle, customMarker, dateStart, dateEnd,
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors,
@@ -14,10 +14,15 @@ function TremorMap(config) {
   // Make the map
   map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
 
-  //Make the basemap
-  osm = new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-  });
+  //Make the basemaps
+  topoBaseMap = L.esri.basemapLayer("Topographic");
+  baseLayers = {
+    "Topographic": topoBaseMap,
+    "Gray": L.esri.basemapLayer("Gray"),
+    "Streets": L.esri.basemapLayer("Streets"),
+    "Imagery": L.esri.basemapLayer("Imagery")
+  };
+
 
   //Make a key that can be recolored
   L.Control.Key = L.Control.extend({
@@ -135,10 +140,10 @@ function TremorMap(config) {
   };
 
   // Add everything to the map
-  map.addLayer(osm); //background
+  map.addLayer(topoBaseMap); //background
   L.control.scale().addTo(map); //scale
   map.addLayer(editableLayers); //layers
-  L.control.layers({}, overlays).addTo(map); //overlays
+  L.control.layers(baseLayers, overlays).addTo(map); //overlays
 
   //Supposed to fix recentering on chrome
   L.Control.include({

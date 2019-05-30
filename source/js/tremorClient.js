@@ -25,6 +25,7 @@ function TremorClient() {
   selectedDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
   currentDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
 
+
   // Add colors from config
   var defaultColor;
   $.each(config.mapOptions.coloringOptions.colors, function (id, color) {
@@ -116,6 +117,10 @@ function TremorClient() {
   // Get actual tremor events
   getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(bounds)).done(function (response) {
     updateMarkers(response);
+  }).fail(function (jqXHR, textStatus) {
+    if (jqXHR.status === 404) {
+      noData();
+    }
   });
 
   //** UI Events and Prepping */
@@ -240,6 +245,10 @@ function TremorClient() {
 
     getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
       updateMarkers(response);
+    }).fail(function (jqXHR, textStatus) {
+      if (jqXHR.status === 404) {
+        noData();
+      }
     });
 
   });
@@ -280,25 +289,52 @@ function TremorClient() {
       $("#event-list-warning").hide();
     }
 
+    $("#no-events-list-warning").hide();
     $("#epicenters span").text(response.count);
     $("#play-events").prop("disabled", false);
 
     $("#loading-overlay").hide();
   }
 
+
+  // Updates UI and markers when new data requested
+  function noData() {
+    $("#event-list").empty();
+
+    $(".start").text(currentDateRange.getStart());
+    $(".end").text(currentDateRange.getEnd());
+
+    $("#submit").addClass("inactive");
+
+    $("#event-limit-warning").hide();
+    $(".sidebar-list").hide();
+    $("#no-events-list-warning").show();
+    $("#epicenters span").text(0);
+
+    $("#loading-overlay").hide();
+  }
+
   // Updates the chart and datepicker with given moment range
   function updateDateRange(range) {
-    selectedDateRange.setRange(range[0], range[1]);
+    if(range[1] > moment.utc()) {
+      $("#next-day").prop('disabled', true);
+    } else if (range[0] < moment.utc(minDate, config.dateFormat)) {
+      $("#previous-day").prop('disabled', true);
+    } else {
+      selectedDateRange.setRange(range[0], range[1]);
 
-    var start = selectedDateRange.getStart();
-    var end = selectedDateRange.getEnd();
+      var start = selectedDateRange.getStart();
+      var end = selectedDateRange.getEnd();
 
-    datePicker.setStartDate(start);
-    datePicker.setEndDate(end);
+      datePicker.setStartDate(start);
+      datePicker.setEndDate(end);
 
-    timeChart.updateBounds(start, end);
+      timeChart.updateBounds(start, end);
 
-    $("#submit").removeClass("inactive");
+      $("#submit").removeClass("inactive");
+
+      $("#previous-day, #next-day").prop('disabled', false);
+    }
   }
 
   function updateUrlParams() {
@@ -356,11 +392,9 @@ function getEvents(apiBaseUrl, rangeStr, boundsStr) {
   }).fail(function (jqXHR, textStatus) {
     $("#loading-gif").hide();
     $("#loading-warning").show();
-    if (jqXHR.status === 404) {
-      $("#err404").show();
-    } else if (jqXHR.status === 500) {
+    if (jqXHR.status === 500) {
       $("#err500").show();
-    } else {
+    } else if (jqXHR.status != 404) {
       $("#err").show();
     }
 
