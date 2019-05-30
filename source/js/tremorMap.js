@@ -23,7 +23,6 @@ function TremorMap(config) {
     "Imagery": L.esri.basemapLayer("Imagery")
   };
 
-
   //Make a key that can be recolored
   L.Control.Key = L.Control.extend({
     onAdd: function (map) {
@@ -255,22 +254,23 @@ function TremorMap(config) {
   // Bypassed if alreadyColored
   function recolorMarkers(alreadyColored) {
     clearLayers();
-
-    if (coloringName == "heat-map") {
-      drawHeatMap();
-      if (mapKey._map != null) {
-        map.removeControl(mapKey);
+    if(eventMarkers) {
+      if (coloringName == "heat-map") {
+        drawHeatMap();
+        if (mapKey._map != null) {
+          map.removeControl(mapKey);
+        }
+      } else {
+        if (!alreadyColored) {
+          prepareSpectrum();
+          eventMarkers.eachLayer(function (marker) {
+            marker.setColoring();
+          });
+        }
+        toggleLayer(true, eventMarkers);
       }
-    } else {
-      if (!alreadyColored) {
-        prepareSpectrum();
-
-        eventMarkers.eachLayer(function (marker) {
-          marker.setColoring();
-        });
-      }
-      toggleLayer(true, eventMarkers);
     }
+
   }
 
   // Sets rainbow coloring to be used on mapkey and icons

@@ -417,7 +417,7 @@ function DateRange(startStr, endStr, dateFormat) {
     }
   } else { // If no valid start, default to yesterday/today
     start = moment.utc().subtract(1, 'days').format(dateFormat); // yesterday
-    end = moment.utc().format(dateFormat); //today
+    end = start; //also yesterday
   }
 
   return {

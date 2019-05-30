@@ -47,7 +47,7 @@ $.tremorDefaultConfig = {
           type: "magnitude",
           fill: ["white", "yellow", "orange", "red"],
           outline: "black"
-        },
+        }
       }
     },
     "leafletOptions": {
