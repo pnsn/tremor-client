@@ -11,7 +11,8 @@ function TremorClient() {
     datePickerOptions = config.datePickerOptions, //options for DateRangePicker
     search_params = new URLSearchParams(window.location.search), //url params
     datePickerContainer = $('input[name="date-range"]'),
-    coloringSelector = $("#display-type"), //how map markers are colored
+    coloringSelector = $("#display-type"),
+    magnitude = $("#magnitude"), //how map markers are colored
     minDate =config.minDate;
 
   //** Set up main page elements */
@@ -40,6 +41,9 @@ function TremorClient() {
   // Set coloring from params or use default from config
   var paramColor = search_params.get('coloring');
   if (paramColor && $("#display-type option[value='" + paramColor + "']").length > 0) {
+    if (paramColor == "magnitude") {
+      $("#magnitude-warning").show();
+    }
     coloringSelector.val(paramColor);
   } else {
     if (defaultColor) {
@@ -48,6 +52,18 @@ function TremorClient() {
       coloringSelector.val("red");
     }
   }
+
+  var paramMag = search_params.get('magnitude');
+  if( !paramColor || paramColor != "heat-map" ) {
+    magnitude.parent().show();
+    if(paramMag === "true") {
+      magnitude.attr('checked', true);
+      $("#magnitude-warning").show();
+    } else {
+      magnitude.attr('checked', false);
+      $("#magnitude-warning").hide(); //will cause problem if color mag is selected
+    }
+  } 
 
   // Initial Bounds - needs to happen after map set up
   bounds = {
@@ -174,9 +190,31 @@ function TremorClient() {
 
   // Change coloring
   coloringSelector.change(function () {
+    if($(this).val() === "heat-map") {
+      magnitude.parent().hide();
+    } else {
+      if (paramColor == "magnitude") {
+        $("#magnitude-warning").show();
+      } else {
+        $("#magnitude-warning").hide();
+      }
+      magnitude.parent().show();
+    }
     tremorMap.setColoring($(this).val());
     tremorMap.recolorMarkers();
     updateUrlParams();
+  });
+
+  magnitude.change(function () {
+    tremorMap.setSizing(magnitude.is(':checked'));
+    tremorMap.recolorMarkers();
+    updateUrlParams();
+    if (magnitude.is(':checked')) {
+      $("#magnitude-warning").show();
+    } else {
+      $("#magnitude-warning").hide();
+    }
+
   });
 
   // Add a geographic filter on the map
@@ -268,10 +306,12 @@ function TremorClient() {
   // Updates UI and markers when new data requested
   function updateMarkers(response) {
     $("#event-list").empty();
-
+    tremorMap.setSizing(magnitude.is(':checked'));
     tremorMap.setColoring(coloringSelector.val());
+
     tremorMap.setRange(currentDateRange.getStart(),currentDateRange.getEnd());
     tremorMap.updateMarkers(response);
+
     $(".start").text(currentDateRange.getStart());
     $(".end").text(currentDateRange.getEnd());
 
@@ -340,6 +380,7 @@ function TremorClient() {
   function updateUrlParams() {
     var urlStr = "?" + currentDateRange.toString() +
               "&coloring=" + coloringSelector.val() + 
+              "&magnitude=" + magnitude.is(':checked') +
               getBoundsString(tremorMap.getBounds());
 
     if (window.history.replaceState) {
