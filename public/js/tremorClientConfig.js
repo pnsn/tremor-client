@@ -2,7 +2,7 @@
 $.tremorDefaultConfig = {
   drawLimit: 20000, //max number of events to draw
   dateFormat: "YYYY-MM-DD", //Date format to use MUST BE SET FOR CHART AND DATEPICKER BELOW
-  apiBaseUrl: "https://tremorapi.pnsn.org/api/v3.0", //Where to get the data from
+  apiBaseUrl: "http://tremorapiv3.pnsn.org/api/v3.0/", //Where to get the data from
   minDate: "2009-08-06",
   mapOptions: {
     "mapContainer": 'tremor-map',
