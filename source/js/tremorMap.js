@@ -3,11 +3,12 @@
 //** Requires external UI elements */
 function TremorMap(config) {
   //** Instantiate some variables */
-
   var map, coloringName, eventMarkers, heatmap, overlays, colorKey, topoBaseMap, baseLayers, scaleMarkers,
     rectangle, drawnRectangle, customMarker, dateStart, dateEnd,
     shapeOptions = config.boundsOptions,
     colors = config.coloringOptions.colors,
+    minMag = config.minMag,
+    maxMag = config.maxMag,
     rainbow = new Rainbow(),
     editableLayers = new L.FeatureGroup();
 
@@ -32,8 +33,8 @@ function TremorMap(config) {
     },
     recolor: function () {
       if(colors[coloringName] && colors[coloringName].type == "magnitude") {
-        $("#key-top").text("Me = 2.2");
-        $("#key-bottom").text("0.5");
+        $("#key-top").text("M = " + maxMag.toFixed(1));
+        $("#key-bottom").text(minMag.toFixed(1));
         $("#key-no-data").show();
       } else {
         $("#key-top").text(dateEnd);
@@ -54,7 +55,7 @@ function TremorMap(config) {
       var div = L.DomUtil.create('div', 'map-key map-control mag-key');
       div.innerHTML = "<div id='sizes'>" +
         "<div class='key-title'>Magnitude (Me)</div>"+
-        "<div class='mag-text'>0.5</div>" + 
+        "<div class='mag-text'>"+minMag.toFixed(1)+"</div>" + 
         "<div id='circles'>" + 
         "<div></div>" +
         "<div></div>" +
@@ -62,7 +63,7 @@ function TremorMap(config) {
         "<div></div>" +
         "<div></div>" +
         "</div>"+
-        "<div class='mag-text'>2.2</div>" + 
+        "<div class='mag-text'>"+maxMag.toFixed(1)+"</div>" + 
         "<div class='no-data'><span> No Data: </span><div></div>";
       return div;
     }
@@ -318,12 +319,12 @@ function TremorMap(config) {
   function getMagIndex(mag) {
     if (!mag) {
       return -1;
-    } else if (mag < 0.5) {
+    } else if (mag < minMag) {
       return 0;
-    } else if (mag > 2.2) {
+    } else if (mag > maxMag) {
       return 100;
     } else {
-      return 100 * (mag - 0.5) / (2.2 - 0.5);
+      return 100 * (mag - minMag) / (maxMag - minMag);
     }
   }
 
@@ -349,7 +350,7 @@ function TremorMap(config) {
           timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
           
         var magIndex = getMagIndex(mag);
-        var magString = "<div>Magnitude (energy): " + (mag ? mag : "no data") + "</div>";
+        var magString = "<div>Magnitude (energy): " + (mag ? mag.toFixed(1) : "no data") + "</div>";
         var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
 
         //Defaults to black - gets overwritten
@@ -369,7 +370,7 @@ function TremorMap(config) {
 
         // do all the listy stuff
         if (data.features.length < 5000) {
-          var listItem = $("<li class='tremor-event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
+          var listItem = $("<li class='tremor-event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag.toFixed(1) : "no data") + "</div></li>");
           listItem.click(function () {
             $(this).addClass("active-event");
             marker.openPopup();
