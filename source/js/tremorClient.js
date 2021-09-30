@@ -1,438 +1,491 @@
-//** Makes a map with passed in config options */
-//** Leaflet map that adds dots from a geojson */
-//** Requires external UI elements */
-function TremorMap(config) {
+function TremorClient() {
+  var config = $.tremorDefaultConfig;
   //** Instantiate some variables */
 
-  var map, coloringName, eventMarkers, heatmap, overlays, colorKey, topoBaseMap, baseLayers, scaleMarkers,
-    rectangle, drawnRectangle, customMarker, dateStart, dateEnd,
-    shapeOptions = config.boundsOptions,
-    colors = config.coloringOptions.colors,
-    rainbow = new Rainbow(),
-    editableLayers = new L.FeatureGroup();
+  var datePicker, tremorMap, timeChart, tour, allTremorCounts, selectedDateRange, currentDateRange, bounds,
+    drawLimit = config.drawLimit, //max number of events to show at once
+    apiBaseUrl = config.apiBaseUrl, //API url
+    mapOptions = config.mapOptions, //options for leaflet map
+    chartOptions = config.chartOptions, //options for D3 chart
+    tourOptions = config.tourOptions, //options for Bootstrap Tour
+    datePickerOptions = config.datePickerOptions, //options for DateRangePicker
+    search_params = new URLSearchParams(window.location.search), //url params
+    datePickerContainer = $('input[name="date-range"]'),
+    coloringSelector = $("#display-type"),
+    magnitude = $("#magnitude"), //how map markers are colored
+    minDate =config.minDate;
 
-  // Make the map
-  map = new L.Map(config.mapContainer, config.leafletOptions).setView(config.center, config.zoom);
+  //** Set up main page elements */
+  tremorMap = new TremorMap(mapOptions);
+  timeChart = new TimeChart(chartOptions, minDate);
+  tour = new Tour(tourOptions);
 
-  //Make the basemaps
-  topoBaseMap = L.esri.basemapLayer("Topographic");
-  baseLayers = {
-    "Topographic": topoBaseMap,
-    "Gray": L.esri.basemapLayer("Gray"),
-    "Streets": L.esri.basemapLayer("Streets"),
-    "Imagery": L.esri.basemapLayer("Imagery")
+  //** Initialize from URL parameters */
+
+  // Date ranges - get from URL or start from yesterday
+  selectedDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
+  currentDateRange = new DateRange(search_params.get('starttime'), search_params.get('endtime'),config.dateFormat);
+
+
+  // Add colors from config
+  var defaultColor;
+  $.each(config.mapOptions.coloringOptions.colors, function (id, color) {
+    if (color.default) {
+      defaultColor = id;
+    }
+    coloringSelector.prepend(
+      "<option value='" + id + "'>" + color.name + "</option>"
+    );
+  });
+
+  // Set coloring from params or use default from config
+  var paramColor = search_params.get('coloring');
+  if (paramColor && $("#display-type option[value='" + paramColor + "']").length > 0) {
+    if (paramColor == "magnitude") {
+      $("#magnitude-warning").show();
+    }
+    coloringSelector.val(paramColor);
+  } else {
+    if (defaultColor) {
+      coloringSelector.val(defaultColor);
+    } else {
+      coloringSelector.val("red");
+    }
+  }
+
+  var paramMag = search_params.get('magnitude');
+  if( !paramColor || paramColor != "heat-map" ) {
+    magnitude.parent().show();
+    if(paramMag === "true") {
+      magnitude.attr('checked', true);
+      $("#magnitude-warning").show();
+    } else {
+      magnitude.attr('checked', false);
+      $("#magnitude-warning").hide(); //will cause problem if color mag is selected
+    }
+  } 
+
+  // Initial Bounds - needs to happen after map set up
+  bounds = {
+    "lat_max": parseFloat(search_params.get("lat_max")),
+    "lat_min": parseFloat(search_params.get("lat_min")),
+    "lon_max": parseFloat(search_params.get("lon_max")),
+    "lon_min": parseFloat(search_params.get("lon_min"))
   };
 
-  //Make a key that can be recolored
-  L.Control.Color = L.Control.extend({
-    onAdd: function (map) {
-      var div = L.DomUtil.create('div', 'map-key map-control color-key');
-      div.innerHTML = "<div class='key-title'>Color Scale</div><div id='key-top' class='key-top'></div><div id='key-colored'></div><div id='key-bottom'></div><div class='no-data'><span> No Data: </span><div></div></div>";
-      return div;
-    },
-    recolor: function () {
-      if(colors[coloringName] && colors[coloringName].type == "magnitude") {
-        $("#key-top").text("Me = 2.2");
-        $("#key-bottom").text("0.5");
-        $("#key-no-data").show();
+  if (bounds.lat_min && bounds.lat_max && bounds.lon_min && bounds.lon_max) {
+    tremorMap.addBounds(bounds);
+    $("#draw-filter").hide();
+    $("#remove-filter").show();
+  } else {
+    bounds = null;
+    $("#draw-filter-text").hide();
+    $("#draw-filter").show();
+    $("#remove-filter").hide();
+  }
+
+  // Set up datepicker after dates figured out
+  datePickerContainer.daterangepicker(
+    Object.assign(datePickerOptions, {
+      "startDate": selectedDateRange.getStart(),
+      "endDate": selectedDateRange.getEnd(),
+      "maxDate": moment.utc(),
+      "minDate": minDate
+    }),
+    // After select is over
+    function (start, end, label) {
+      selectedDateRange.setRange(start, end);
+      timeChart.updateBounds(selectedDateRange.getStart(), selectedDateRange.getEnd());
+      $("#submit").removeClass("inactive");
+    });
+
+  // Add date picker to container and tell the timeChart
+  datePicker = datePickerContainer.data('daterangepicker'); //actual datePicker
+
+  //** Get data and do stuff with it */
+
+  //Get updated at time
+  $.ajax({
+    url: apiBaseUrl + "/event/0",
+    dataType: "json"
+  }).done(function (response) {
+    $("#tremor-updated span").text(moment.utc(response.properties.time).fromNow());
+  });
+
+  // Total counts for time chart
+  getCounts(apiBaseUrl).done(function (response) {
+    allTremorCounts = response;
+    timeChart.addData(response);
+
+    // Grab new counts if there are bounds
+    if (bounds) {
+      getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
+        timeChart.updateData(response);
+        $("path.tremor-line").addClass("modified");
+      });
+    }
+
+    $(window).on('resize', function () {
+      timeChart.resize($("#tremor-control-bar").width() - $("#tremor-search").width() - 20);
+    });
+  });
+
+  // Get actual tremor events
+  getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(bounds)).done(function (response) {
+    updateMarkers(response);
+  }).fail(function (jqXHR, textStatus) {
+    if (jqXHR.status === 404) {
+      noData();
+    }
+  });
+
+  //** UI Events and Prepping */
+  $("#tremor-start-tour").click(function () {
+    if (tour.ended()) {
+      tour.restart();
+    } else {
+      tour.start(true);
+    }
+  });
+
+  $("#heatmap-warning span").text(drawLimit);
+
+  // Buttons on chart for quick zooming
+  $("#chart-buttons a").click(function (e) {
+    e.stopPropagation();
+    var range = [];
+    switch ($(this).attr("value")) {
+    case "day":
+      range = [moment.utc().subtract(1, 'days'), moment.utc()];
+      break;
+
+    case "week":
+      range = [moment.utc().subtract(6, 'days'), moment.utc()];
+      break;
+
+    case "month":
+      range = [moment.utc().subtract(1, 'month'), moment.utc()];
+      break;
+
+    default:
+      range = [moment.utc(minDate), moment.utc()];
+    }
+
+    if (range.length > 0) {
+      updateDateRange(range);
+    }
+  });
+
+  // Shift range back a day
+  $("#previous-day").click(function () {
+    var range = [moment.utc(selectedDateRange.getStart()).subtract(1, 'days'), moment.utc(selectedDateRange.getEnd()).subtract(1, 'days')];
+    updateDateRange(range);
+  });
+
+  // Shift range forward a day
+  $("#next-day").click(function () {
+    var range = [moment.utc(selectedDateRange.getStart()).add(1, 'days'), moment.utc(selectedDateRange.getEnd()).add(1, 'days')];
+    updateDateRange(range);
+  });
+
+  // Change coloring
+  coloringSelector.change(function () {
+    if($(this).val() === "heat-map") {
+      magnitude.parent().hide();
+    } else {
+      if (paramColor == "magnitude") {
+        $("#magnitude-warning").show();
       } else {
-        $("#key-top").text(dateEnd);
-        $("#key-bottom").text(dateStart);
-        $("#key-no-data").hide();
+        $("#magnitude-warning").hide();
       }
-      var str = "";
-      $.each(colors[coloringName].fill, function (i, color) {
-        str += "," + color;
-      });
-      $("#key-colored").css("background-image", "linear-gradient(to top" + str + ")");
+      magnitude.parent().show();
     }
+    tremorMap.setColoring($(this).val());
+    tremorMap.recolorMarkers();
+    updateUrlParams();
   });
 
-  //Make a key that can be recolored
-  L.Control.Magnitude = L.Control.extend({
-    onAdd: function (map) {
-      var div = L.DomUtil.create('div', 'map-key map-control mag-key');
-      div.innerHTML = "<div id='sizes'>" +
-        "<div class='key-title'>Magnitude (Me)</div>"+
-        "<div class='mag-text'>0.5</div>" + 
-        "<div id='circles'>" + 
-        "<div></div>" +
-        "<div></div>" +
-        "<div></div>" +
-        "<div></div>" +
-        "<div></div>" +
-        "</div>"+
-        "<div class='mag-text'>2.2</div>" + 
-        "<div class='no-data'><span> No Data: </span><div></div>";
-      return div;
+  magnitude.change(function () {
+    tremorMap.setSizing(magnitude.is(':checked'));
+    tremorMap.recolorMarkers();
+    updateUrlParams();
+    if (magnitude.is(':checked')) {
+      $("#magnitude-warning").show();
+    } else {
+      $("#magnitude-warning").hide();
     }
+
   });
 
-  magKey = new L.Control.Magnitude({
-    position: 'topleft'
-  });  
+  // Add a geographic filter on the map
+  $("#draw-filter").click(function (e) {
+    e.preventDefault();
+    $(this).hide();
+    $("#remove-filter").show();
+    $("#draw-filter-text").show();
 
-  //Create a key (added to map later)
-  colorKey = new L.Control.Color({
-    position: 'topleft'
-  });  
-
-  //Create empty rainbows for coloring
-  rainbow = new Rainbow();
-
-  // Custom leaflet marker
-  // Allows storing of additional data in marker
-  customMarker = L.CircleMarker.extend({
-    options: {
-      weight: config.markerOptions.weight,
-      opacity: config.markerOptions.opacity,
-      fillOpacity: config.markerOptions.fillOpacity,
-      radius: config.markerOptions.size/2,
-      magIndex: -1,
-      timeIndex: 0,
-      id: "",
-      fill: "white", //default
-      outline: "black" //default
-    },
-    //sets spectrum or single color using config
-    setColoring: function () {
-      var fill;
-      if (colors[coloringName]) {
-        switch (colors[coloringName].type) {
-          case "magnitude":
-            if (this.options.magIndex >= 0) {
-              fill = "#" + rainbow.colorAt(this.options.magIndex);
-            } else {
-              fill = "#ababab";
-            }
-            break;
-          
-          case "time":
-              fill = "#" + rainbow.colorAt(this.options.timeIndex);
-            break;
-
-          default:
-            fill = colors[coloringName].fill;
-        }
-
-        this.setStyle({
-          fillColor: fill,
-          color: colors[coloringName].outline
+    // Wait for filter to be drawn, then act
+    $.when(tremorMap.startDrawing()).then(
+      // draw completed
+      function (bounds) {
+        getCounts(apiBaseUrl, getBoundsString(bounds)).done(function (response) {
+          timeChart.updateData(response);
+          $("#tremor-line").addClass("modified");
         });
+      },
+      // draw canceled 
+      function (status) {
+        $("#remove-filter").hide();
+        $("#draw-filter").show();
+        $("#draw-filter-text").hide();
       }
-    },
-    setSizing: function(sizing) {
-      var size;
-      
-      if ( sizing && this.options.magIndex >= 0 ){
-        size = (this.options.magIndex / 100) * config.markerOptions.size + 1;
-      } else if ( sizing ) {
-        size = config.markerOptions.size / 2;
-      }
-      this.setStyle({
-        radius: size ? size / 2 : config.markerOptions.size / 2
-      });
-        
+    );
+
+    $("#submit").removeClass("inactive");
+  });
+
+  // Remove geographic filter
+  $("#remove-filter").click(function () {
+    $(this).hide();
+    $("path.line").removeClass("modified");
+    $("#draw-filter").show();
+    $("#draw-filter-text").hide();
+    $("#submit").removeClass("inactive");
+    tremorMap.removeBounds();
+    timeChart.updateData(allTremorCounts);
+    //put back normal line
+  });
+
+  // Select data format
+  $("#download-container button").click(function () {
+    var dataFormat = $("#download-type").val();
+    if (dataFormat === "json" || dataFormat === "csv") {
+      var url = apiBaseUrl + "/events?" + currentDateRange.toString() + "&format=" + dataFormat;
+      window.open(url, "_blank");
     }
   });
 
-  // Map overlays for leaflet overlay control
-  overlays = {
-    "Seismometers": L.geoJSON(seismometersGeoJSON, {
-      pointToLayer: function (feature, latlng) {
-        return L.marker(latlng, {
-          icon: L.icon({
-            iconUrl: '/assets/map/station.png',
-            iconSize: [10, 8]
-          })
-        }).bindPopup("<div>" + feature.properties.station + "</div>");
+  // Submit changes and get new data
+  $("#submit").click(function () {
+    $("#loading-overlay").show();
+    $("#loading-gif").show();
+    $("#loading-warning").hide();
+    $("#play-events").prop('disabled', true);
+
+    tremorMap.clearLayers();
+
+    var newRange = selectedDateRange.getRange();
+    //update date range
+    currentDateRange.setRange(newRange.start, newRange.end);
+
+    
+    updateUrlParams();
+
+    getEvents(apiBaseUrl, currentDateRange.toString(), getBoundsString(tremorMap.getBounds())).done(function (response) {
+      updateMarkers(response);
+    }).fail(function (jqXHR, textStatus) {
+      if (jqXHR.status === 404) {
+        noData();
       }
-    }),
-    "Past Tremor": L.geoJSON(pastTremorGeoJSON, {
-      style: pastTremorGeoJSON.properties.style
-    }),
-    "JDF Plate Contours": L.geoJSON(contoursGeoJSON, {
-      style: function (feature) {
-        return feature.properties.style;
-      }
-    })
-  };
+    });
 
-  // Add everything to the map
-  map.addLayer(topoBaseMap); //background
-  L.control.scale().addTo(map); //scale
+  });
 
-  map.addLayer(editableLayers); //layers
-  L.control.layers(baseLayers, overlays).addTo(map); //overlays
+  // Waits for dateChanged event on chart and updates UI
+  $(chartOptions.container).on("dateChanged", function(e, dates){
+    selectedDateRange.setRange(dates.start, dates.end);
 
-  //Supposed to fix recentering on chrome
-  L.Control.include({
-    _refocusOnMap: L.Util.falseFn // Do nothing.
+    datePicker.setStartDate(selectedDateRange.getStart());
+    datePicker.setEndDate(selectedDateRange.getEnd());
+
+    $("#submit").removeClass("inactive");
   });
 
   //** Helper functions */
 
-  // Allows user to start drawing a single rectangle on the map
-  // Returns a promise to indicate when drawing is done
-  // Promise is resolved with bounds or rejected on cancel
-  function startDrawing() {
-    var dfd = $.Deferred();
-    editableLayers.clearLayers();
-    rectangle = new L.Draw.Rectangle(map, {
-      "shapeOptions": shapeOptions
-    });
-    rectangle.enable();
+  // Updates UI and markers when new data requested
+  function updateMarkers(response) {
+    $("#event-list").empty();
+    tremorMap.setSizing(magnitude.is(':checked'));
+    tremorMap.setColoring(coloringSelector.val());
 
-    map.on(L.Draw.Event.CREATED, function (e) {
-      var type = e.layerType,
-        layer = e.layer;
+    tremorMap.setRange(currentDateRange.getStart(),currentDateRange.getEnd());
+    tremorMap.updateMarkers(response);
 
-      editableLayers.addLayer(layer);
-      dfd.resolve(getBounds());
-    });
+    $(".start").text(currentDateRange.getStart());
+    $(".end").text(currentDateRange.getEnd());
 
-    map.on('draw:drawstop', function (e) {
-      dfd.reject("cancel");
-    });
-
-    return dfd.promise();
-  }
-
-  // Removes drawn bounds from map
-  function removeBounds() {
-    editableLayers.clearLayers();
-    if (rectangle) {
-      rectangle.disable();
-      rectangle = null;
-    }
-    if (drawnRectangle) {
-      drawnRectangle = null;
-    }
-  }
-
-  // Adds a rectangle to map using passed in bounds object
-  function addBounds(bounds) {
-    editableLayers.clearLayers();
-    drawnRectangle = L.rectangle([
-      [bounds.lat_max, bounds.lon_max],
-      [bounds.lat_min, bounds.lon_min]
-    ], shapeOptions);
-    editableLayers.addLayer(drawnRectangle);
-  }
-
-  // Returns a bounds object if there is a rectangle on the map
-  function getBounds() {
-    if (editableLayers.getLayers().length > 0) {
-
-      var layer = editableLayers.getLayers()[0];
-      var bounds = layer.getBounds();
-      return {
-        "lat_max": bounds.getNorth(),
-        "lat_min": bounds.getSouth(),
-        "lon_max": bounds.getEast(),
-        "lon_min": bounds.getWest()
-      };
+    $("#submit").addClass("inactive");
+    if (response.count >= drawLimit) {
+      $("#event-limit-warning").show();
     } else {
-      return;
+      $("#event-limit-warning").hide();
     }
-  }
-
-  // Removes event based layers
-  function clearLayers() {
-    toggleLayer(false, heatmap);
-    toggleLayer(false, eventMarkers);
-  }
-
-  // Makes a heat map using the eventMarkers
-  // Uses leaflet-heat.js
-  function drawHeatMap() {
-    clearLayers();
-    var points = [];
-    eventMarkers.eachLayer(function (marker) {
-      points.push(marker.getLatLng());
-    });
-    heatmap = L.heatLayer(points, {
-      radius: 15,
-      blur: 20
-    });
-    map.addLayer(heatmap);
-  }
-
-  // Toogles given layer using passed bool
-  function toggleLayer(show, layer) {
-    if (show) {
-      if (!map.hasLayer(layer)) {
-        map.addLayer(layer);
-      }
+    if (response.count > 5000) {
+      $(".sidebar-list").hide();
+      $("#event-list-warning").show();
     } else {
-      if (map.hasLayer(layer)) {
-        map.removeLayer(layer);
-      }
-    }
-  }
-
-  // Recolors all markers in the passed in style
-  // Bypassed if alreadyColored
-  function recolorMarkers(alreadyColored) {
-    clearLayers();
-    if(eventMarkers) {
-      if (coloringName == "heat-map") {
-        drawHeatMap();
-        if (colorKey._map != null) {
-          map.removeControl(colorKey);
-        }
-        if (magKey._map != null) {
-          map.removeControl(magKey);
-        }
-      } else {
-        if (!alreadyColored) {
-          prepareSpectrum();
-          eventMarkers.eachLayer(function (marker) {
-            marker.setSizing(scaleMarkers);
-            marker.setColoring();
-          });
-        }
-        toggleLayer(true, eventMarkers);
-      }
+      $(".sidebar-list").show();
+      $("#event-list-warning").hide();
     }
 
+    $("#no-events-list-warning").hide();
+    $("#epicenters span").text(response.count);
+    $("#play-events").prop("disabled", false);
+
+    $("#loading-overlay").hide();
   }
 
-  // Sets rainbow coloring to be used on mapkey and icons
-  function prepareSpectrum() {
-    if (colors[coloringName] && (colors[coloringName].type == "time" || colors[coloringName].type == "magnitude")) {
-      rainbow.setSpectrumByArray(colors[coloringName].fill);
-      
-      if (colorKey._map == null) {
-        map.addControl(colorKey);
-      }
 
-      colorKey.recolor();
+  // Updates UI and markers when new data requested
+  function noData() {
+    $("#event-list").empty();
+
+    $(".start").text(currentDateRange.getStart());
+    $(".end").text(currentDateRange.getEnd());
+
+    $("#submit").addClass("inactive");
+
+    $("#event-limit-warning").hide();
+    $(".sidebar-list").hide();
+    $("#no-events-list-warning").show();
+    $("#epicenters span").text(0);
+
+    $("#loading-overlay").hide();
+  }
+
+  // Updates the chart and datepicker with given moment range
+  function updateDateRange(range) {
+    if(range[1] > moment.utc()) {
+      $("#next-day").prop('disabled', true);
+    } else if (range[0] < moment.utc(minDate, config.dateFormat)) {
+      $("#previous-day").prop('disabled', true);
     } else {
-      if (colorKey._map != null) {
-        map.removeControl(colorKey);
-      }
+      selectedDateRange.setRange(range[0], range[1]);
+
+      var start = selectedDateRange.getStart();
+      var end = selectedDateRange.getEnd();
+
+      datePicker.setStartDate(start);
+      datePicker.setEndDate(end);
+
+      timeChart.updateBounds(start, end);
+
+      $("#submit").removeClass("inactive");
+
+      $("#previous-day, #next-day").prop('disabled', false);
     }
   }
 
-  function getMagIndex(mag) {
-    if (!mag) {
-      return -1;
-    } else if (mag < 0.5) {
-      return 0;
-    } else if (mag > 2.2) {
-      return 100;
-    } else {
-      return 100 * (mag - 0.5) / (2.2 - 0.5);
-    }
-  }
+  function updateUrlParams() {
+    var urlStr = "?" + currentDateRange.toString() +
+              "&coloring=" + coloringSelector.val() + 
+              "&magnitude=" + magnitude.is(':checked') +
+              getBoundsString(tremorMap.getBounds());
 
-  // Makes new markers with given data and coloringName
-  function updateMarkers(data) {
-    clearLayers();
-
-    var firstEventTime = new Date(data.features[0].properties.time);
-    var lastEventTime = new Date(data.features[data.features.length - 1].properties.time);
-    
-    prepareSpectrum();
-
-    //Go through all the data and create markers
-    eventMarkers = L.geoJSON(data.features, {
-      pointToLayer: function (feature, latlng) {
-        var id = feature.properties.id,
-          time = new Date(feature.properties.time),
-          lat = latlng.lat,
-          lng = latlng.lng,
-          mag = feature.properties.magnitude ? feature.properties.magnitude : null,
-
-          //timeIndex is used to assign coloring relative to start and end dates
-          timeIndex = (time - firstEventTime) / (lastEventTime - firstEventTime) * 100;
-          
-        var magIndex = getMagIndex(mag);
-        var magString = "<div>Magnitude (energy): " + (mag ? mag.toFixed(1) : "no data") + "</div>";
-        var timeString = time.toISOString().replace("T", " ").replace(".000Z", "");
-
-        //Defaults to black - gets overwritten
-        var marker = new customMarker([lat, lng], {
-          timeIndex: timeIndex,
-          id: id,
-          magIndex: magIndex
-        });
-
-        marker.setSizing(scaleMarkers);
-        marker.setColoring();
-        marker.bindPopup("<div> Time: " + timeString + "</div> <div> Latitude: " + lat + "</div><div>Longitude: " + lng + "</div>" + magString)
-          .on('mouseover', function () {
-            $(".active-event").removeClass("active-event");
-            $(".event-" + id).addClass("active-event");
-          });
-
-        // do all the listy stuff
-        if (data.features.length < 5000) {
-          var listItem = $("<li class='tremor-event-nav event-" + id + "'><div>" + timeString + "</div><div>" + (mag ? "M" + mag : "no data") + "</div></li>");
-          listItem.click(function () {
-            $(this).addClass("active-event");
-            marker.openPopup();
-          }).on('mouseenter', function () {
-            $(this).addClass("active-event");
-            marker.setRadius(6);
-          }).on('mouseout', function () {
-            $(this).removeClass("active-event");
-            marker.setSizing(scaleMarkers);
-          });
-
-          $("#event-list").prepend(listItem);
-
-          marker.on('click', function () {
-            $(".active-event").removeClass("active-event");
-            listItem.addClass("active-event");
-            $("#event-list").scrollTop(listItem[0].scrollHeight - 50);
-          });
-
-
-        }
-        return marker;
-      }
-    });
-    //update key top and bottom with colors?
-    recolorMarkers(true);
-  }
-
-  function setColoring(color) {
-    if(colors[color] || color == "heat-map"){
-      coloringName = color;
-    } else {
-      coloringName = "red";
-    }
-  }
-
-  function setSizing(show) {
-    if(show) {
-      scaleMarkers = true;
-      map.addControl(magKey);
-      //show key
-    } else {
-      scaleMarkers = false;
-      map.removeControl(magKey);
-      //hide key
+    if (window.history.replaceState) {
+      window.history.replaceState({}, "Tremor Map", urlStr);
     }
   }
   
-  //** Methods available for external use */
+} //end of main body
+
+// Gets the day counts of tremor
+function getCounts(apiBaseUrl, boundsStr) {
+  var str = "";
+  if (boundsStr && boundsStr.length > 0) {
+    str = "?" + boundsStr;
+  }
+  var request = $.ajax({
+    url: apiBaseUrl + "/day_counts" + str,
+    dataType: "json"
+  });
+
+  return request.done(function (response) {
+    return response;
+  }).fail(function (jqXHR, textStatus) {
+    console.log(jqXHR.status);
+    console.log("Request failed: " + textStatus + " ");
+  }).promise();
+}
+
+// Returns a string form of the bounds
+function getBoundsString(bounds) {
+  var boundsStr = "";
+  if (bounds) {
+    $.each(bounds, function (key, value) {
+      boundsStr += "&" + key + "=" + value;
+    });
+  }
+  return boundsStr;
+}
+
+// Gets the events for a given start and end time
+function getEvents(apiBaseUrl, rangeStr, boundsStr) {
+  var request = $.ajax({
+    url: apiBaseUrl + "/events?" + rangeStr + boundsStr,
+    dataType: "json"
+  });
+
+  return request.done(function (response) {
+    $("#loading-warning").hide();
+    return response;
+  }).fail(function (jqXHR, textStatus) {
+    $("#loading-gif").hide();
+    $("#loading-warning").show();
+    if (jqXHR.status === 500) {
+      $("#err500").show();
+    } else if (jqXHR.status != 404) {
+      $("#err").show();
+    }
+
+    console.log(jqXHR.status);
+    console.log("Request failed: " + textStatus + " ");
+  }).promise();
+
+}
+// Stores date range as strings
+function DateRange(startStr, endStr, dateFormat) {
+  var start, end;
+
+  // Check if there are valid start and end dates 
+  if (startStr && moment.utc(startStr, dateFormat).isValid()) {
+    start = moment.utc(startStr, dateFormat).format(dateFormat);
+    if (endStr && moment.utc(endStr, dateFormat).isValid()) {
+      end = moment.utc(endStr, dateFormat).format(dateFormat);
+    } else {
+      end = start;
+    }
+  } else { // If no valid start, default to yesterday/today
+    start = moment.utc().subtract(1, 'days').format(dateFormat); // yesterday
+    end = start; //also yesterday
+  }
 
   return {
-    recolorMarkers: recolorMarkers,
-    updateMarkers: updateMarkers,
-    addBounds: addBounds,
-    startDrawing: startDrawing,
-    removeBounds: removeBounds,
-    getBounds: getBounds,
-    clearLayers: clearLayers,
-    setColoring: setColoring,
-    setSizing: setSizing,
-    setRange: function(start, end){
-      dateStart = start;
-      dateEnd = end;
+    // Get start string
+    getStart: function () {
+      return start;
+    },
+
+    // Get end string
+    getEnd: function () {
+      return end;
+    },
+
+    // Returns moment objects
+    getRange: function() {
+      return{"start" : moment.utc(start, dateFormat), "end" : moment.utc(end, dateFormat)};
+    },
+
+    // Set given moment objects as the dates
+    setRange: function (s, e) {
+      start = s.format(dateFormat);
+      end = e.format(dateFormat);
+    },
+
+    // Get range as formatted string
+    toString: function () {
+      return "starttime=" + start + "T00:00:00&endtime=" + end + "T23:59:59";
     }
   };
 
